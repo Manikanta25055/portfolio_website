@@ -71,10 +71,13 @@ const Hero = () => {
             </div>
           </motion.div>
 
-          <motion.div
-            className="achievement-badge"
+          <motion.a
+            href="#project-garuda"
+            className="achievement-badge achievement-badge-link"
             animate={{ y: [0, -8, 0] }}
             transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
             <div className="badge-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -86,12 +89,15 @@ const Hero = () => {
               <span className="badge-value">1st Place Winner</span>
               <span className="badge-label">Gadget Expo 2025</span>
             </div>
-          </motion.div>
+          </motion.a>
 
-          <motion.div
-            className="achievement-badge"
+          <motion.a
+            href="#patient-collapse-detection"
+            className="achievement-badge achievement-badge-link"
             animate={{ y: [0, -8, 0] }}
             transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
             <div className="badge-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -104,7 +110,7 @@ const Hero = () => {
               <span className="badge-value">Patent Filed</span>
               <span className="badge-label">Healthcare Innovation</span>
             </div>
-          </motion.div>
+          </motion.a>
         </motion.div>
 
         <motion.div variants={itemVariants} className="hero-cta">

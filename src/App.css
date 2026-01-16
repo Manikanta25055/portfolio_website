@@ -425,6 +425,11 @@ button:hover ~ .cursor-dot {
   min-width: 200px;
 }
 
+.achievement-badge-link {
+  text-decoration: none;
+  cursor: pointer;
+}
+
 .achievement-badge::before {
   content: '';
   position: absolute;
@@ -812,6 +817,65 @@ section {
   font-weight: 600;
 }
 
+/* ==================== COURSEWORK & HARDWARE ==================== */
+.coursework {
+  padding: 6rem 0;
+}
+
+.coursework-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 3rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.coursework-category h3 {
+  font-size: 1.5rem;
+  color: var(--orange);
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+}
+
+.coursework-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.coursework-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.875rem 1.25rem;
+  background: rgba(20, 20, 20, 0.5);
+  border: 1px solid rgba(255, 107, 53, 0.1);
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.coursework-item:hover {
+  border-color: rgba(255, 107, 53, 0.3);
+  background: rgba(20, 20, 20, 0.7);
+  transform: translateX(5px);
+}
+
+.item-name {
+  font-size: 0.95rem;
+  color: var(--white);
+  font-weight: 500;
+}
+
+.item-badge {
+  font-size: 0.75rem;
+  color: var(--orange);
+  padding: 0.25rem 0.75rem;
+  background: rgba(255, 107, 53, 0.1);
+  border-radius: 6px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 /* ==================== CONTACT ==================== */
 .contact {
   padding-bottom: 4rem;
@@ -844,7 +908,7 @@ section {
   position: relative;
   display: flex;
   flex-direction: column;
-  padding: 2.5rem 2rem;
+  padding: 1.75rem 1.5rem;
   background: rgba(20, 20, 20, 0.5);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.05);
@@ -889,20 +953,20 @@ section {
 }
 
 .card-icon {
-  width: 56px;
-  height: 56px;
+  width: 48px;
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: rgba(255, 255, 255, 0.03);
   border-radius: 12px;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
   transition: all 0.3s ease;
 }
 
 .card-icon svg {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   transition: transform 0.3s ease;
 }
 
@@ -920,14 +984,14 @@ section {
 }
 
 .card-content h3 {
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   font-weight: 700;
   color: var(--white);
   margin-bottom: 0.5rem;
 }
 
 .card-content p {
-  font-size: 0.95rem;
+  font-size: 0.875rem;
   color: var(--gray);
   font-weight: 500;
   line-height: 1.5;
@@ -1022,5 +1086,10 @@ section {
   .contact-cards {
     grid-template-columns: 1fr;
     gap: 1.5rem;
+  }
+
+  .coursework-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
   }
 }

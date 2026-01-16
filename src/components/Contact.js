@@ -47,6 +47,21 @@ const Contact = () => {
         </svg>
       ),
       color: '#34C759'
+    },
+    {
+      platform: 'Resume',
+      handle: 'Download PDF',
+      link: '/Manikanta_Gonugondla_Resume.pdf',
+      download: true,
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="12" y1="18" x2="12" y2="12"/>
+          <polyline points="9 15 12 18 15 15"/>
+        </svg>
+      ),
+      color: '#FF9500'
     }
   ];
 
@@ -96,6 +111,7 @@ const Contact = () => {
               href={method.link}
               target={method.platform !== 'Email' && method.platform !== 'Phone' ? '_blank' : undefined}
               rel={method.platform !== 'Email' && method.platform !== 'Phone' ? 'noopener noreferrer' : undefined}
+              download={method.download ? true : undefined}
               className="contact-card"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}

@@ -6,6 +6,7 @@ const sections = [
   { id: 'about', label: 'About' },
   { id: 'experience', label: 'Experience' },
   { id: 'projects', label: 'Projects' },
+  { id: 'coursework', label: 'Tech' },
   { id: 'contact', label: 'Contact' }
 ];
 

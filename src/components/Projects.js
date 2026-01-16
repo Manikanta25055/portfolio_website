@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 
 const projects = [
   {
+    id: "project-garuda",
     title: "Project GARUDA",
     subtitle: "AI-Powered Real-Time Security System",
     achievement: "1st Place - Gadget Expo 2025",
@@ -10,6 +11,7 @@ const projects = [
     tech: ["Python", "YOLOv8", "Hailo AI", "Raspberry Pi 5", "GStreamer", "OpenCV"]
   },
   {
+    id: "patient-collapse-detection",
     title: "Patient Collapse Detection System",
     subtitle: "Healthcare Innovation",
     achievement: "Patent Filed",
@@ -56,6 +58,7 @@ const Projects = () => {
           {projects.map((project, index) => (
             <motion.div
               key={index}
+              id={project.id}
               className={`project-card ${index === 0 ? 'featured' : ''}`}
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}

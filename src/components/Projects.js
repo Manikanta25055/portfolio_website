@@ -94,6 +94,75 @@ const projects = [
       { value: "<5%", label: "Steady-State Error" }
     ],
     timeline: "March 2024 - June 2024"
+  },
+  {
+    title: "Secure Communication System",
+    subtitle: "Digital Communication & Encryption",
+    achievement: "14.91 dB Processing Gain",
+    description: "MATLAB-based secure communication system implementing Direct Sequence Spread Spectrum (DSSS) with XOR-based encryption for jamming-resistant data transmission.",
+    tech: ["MATLAB", "DSSS", "Digital Signal Processing", "Encryption", "Communication Theory"],
+    problemStatement: "Traditional communication systems are vulnerable to eavesdropping and jamming attacks. Sensitive data transmission requires robust protection against both unauthorized interception and intentional interference, especially in wireless environments.",
+    solution: "Developed a multi-layered secure communication system combining Direct Sequence Spread Spectrum (DSSS) modulation with XOR-based encryption. The system uses a 31-chip spreading factor for signal spreading and correlation-based despreading at the receiver, providing both security and jamming resistance.",
+    keyFeatures: [
+      "Direct Sequence Spread Spectrum with 31 chips/bit spreading factor",
+      "XOR-based encryption with pseudo-random key stream",
+      "Correlation-based despreading for signal recovery",
+      "AWGN channel modeling with narrowband jamming simulation",
+      "BER performance analysis across 4 scenarios",
+      "Processing gain of 14.91 dB for noise suppression"
+    ],
+    achievements: [
+      { value: "14.91 dB", label: "Processing Gain" },
+      { value: "10 dB", label: "Jamming Suppression" },
+      { value: "4 Scenarios", label: "BER Analysis" }
+    ],
+    timeline: "November 2024"
+  },
+  {
+    title: "Speech Denoising using Spectral Subtraction",
+    subtitle: "Digital Signal Processing",
+    achievement: "5-10 dB SNR Improvement",
+    description: "MATLAB implementation of frequency-domain speech enhancement using N-point FFT and spectral subtraction for noise reduction in audio signals.",
+    tech: ["MATLAB", "FFT/IFFT", "Spectral Analysis", "Audio Processing", "Signal Processing"],
+    problemStatement: "Speech signals are often corrupted by background noise in real-world applications such as telecommunication, voice recognition, and hearing aids. Traditional time-domain filtering methods struggle with non-stationary noise, requiring more sophisticated frequency-domain techniques.",
+    solution: "Implemented a spectral subtraction algorithm using N-point Fast Fourier Transform to transform signals into the frequency domain. The system estimates noise characteristics from silent frames and subtracts the noise spectrum from the noisy speech spectrum, with spectral floor protection to prevent over-subtraction artifacts.",
+    keyFeatures: [
+      "Frame-based processing with Hamming windowing",
+      "N-point FFT for frequency domain transformation",
+      "Adaptive noise spectrum estimation",
+      "Spectral subtraction with over-subtraction factor",
+      "Spectral floor to prevent musical noise artifacts",
+      "Overlap-add synthesis for signal reconstruction"
+    ],
+    achievements: [
+      { value: "5-10 dB", label: "SNR Improvement" },
+      { value: ">0.85", label: "Correlation" },
+      { value: "2.5-3.5", label: "PESQ Score" }
+    ],
+    timeline: "October 2024"
+  },
+  {
+    title: "Power Quality Analysis using DTFS",
+    subtitle: "Power Systems & Harmonic Analysis",
+    achievement: "IEEE 519 Compliance",
+    description: "Comprehensive power quality assessment system using Discrete-Time Fourier Series for harmonic analysis, THD calculation, and power factor correction in electrical distribution systems.",
+    tech: ["MATLAB", "DTFS", "Power Systems", "Harmonic Analysis", "IEEE 519"],
+    problemStatement: "Modern electrical loads like LED lighting, variable frequency drives, and switch-mode power supplies introduce harmonic distortion into power systems. This degrades power quality, increases losses, causes equipment malfunction, and violates IEEE 519 standards.",
+    solution: "Developed a MATLAB-based power quality analysis tool using Discrete-Time Fourier Series (DTFS) to decompose distorted power signals into harmonic components. The system analyzes multiple real-world scenarios (LED lighting, motor drives, data centers), calculates comprehensive power quality metrics, and designs harmonic filters for mitigation.",
+    keyFeatures: [
+      "DTFS-based harmonic content extraction",
+      "Total Harmonic Distortion (THD) calculation",
+      "IEEE 519 compliance assessment",
+      "Power factor and K-factor computation",
+      "Harmonic filter design for mitigation",
+      "Multiple real-world scenario analysis"
+    ],
+    achievements: [
+      { value: "<5%", label: "THD after Filtering" },
+      { value: "3 Scenarios", label: "Industrial Cases" },
+      { value: "IEEE 519", label: "Compliance" }
+    ],
+    timeline: "October 2024"
   }
 ];
 

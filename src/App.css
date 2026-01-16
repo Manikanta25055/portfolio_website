@@ -153,18 +153,28 @@ button:hover ~ .cursor-dot {
 
 .nav-logo {
   display: flex;
-  flex-direction: column;
-  gap: 0;
+  align-items: center;
+  gap: 0.75rem;
   text-decoration: none;
   cursor: pointer;
 }
 
+.logo-image {
+  height: 40px;
+  width: auto;
+  filter: drop-shadow(0 2px 8px rgba(255, 107, 53, 0.3));
+}
+
+.logo-text-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
 .logo-text {
-  font-size: 1.5rem;
-  font-weight: 900;
-  background: linear-gradient(135deg, var(--white), var(--orange));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--white);
   line-height: 1;
 }
 
@@ -768,6 +778,7 @@ section {
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  cursor: pointer;
 }
 
 .project-card::before {
@@ -836,6 +847,217 @@ section {
 }
 
 .project-tech span {
+  padding: 0.5rem 1rem;
+  background: rgba(255, 107, 53, 0.1);
+  color: var(--orange);
+  border: 1px solid rgba(255, 107, 53, 0.2);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.view-details {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--orange);
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+}
+
+.project-card:hover .view-details {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.view-details svg {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.3s ease;
+}
+
+.project-card:hover .view-details svg {
+  transform: translateX(4px);
+}
+
+/* ==================== PROJECT MODAL ==================== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 9998;
+}
+
+.modal-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 900px;
+  max-height: 85vh;
+  background: var(--black-light);
+  border: 1px solid rgba(255, 107, 53, 0.3);
+  border-radius: 16px;
+  overflow-y: auto;
+  z-index: 9999;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.8);
+}
+
+.modal-close {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: var(--white);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.modal-close:hover {
+  background: rgba(255, 107, 53, 0.2);
+  border-color: var(--orange);
+  transform: rotate(90deg);
+}
+
+.modal-content {
+  padding: 3rem;
+}
+
+.modal-header {
+  margin-bottom: 2.5rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid rgba(255, 107, 53, 0.2);
+}
+
+.modal-badge {
+  display: inline-block;
+  padding: 0.5rem 1.25rem;
+  background: var(--orange);
+  color: var(--black);
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.modal-header h2 {
+  font-size: 2rem;
+  color: var(--white);
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
+}
+
+.modal-header h3 {
+  font-size: 1.25rem;
+  color: var(--orange);
+  font-weight: 600;
+}
+
+.modal-section {
+  margin-bottom: 2.5rem;
+}
+
+.modal-section h4 {
+  font-size: 1.125rem;
+  color: var(--white);
+  margin-bottom: 1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.modal-section h4::before {
+  content: '';
+  width: 4px;
+  height: 1.125rem;
+  background: var(--orange);
+  border-radius: 2px;
+}
+
+.modal-section p {
+  color: var(--gray);
+  line-height: 1.8;
+  font-size: 0.95rem;
+}
+
+.modal-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.modal-list li {
+  color: var(--gray);
+  line-height: 1.8;
+  font-size: 0.95rem;
+  padding-left: 1.5rem;
+  position: relative;
+  margin-bottom: 0.75rem;
+}
+
+.modal-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.6rem;
+  width: 6px;
+  height: 6px;
+  background: var(--orange);
+  border-radius: 50%;
+}
+
+.achievements-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1.5rem;
+}
+
+.achievement-item {
+  text-align: center;
+  padding: 1.5rem;
+  background: rgba(255, 107, 53, 0.05);
+  border: 1px solid rgba(255, 107, 53, 0.2);
+  border-radius: 12px;
+}
+
+.achievement-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--orange);
+  margin-bottom: 0.5rem;
+}
+
+.achievement-label {
+  font-size: 0.875rem;
+  color: var(--gray);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.modal-tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.modal-tech-pill {
   padding: 0.5rem 1rem;
   background: rgba(255, 107, 53, 0.1);
   color: var(--orange);

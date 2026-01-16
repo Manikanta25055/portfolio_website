@@ -60,8 +60,11 @@ const Navigation = () => {
             className="nav-logo"
             whileHover={{ scale: 1.05 }}
           >
-            <span className="logo-text">GVM</span>
-            <span className="logo-subtext">Portfolio</span>
+            <img src="/logo.png" alt="M Logo" className="logo-image" />
+            <div className="logo-text-container">
+              <span className="logo-text">Manikanta</span>
+              <span className="logo-subtext">Portfolio</span>
+            </div>
           </motion.a>
 
           <motion.a

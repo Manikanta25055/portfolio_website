@@ -100,21 +100,21 @@ button:hover ~ .cursor-dot {
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background-image: radial-gradient(circle, rgba(255, 107, 53, 0.15) 1px, transparent 1px);
+  background-image: radial-gradient(circle, rgba(255, 107, 53, 0.35) 1.5px, transparent 1.5px);
   background-size: 30px 30px;
   background-position: 0 0;
-  opacity: 0.4;
+  opacity: 0.6;
   mask-image: radial-gradient(
-    ellipse 100% 100% at 50% 50%,
+    ellipse 120% 120% at 50% 50%,
     black 0%,
-    black 40%,
-    transparent 100%
+    black 30%,
+    transparent 90%
   );
   -webkit-mask-image: radial-gradient(
-    ellipse 100% 100% at 50% 50%,
+    ellipse 120% 120% at 50% 50%,
     black 0%,
-    black 40%,
-    transparent 100%
+    black 30%,
+    transparent 90%
   );
 }
 

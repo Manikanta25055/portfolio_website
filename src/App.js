@@ -7,7 +7,7 @@ import Navigation from './components/Navigation';
 import ScrollToTop from './components/ScrollToTop';
 import Hero from './components/Hero';
 import About from './components/About';
-import Experience from './components/Experience';
+import WorkTimeline from './components/WorkTimeline';
 import Projects from './components/Projects';
 import Coursework from './components/Coursework';
 import Contact from './components/Contact';
@@ -53,7 +53,7 @@ function App() {
       <Navigation />
       <Hero />
       <About />
-      <Experience />
+      <WorkTimeline />
       <Projects />
       <Coursework />
       <Contact />

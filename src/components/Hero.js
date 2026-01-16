@@ -125,14 +125,6 @@ const Hero = () => {
               <path d="M5 12h14M12 5l7 7-7 7"/>
             </svg>
           </motion.a>
-          <motion.a
-            href="#contact"
-            className="cta-secondary"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            Get In Touch
-          </motion.a>
         </motion.div>
 
         <motion.div

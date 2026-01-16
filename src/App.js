@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import './App.css';
 import CustomCursor from './components/CustomCursor';
-import ParticleNetwork from './components/ParticleNetwork';
+import DotGrid from './components/DotGrid';
 import Navigation from './components/Navigation';
 import Hero from './components/Hero';
 import About from './components/About';
@@ -48,7 +48,7 @@ function App() {
   return (
     <div className="App">
       <CustomCursor />
-      <ParticleNetwork />
+      <DotGrid />
       <Navigation />
       <Hero />
       <About />

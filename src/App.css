@@ -16,12 +16,19 @@
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
   background: var(--black);
   color: var(--white);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   cursor: none;
+}
+
+h1, h2, h3, h4, h5, h6,
+.section-title,
+.hero-title,
+.nav-logo {
+  font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 /* ==================== CUSTOM CURSOR ==================== */
@@ -87,12 +94,28 @@ button:hover ~ .cursor-dot {
   background: linear-gradient(90deg, var(--orange-dark), var(--orange), var(--orange-light));
 }
 
-/* ==================== PARTICLE CANVAS ==================== */
-.particle-canvas {
+/* ==================== DOT GRID ==================== */
+.dot-grid {
   position: fixed;
   inset: 0;
   z-index: -1;
   pointer-events: none;
+  background-image: radial-gradient(circle, rgba(255, 107, 53, 0.15) 1px, transparent 1px);
+  background-size: 30px 30px;
+  background-position: 0 0;
+  opacity: 0.4;
+  mask-image: radial-gradient(
+    ellipse 100% 100% at 50% 50%,
+    black 0%,
+    black 40%,
+    transparent 100%
+  );
+  -webkit-mask-image: radial-gradient(
+    ellipse 100% 100% at 50% 50%,
+    black 0%,
+    black 40%,
+    transparent 100%
+  );
 }
 
 /* ==================== NAVIGATION ==================== */
@@ -819,61 +842,59 @@ section {
 
 /* ==================== COURSEWORK & HARDWARE ==================== */
 .coursework {
-  padding: 6rem 0;
+  padding: 5rem 0;
 }
 
-.coursework-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  gap: 3rem;
-  max-width: 1200px;
+.tech-container {
+  max-width: 1100px;
   margin: 0 auto;
-}
-
-.coursework-category h3 {
-  font-size: 1.5rem;
-  color: var(--orange);
-  margin-bottom: 1.5rem;
-  font-weight: 700;
-}
-
-.coursework-items {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 3rem;
 }
 
-.coursework-item {
+.tech-section {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.875rem 1.25rem;
-  background: rgba(20, 20, 20, 0.5);
-  border: 1px solid rgba(255, 107, 53, 0.1);
-  border-radius: 10px;
-  transition: all 0.3s ease;
+  flex-direction: column;
+  gap: 1.25rem;
 }
 
-.coursework-item:hover {
-  border-color: rgba(255, 107, 53, 0.3);
-  background: rgba(20, 20, 20, 0.7);
-  transform: translateX(5px);
-}
-
-.item-name {
-  font-size: 0.95rem;
-  color: var(--white);
-  font-weight: 500;
-}
-
-.item-badge {
-  font-size: 0.75rem;
+.tech-subtitle {
+  font-size: 1.125rem;
   color: var(--orange);
-  padding: 0.25rem 0.75rem;
-  background: rgba(255, 107, 53, 0.1);
-  border-radius: 6px;
   font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  font-size: 0.875rem;
+  opacity: 0.9;
+}
+
+.tech-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.625rem;
+  align-items: flex-start;
+}
+
+.tech-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background: rgba(20, 20, 20, 0.6);
+  border: 1px solid rgba(255, 107, 53, 0.15);
+  border-radius: 8px;
+  color: var(--white);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: default;
   white-space: nowrap;
+}
+
+.tech-pill:hover {
+  background: rgba(255, 107, 53, 0.08);
+  border-color: rgba(255, 107, 53, 0.35);
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.12);
 }
 
 /* ==================== CONTACT ==================== */

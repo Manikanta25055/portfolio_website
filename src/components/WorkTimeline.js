@@ -4,24 +4,22 @@ import { motion } from 'framer-motion';
 const WorkTimeline = () => {
   const experiences = [
     {
-      role: "Project Intern - IoT Solutions",
+      role: "Project Intern",
       company: "Apsis Solutions",
       location: "Bangalore, India",
       period: "July 2025 - Present",
       current: true,
-      description: "Developing IoT solutions and providing mentorship for FMCG, Banking, Financial, Supply Chain & Telecom industries.",
-      skills: ["IoT Development", "Industry Solutions", "Mentorship"],
-      color: "#FF6B35"
+      description: "IoT solutions development and mentorship for FMCG, Banking, Financial, Supply Chain & Telecom industries.",
+      skills: ["IoT Development", "Industry Solutions", "Mentorship", "Technical Leadership"]
     },
     {
-      role: "Project Intern - VLSI Design",
+      role: "Project Intern",
       company: "Mindenious Edutech",
       location: "Bangalore, India",
       period: "July 2025 - Present",
       current: true,
-      description: "VLSI design training with focus on FPGA validation, test bench development, RTL design, verification, synthesis, and ASIC design flow.",
-      skills: ["FPGA Validation", "RTL Design", "Test Bench Development", "ASIC Design Flow"],
-      color: "#0A66C2"
+      description: "VLSI design training program with focus on FPGA validation, test bench development, RTL design, verification, synthesis, and ASIC design flow expertise.",
+      skills: ["FPGA Validation", "RTL Design", "Verification", "Test Bench Development", "ASIC Design Flow"]
     },
     {
       role: "Summer School Participant",
@@ -29,8 +27,7 @@ const WorkTimeline = () => {
       location: "Hyderabad, India",
       period: "June 2024 - July 2024",
       description: "Product Development Management program focusing on systematic approach to product innovation and development.",
-      skills: ["Product Development", "Project Management", "Innovation"],
-      color: "#34C759"
+      skills: ["Product Development", "Project Management", "Innovation Strategy"]
     }
   ];
 
@@ -63,16 +60,16 @@ const WorkTimeline = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: index * 0.2 }}
             >
-              <div className="timeline-marker" style={{ borderColor: exp.color }}>
-                <div className="timeline-dot" style={{ background: exp.color }}></div>
+              <div className="timeline-marker">
+                <div className="timeline-dot"></div>
               </div>
               <motion.div
                 className="timeline-content"
-                whileHover={{ y: -5, boxShadow: `0 12px 32px ${exp.color}20` }}
+                whileHover={{ y: -5, boxShadow: "0 12px 32px rgba(255, 107, 53, 0.2)" }}
                 transition={{ duration: 0.3 }}
               >
                 {exp.current && <div className="current-badge">Current</div>}
-                <h3 style={{ color: exp.color }}>{exp.role}</h3>
+                <h3>{exp.role}</h3>
                 <h4>{exp.company}</h4>
                 <div className="timeline-meta">
                   <span className="timeline-location">{exp.location}</span>

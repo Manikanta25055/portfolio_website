@@ -740,7 +740,7 @@ section {
 
 .timeline-content h3 {
   font-size: 1.35rem;
-  color: var(--white);
+  color: var(--orange);
   margin-bottom: 0.5rem;
   font-weight: 700;
 }
@@ -770,13 +770,17 @@ section {
 }
 
 .timeline-location::before {
-  content: '📍';
-  font-size: 0.85rem;
+  content: '•';
+  color: var(--orange);
+  font-weight: 900;
+  font-size: 1rem;
 }
 
 .timeline-period::before {
-  content: '📅';
-  font-size: 0.85rem;
+  content: '•';
+  color: var(--orange);
+  font-weight: 900;
+  font-size: 1rem;
 }
 
 .timeline-content p {

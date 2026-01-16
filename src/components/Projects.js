@@ -77,7 +77,6 @@ const projects = [
     title: "Active Suspension System",
     subtitle: "Control Systems Design",
     achievement: "15.24 dB Vibration Reduction",
-    achievement: "15.24 dB Vibration Reduction",
     description: "PID controller design achieving significant improvements in vibration isolation compared to passive systems.",
     tech: ["Control Systems", "PID", "MATLAB", "Simulink", "System Modeling"],
     problemStatement: "Passive suspension systems in vehicles cannot adapt to varying road conditions, resulting in poor ride comfort and handling. There was a need for an intelligent suspension system that could actively respond to road disturbances.",

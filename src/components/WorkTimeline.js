@@ -7,8 +7,8 @@ const WorkTimeline = () => {
       role: "Project Intern",
       company: "Apsis Solutions",
       location: "Bangalore, India",
-      period: "July 2025 - Present",
-      current: true,
+      period: "July 2025 - September 2025",
+      current: false,
       description: "IoT solutions development and mentorship for FMCG, Banking, Financial, Supply Chain & Telecom industries.",
       skills: ["IoT Development", "Industry Solutions", "Mentorship", "Technical Leadership"]
     },
@@ -16,8 +16,8 @@ const WorkTimeline = () => {
       role: "Project Intern",
       company: "Mindenious Edutech",
       location: "Bangalore, India",
-      period: "July 2025 - Present",
-      current: true,
+      period: "July 2025 - September 2025",
+      current: false,
       description: "VLSI design training program with focus on FPGA validation, test bench development, RTL design, verification, synthesis, and ASIC design flow expertise.",
       skills: ["FPGA Validation", "RTL Design", "Verification", "Test Bench Development", "ASIC Design Flow"]
     },

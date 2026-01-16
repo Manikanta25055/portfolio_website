@@ -4,6 +4,10 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 :root {
   --orange: #FF6B35;
   --orange-light: #FF8C5F;
@@ -153,28 +157,18 @@ button:hover ~ .cursor-dot {
 
 .nav-logo {
   display: flex;
-  align-items: center;
-  gap: 0.75rem;
+  flex-direction: column;
+  gap: 0;
   text-decoration: none;
   cursor: pointer;
 }
 
-.logo-image {
-  height: 40px;
-  width: auto;
-  filter: drop-shadow(0 2px 8px rgba(255, 107, 53, 0.3));
-}
-
-.logo-text-container {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
-
 .logo-text {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: var(--white);
+  font-size: 1.5rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--white), var(--orange));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   line-height: 1;
 }
 
@@ -1067,23 +1061,129 @@ section {
   font-weight: 600;
 }
 
+/* ==================== SCROLL TO TOP ==================== */
+.scroll-to-top {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--orange);
+  border: none;
+  border-radius: 12px;
+  color: var(--white);
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(255, 107, 53, 0.4);
+  z-index: 9997;
+  transition: all 0.3s ease;
+}
+
+.scroll-to-top:hover {
+  background: var(--orange-light);
+  box-shadow: 0 8px 24px rgba(255, 107, 53, 0.6);
+  transform: translateY(-2px);
+}
+
 /* ==================== COURSEWORK & HARDWARE ==================== */
 .coursework {
   padding: 5rem 0;
 }
 
-.tech-container {
+.skills-categories {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin: 2.5rem 0;
+  flex-wrap: wrap;
+}
+
+.category-btn {
+  padding: 0.75rem 1.5rem;
+  background: rgba(20, 20, 20, 0.6);
+  border: 1px solid rgba(255, 107, 53, 0.2);
+  border-radius: 8px;
+  color: var(--gray);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.category-btn:hover {
+  border-color: rgba(255, 107, 53, 0.4);
+  background: rgba(255, 107, 53, 0.1);
+  color: var(--white);
+}
+
+.category-btn.active {
+  background: var(--orange);
+  color: var(--black);
+  border-color: var(--orange);
+}
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.25rem;
   max-width: 1100px;
-  margin: 0 auto;
+  margin: 0 auto 3rem;
+}
+
+.skill-card {
   display: flex;
   flex-direction: column;
-  gap: 3rem;
+  justify-content: space-between;
+  padding: 1.25rem;
+  background: rgba(20, 20, 20, 0.6);
+  border: 1px solid rgba(255, 107, 53, 0.15);
+  border-radius: 10px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.skill-card:hover {
+  border-color: rgba(255, 107, 53, 0.4);
+  background: rgba(20, 20, 20, 0.8);
+}
+
+.skill-name {
+  color: var(--white);
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+}
+
+.proficiency-dots {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.proficiency-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 107, 53, 0.2);
+  border: 1px solid rgba(255, 107, 53, 0.3);
+  transition: all 0.3s ease;
+}
+
+.proficiency-dot.active {
+  background: var(--orange);
+  border-color: var(--orange);
+  box-shadow: 0 0 8px rgba(255, 107, 53, 0.5);
 }
 
 .tech-section {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+  max-width: 1100px;
+  margin: 0 auto;
 }
 
 .tech-subtitle {

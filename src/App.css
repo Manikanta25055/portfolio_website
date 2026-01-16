@@ -938,13 +938,14 @@ section {
   background: rgba(0, 0, 0, 0.85);
   backdrop-filter: blur(8px);
   z-index: 9998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
 }
 
 .modal-container {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  position: relative;
   width: 90%;
   max-width: 900px;
   max-height: 90vh;
@@ -1440,8 +1441,37 @@ section {
     left: 11px;
   }
 
+  .timeline-marker {
+    left: 11px;
+    transform: translateX(0);
+  }
+
   .timeline-dot {
-    left: -35px;
+    left: 0;
+    transform: translate(-50%, -50%);
+  }
+
+  .timeline-content {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding: 1.5rem;
+  }
+
+  .timeline-content h3 {
+    font-size: 1.2rem;
+  }
+
+  .timeline-content h4 {
+    font-size: 1rem;
+  }
+
+  .timeline-content p {
+    font-size: 0.9rem;
+  }
+
+  .timeline-meta {
+    flex-direction: column;
+    gap: 0.5rem;
   }
 
   .contact-cards {
@@ -1452,5 +1482,56 @@ section {
   .coursework-grid {
     grid-template-columns: 1fr;
     gap: 2rem;
+  }
+
+  .skills-categories {
+    gap: 0.5rem;
+    margin: 1.5rem 0;
+  }
+
+  .category-btn {
+    font-size: 0.8rem;
+    padding: 0.5rem 0.85rem;
+  }
+
+  .skills-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+  }
+
+  .skill-card {
+    padding: 0.85rem;
+  }
+
+  .skill-name {
+    font-size: 0.8rem;
+  }
+
+  .proficiency-dots {
+    gap: 3px;
+  }
+
+  .proficiency-dot {
+    width: 5px;
+    height: 5px;
+  }
+
+  .tech-section {
+    margin-top: 2rem;
+  }
+
+  .tech-subtitle {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .tech-pills {
+    gap: 0.5rem;
+  }
+
+  .tech-pill {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.75rem;
   }
 }

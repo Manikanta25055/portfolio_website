@@ -10,16 +10,11 @@ const CustomCursor = () => {
   useEffect(() => {
     const checkTouchDevice = () => {
       const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-      const isMobile = window.innerWidth <= 1024;
-      setIsTouchDevice(hasTouch || isMobile);
+      setIsTouchDevice(hasTouch);
     };
 
     checkTouchDevice();
-    window.addEventListener('resize', checkTouchDevice);
-
-    return () => {
-      window.removeEventListener('resize', checkTouchDevice);
-    };
+    // No need for resize listener since touch capability doesn't change
   }, []);
 
   useEffect(() => {

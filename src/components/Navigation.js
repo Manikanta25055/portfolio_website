@@ -99,69 +99,11 @@ const Navigation = () => {
       </motion.nav>
 
       {/* Scroll Progress Bar */}
-      <div className="scroll-progress-container">
-        <motion.div
-          className="scroll-progress-bar"
-          style={{ scaleX: scrollProgress / 100 }}
-          initial={{ scaleX: 0 }}
-        />
-        <motion.div
-          className="scroll-droplet"
-          style={{ left: `${scrollProgress}%` }}
-          initial={{ left: '0%' }}
-        >
-          <svg width="16" height="20" viewBox="0 0 16 20" className="droplet-svg">
-            <path
-              d="M8 0C8 0 0 8 0 13C0 16.866 3.58172 20 8 20C12.4183 20 16 16.866 16 13C16 8 8 0 8 0Z"
-              fill="var(--orange)"
-              className="droplet-path"
-            />
-          </svg>
-          <div className="droplet-trail"></div>
-        </motion.div>
-      </div>
-
-      {/* Custom Vertical Scrollbar */}
-      <div className="custom-scrollbar-container">
-        <div className="custom-scrollbar-track">
-          <motion.div
-            className="custom-scrollbar-progress"
-            style={{ height: `${scrollProgress}%` }}
-            initial={{ height: '0%' }}
-          />
-        </div>
-        <motion.div
-          className="scrollbar-droplet"
-          style={{ top: `${scrollProgress}%` }}
-          initial={{ top: '0%' }}
-        >
-          <svg width="20" height="28" viewBox="0 0 20 28" className="scrollbar-droplet-svg">
-            <defs>
-              <filter id="glow">
-                <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-                <feMerge>
-                  <feMergeNode in="coloredBlur"/>
-                  <feMergeNode in="SourceGraphic"/>
-                </feMerge>
-              </filter>
-            </defs>
-            <path
-              d="M10 0C10 0 0 10 0 16C0 21.5228 4.47715 26 10 26C15.5228 26 20 21.5228 20 16C20 10 10 0 10 0Z"
-              fill="url(#dropletGradient)"
-              filter="url(#glow)"
-              className="scrollbar-droplet-path"
-            />
-            <defs>
-              <linearGradient id="dropletGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="var(--orange-light)" stopOpacity="1" />
-                <stop offset="50%" stopColor="var(--orange)" stopOpacity="1" />
-                <stop offset="100%" stopColor="var(--orange-dark)" stopOpacity="0.9" />
-              </linearGradient>
-            </defs>
-          </svg>
-          <div className="scrollbar-droplet-trail"></div>
-        </motion.div>
-      </div>
+      <motion.div
+        className="scroll-progress-bar"
+        style={{ scaleX: scrollProgress / 100 }}
+        initial={{ scaleX: 0 }}
+      />
 
       {/* Vertical Section Indicators */}
       <motion.div

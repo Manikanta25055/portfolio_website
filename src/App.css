@@ -596,6 +596,99 @@ h1, h2, h3, h4, h5, h6,
   }
 }
 
+/* Mobile Interactive Progress Bar */
+@media (max-width: 768px) {
+  .circuit-progress-container {
+    height: 50px;
+    touch-action: none;
+    cursor: grab;
+  }
+
+  .circuit-progress-container.dragging {
+    cursor: grabbing;
+  }
+
+  .circuit-progress-container.dragging .circuit-track {
+    transform: scaleY(1.2);
+  }
+
+  .circuit-track {
+    transition: transform 0.2s ease;
+  }
+
+  /* Larger touch targets on mobile */
+  .circuit-node {
+    width: 20px;
+    height: 20px;
+  }
+
+  .node-ring {
+    width: 18px;
+    height: 18px;
+  }
+
+  .node-core {
+    width: 8px;
+    height: 8px;
+  }
+
+  /* Deformed current indicator */
+  .circuit-current {
+    transition: transform 0.05s ease-out;
+    transform-origin: center center;
+  }
+
+  .circuit-current.dragging {
+    width: 30px;
+    height: 30px;
+  }
+
+  .circuit-current.dragging .current-spark {
+    width: 6px;
+    height: 6px;
+    box-shadow: 0 0 10px var(--orange), 0 0 20px var(--orange);
+  }
+
+  .circuit-current.dragging .current-glow {
+    width: 30px;
+    height: 30px;
+    opacity: 0.8;
+  }
+}
+
+/* Section preview tooltip */
+.section-preview {
+  position: absolute;
+  top: 100%;
+  margin-top: 12px;
+  transform: translateX(-50%);
+  background: var(--black-light);
+  border: 1px solid var(--orange);
+  color: var(--orange);
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 107, 53, 0.2);
+  z-index: 10;
+}
+
+.section-preview::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 6px solid var(--orange);
+}
+
 /* Vertical Section Indicators */
 .section-indicators {
   position: fixed;

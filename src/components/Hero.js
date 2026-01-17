@@ -54,10 +54,13 @@ const Hero = () => {
         </motion.p>
 
         <motion.div variants={itemVariants} className="hero-achievements">
-          <motion.div
-            className="achievement-badge"
+          <motion.a
+            href="#about"
+            className="achievement-badge achievement-badge-link"
             animate={{ y: [0, -8, 0] }}
             transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
             <div className="badge-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -69,7 +72,7 @@ const Hero = () => {
               <span className="badge-value">Dual Degree</span>
               <span className="badge-label">MIT 8.01 • IIT-M 7.33</span>
             </div>
-          </motion.div>
+          </motion.a>
 
           <motion.a
             href="#project-garuda"

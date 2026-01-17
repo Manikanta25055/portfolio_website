@@ -1434,9 +1434,9 @@ section {
 }
 
 .modal-container {
-  position: fixed;
-  top: 50%;
-  left: 50%;
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
   transform: translate(-50%, -50%) !important;
   width: 90%;
   max-width: 900px;
@@ -1448,8 +1448,18 @@ section {
   overflow-x: hidden;
   z-index: 9999;
   box-shadow: 0 24px 64px rgba(0, 0, 0, 0.8);
-  display: flex;
-  flex-direction: column;
+  animation: modalFadeIn 0.25s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -45%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
 }
 
 @media (max-width: 768px) {

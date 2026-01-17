@@ -113,11 +113,18 @@ h1, h2, h3, h4, h5, h6,
   background: var(--orange);
   margin-left: -4px;
   margin-top: -4px;
-  transition: background 0.15s ease-out;
+  transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              height 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              background 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              margin 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .cursor-dot.hovering {
+  width: 20px;
+  height: 20px;
   background: rgba(255, 107, 53, 0.8);
+  margin-left: -10px;
+  margin-top: -10px;
 }
 
 .cursor-dot.clicking {
@@ -132,12 +139,20 @@ h1, h2, h3, h4, h5, h6,
   opacity: 0.5;
   margin-left: -20px;
   margin-top: -20px;
-  transition: opacity 0.15s ease-out, border-width 0.15s ease-out;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              border-width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              margin 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .cursor-outline.hovering {
+  width: 50px;
+  height: 50px;
   opacity: 0.7;
   border-width: 3px;
+  margin-left: -25px;
+  margin-top: -25px;
 }
 
 .cursor-outline.clicking {
@@ -1422,7 +1437,7 @@ section {
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) !important;
   width: 90%;
   max-width: 900px;
   max-height: 90vh;
@@ -1433,6 +1448,8 @@ section {
   overflow-x: hidden;
   z-index: 9999;
   box-shadow: 0 24px 64px rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
 }
 
 @media (max-width: 768px) {

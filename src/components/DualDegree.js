@@ -155,12 +155,9 @@ const DualDegree = () => {
 
         <div className="degrees-grid">
           {/* MIT Card */}
-          <motion.div
+          <div
             className="degree-card mit-card"
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            style={{ opacity: 1 }}
           >
             <div className="degree-header">
               <div className="institution-badge">MIT</div>
@@ -288,15 +285,12 @@ const DualDegree = () => {
                 </motion.div>
               )}
             </AnimatePresence>
-          </motion.div>
+          </div>
 
           {/* IIT Madras Card */}
-          <motion.div
+          <div
             className="degree-card iit-card"
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            style={{ opacity: 1 }}
           >
             <div className="degree-header">
               <div className="institution-badge iit-badge">IITM</div>
@@ -405,7 +399,7 @@ const DualDegree = () => {
                 </motion.div>
               )}
             </AnimatePresence>
-          </motion.div>
+          </div>
         </div>
       </SectionContainer>
     </section>

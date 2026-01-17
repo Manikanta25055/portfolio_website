@@ -84,7 +84,7 @@ const Contact = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            Feel free to reach out for collaborations or just a friendly hello
+            Got a wild idea? Wanna collab on something cool? Or just wanna say hi? Hit me up - I'm always down for a chat
           </motion.p>
         </motion.div>
 

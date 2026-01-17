@@ -10,24 +10,21 @@ const ProjectModal = ({ project, isOpen, onClose }) => {
       // Save current scroll position
       scrollPositionRef.current = window.scrollY;
 
-      // Apply fixed position with negative top to maintain visual position
-      document.body.style.top = `-${scrollPositionRef.current}px`;
-      document.body.classList.add('modal-open');
-      document.documentElement.classList.add('modal-open');
-    } else {
-      // Remove classes
-      document.body.classList.remove('modal-open');
-      document.documentElement.classList.remove('modal-open');
-      document.body.style.top = '';
-
-      // Restore scroll position
-      window.scrollTo(0, scrollPositionRef.current);
+      // Lock scroll without moving the page
+      document.body.style.overflow = 'hidden';
+      document.body.style.paddingRight = '15px'; // Prevent layout shift from scrollbar
+      document.documentElement.style.overflow = 'hidden';
+    } else if (scrollPositionRef.current !== undefined) {
+      // Restore scrolling
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+      document.documentElement.style.overflow = '';
     }
 
     return () => {
-      document.body.classList.remove('modal-open');
-      document.documentElement.classList.remove('modal-open');
-      document.body.style.top = '';
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+      document.documentElement.style.overflow = '';
     };
   }, [isOpen]);
 

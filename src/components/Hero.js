@@ -48,9 +48,9 @@ const Hero = () => {
         </motion.p>
 
         <motion.p variants={itemVariants} className="hero-description">
-          Crafting innovative solutions at the intersection of hardware and software.
+          Building cool stuff where hardware meets software - basically making silicon think.
           <br />
-          Specialized in FPGA design, embedded systems, and AI-powered electronics.
+          Deep into FPGAs, embedded systems, and throwing AI at everything electronic.
         </motion.p>
 
         <motion.div variants={itemVariants} className="hero-achievements">

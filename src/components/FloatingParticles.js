@@ -17,13 +17,18 @@ const FloatingParticles = () => {
     const ctx = canvas.getContext('2d');
     let width = canvas.offsetWidth;
     let height = canvas.offsetHeight;
+    const dpr = window.devicePixelRatio || 1;
 
     const resizeCanvas = () => {
       width = canvas.offsetWidth;
       height = canvas.offsetHeight;
-      canvas.width = width * window.devicePixelRatio;
-      canvas.height = height * window.devicePixelRatio;
-      ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+
+      // Set canvas size accounting for device pixel ratio
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+
+      // Reset transform and apply fresh scale
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
 
     resizeCanvas();

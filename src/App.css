@@ -58,7 +58,7 @@ img, video {
 }
 
 /* Reduce repaints for frequently updated elements */
-.scroll-progress-bar, .circular-progress, .progress-text {
+.section-progress-container, .circular-progress, .progress-text {
   will-change: transform, stroke-dashoffset;
 }
 
@@ -188,23 +188,100 @@ h1, h2, h3, h4, h5, h6,
   z-index: 9999;
 }
 
-.loader-content h1 {
-  font-size: clamp(3rem, 8vw, 6rem);
-  font-weight: 900;
-  letter-spacing: 0.1em;
-  background: linear-gradient(135deg, var(--white), var(--orange));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+.loader-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3rem;
 }
 
-.loader-bar {
-  height: 3px;
-  width: 300px;
-  background: var(--black-light);
-  margin-top: 2rem;
-  border-radius: 2px;
-  transform-origin: left;
-  background: linear-gradient(90deg, var(--orange-dark), var(--orange), var(--orange-light));
+.loader-orbit-container {
+  position: relative;
+  width: 150px;
+  height: 150px;
+}
+
+.loader-orbit {
+  position: absolute;
+  border: 2px solid transparent;
+  border-radius: 50%;
+}
+
+.loader-orbit-1 {
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  border-top-color: var(--orange);
+  border-right-color: rgba(255, 107, 53, 0.3);
+}
+
+.loader-orbit-2 {
+  width: 75%;
+  height: 75%;
+  top: 12.5%;
+  left: 12.5%;
+  border-bottom-color: var(--orange-light);
+  border-left-color: rgba(255, 140, 95, 0.3);
+}
+
+.loader-orbit-3 {
+  width: 50%;
+  height: 50%;
+  top: 25%;
+  left: 25%;
+  border-top-color: var(--orange-dark);
+  border-right-color: rgba(232, 90, 42, 0.3);
+}
+
+.loader-core {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--orange);
+  border-radius: 50%;
+  box-shadow: 0 0 20px rgba(255, 107, 53, 0.5);
+}
+
+.loader-terminal {
+  font-family: 'JetBrains Mono', monospace;
+  min-height: 30px;
+}
+
+.loader-text {
+  font-size: 1rem;
+  color: var(--orange);
+  letter-spacing: 0.05em;
+}
+
+.loader-cursor {
+  animation: blink 0.8s infinite;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+.loader-dots {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.loader-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 107, 53, 0.3);
+  transition: all 0.3s ease;
+}
+
+.loader-dot.active {
+  background: var(--orange);
+  box-shadow: 0 0 10px rgba(255, 107, 53, 0.6);
 }
 
 /* ==================== DOT GRID ==================== */
@@ -323,16 +400,120 @@ h1, h2, h3, h4, h5, h6,
   transform: rotate(-45deg) translateY(-8px);
 }
 
-/* Scroll Progress Bar */
-.scroll-progress-bar {
+/* Bouncing Ball Section Progress */
+.section-progress-container {
   position: fixed;
   top: 70px;
-  left: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--orange), var(--orange-light));
-  transform-origin: left;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(400px, 80vw);
+  height: 20px;
   z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.section-progress-track {
+  position: relative;
   width: 100%;
+  height: 2px;
+  background: rgba(255, 107, 53, 0.15);
+  border-radius: 2px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.section-marker {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 107, 53, 0.3);
+  transition: all 0.3s ease;
+}
+
+.section-marker.passed {
+  background: var(--orange);
+  box-shadow: 0 0 6px rgba(255, 107, 53, 0.5);
+}
+
+.progress-ball {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  transform: translate(-50%, -50%);
+  top: 50%;
+  z-index: 2;
+}
+
+.ball-core {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  height: 10px;
+  background: var(--orange);
+  border-radius: 50%;
+  z-index: 2;
+}
+
+.ball-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  background: radial-gradient(circle, rgba(255, 107, 53, 0.6) 0%, rgba(255, 107, 53, 0) 70%);
+  border-radius: 50%;
+  animation: ballPulse 2s ease-in-out infinite;
+}
+
+.progress-ball.bouncing .ball-core {
+  animation: ballBounce 0.5s cubic-bezier(0.36, 0, 0.66, -0.56);
+}
+
+.progress-ball.bouncing .ball-glow {
+  animation: glowBurst 0.5s ease-out;
+}
+
+@keyframes ballPulse {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.5);
+    opacity: 0.3;
+  }
+}
+
+@keyframes ballBounce {
+  0%, 100% {
+    transform: translate(-50%, -50%) translateY(0);
+  }
+  25% {
+    transform: translate(-50%, -50%) translateY(-8px);
+  }
+  50% {
+    transform: translate(-50%, -50%) translateY(0);
+  }
+  75% {
+    transform: translate(-50%, -50%) translateY(-4px);
+  }
+}
+
+@keyframes glowBurst {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2.5);
+    opacity: 0;
+  }
 }
 
 /* Vertical Section Indicators */
@@ -1428,18 +1609,6 @@ section {
 }
 
 /* ==================== PROJECT MODAL ==================== */
-body.modal-open {
-  overflow: hidden !important;
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-}
-
-html.modal-open {
-  overflow: hidden !important;
-}
 
 .modal-overlay {
   position: fixed;
@@ -2017,6 +2186,29 @@ html.modal-open {
   z-index: 1;
 }
 
+/* Disable animations on mobile for performance */
+@media (max-width: 768px) {
+  .dual-degree *,
+  .dual-degree *::before,
+  .dual-degree *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .degree-card,
+  .cgpa-value,
+  .specialization-badge,
+  .phase-timeline,
+  .phase-item,
+  .expand-btn,
+  .courses-section,
+  .course-item {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
 /* ==================== RESPONSIVE ==================== */
 @media (max-width: 1024px) {
   .degrees-grid {
@@ -2055,8 +2247,9 @@ html.modal-open {
     display: none;
   }
 
-  .scroll-progress-bar {
+  .section-progress-container {
     top: 70px;
+    width: min(300px, 70vw);
   }
 
   .degrees-grid {

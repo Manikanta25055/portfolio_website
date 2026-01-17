@@ -42,7 +42,7 @@ const WorkTimeline = () => {
       location: "Bangalore, India",
       period: "July 2025 - September 2025",
       current: false,
-      description: "IoT solutions development and mentorship for FMCG, Banking, Financial, Supply Chain & Telecom industries.",
+      description: "Diving deep into IoT solutions that actually matter - building stuff for banks, supply chains, and telecom giants. Learning from the best while shipping real products.",
       skills: ["IoT Development", "Industry Solutions", "Mentorship", "Technical Leadership"]
     },
     {
@@ -51,7 +51,7 @@ const WorkTimeline = () => {
       location: "Bangalore, India",
       period: "July 2025 - September 2025",
       current: false,
-      description: "VLSI design training program with focus on FPGA validation, test bench development, RTL design, verification, synthesis, and ASIC design flow expertise.",
+      description: "Getting my hands dirty with hardcore VLSI - FPGAs, RTL design, the whole ASIC flow. Writing testbenches that actually catch bugs before they become disasters.",
       skills: ["FPGA Validation", "RTL Design", "Verification", "Test Bench Development", "ASIC Design Flow"]
     },
     {
@@ -59,7 +59,7 @@ const WorkTimeline = () => {
       company: "IIIT Hyderabad",
       location: "Hyderabad, India",
       period: "June 2024 - July 2024",
-      description: "Product Development Management program focusing on systematic approach to product innovation and development.",
+      description: "Leveled up my product game at one of India's top tech schools - learned how to turn wild ideas into actual products people want to use.",
       skills: ["Product Development", "Project Management", "Innovation Strategy"]
     }
   ];

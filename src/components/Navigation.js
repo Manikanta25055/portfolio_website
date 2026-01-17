@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const sections = [
@@ -13,8 +13,10 @@ const sections = [
 const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
-  const [scrollProgress, setScrollProgress] = useState(0);
+  const [activeSectionIndex, setActiveSectionIndex] = useState(0);
+  const [isBouncing, setIsBouncing] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const prevSectionRef = useRef('home');
 
   useEffect(() => {
     let rafId = null;
@@ -32,13 +34,9 @@ const Navigation = () => {
       rafId = requestAnimationFrame(() => {
         setIsScrolled(window.scrollY > 50);
 
-        // Calculate scroll progress
         const windowHeight = window.innerHeight;
         const documentHeight = document.documentElement.scrollHeight;
         const scrollTop = window.scrollY;
-        const maxScroll = Math.max(1, documentHeight - windowHeight);
-        const progress = (scrollTop / maxScroll) * 100;
-        setScrollProgress(progress);
 
         // Determine active section
         const sectionElements = sections.map(s => document.getElementById(s.id));
@@ -46,29 +44,35 @@ const Navigation = () => {
         // Check if we're at the bottom of the page
         const isAtBottom = (scrollTop + windowHeight) >= (documentHeight - 50);
 
-        if (isAtBottom) {
-          // At the bottom, always set contact as active
-          setActiveSection('contact');
-        } else {
-          // Find section that's currently in view
-          let foundSection = null;
+        let newSection = 'home';
+        let newIndex = 0;
 
+        if (isAtBottom) {
+          newSection = 'contact';
+          newIndex = sections.length - 1;
+        } else {
           for (let i = sectionElements.length - 1; i >= 0; i--) {
             const el = sectionElements[i];
             if (el) {
               const rect = el.getBoundingClientRect();
-              // Check if section is in the viewport (top is above or at viewport center)
               if (rect.top <= windowHeight / 2) {
-                foundSection = sections[i];
+                newSection = sections[i].id;
+                newIndex = i;
                 break;
               }
             }
           }
-
-          if (foundSection) {
-            setActiveSection(foundSection.id);
-          }
         }
+
+        // Trigger bounce animation when section changes
+        if (newSection !== prevSectionRef.current) {
+          prevSectionRef.current = newSection;
+          setIsBouncing(true);
+          setTimeout(() => setIsBouncing(false), 500);
+        }
+
+        setActiveSection(newSection);
+        setActiveSectionIndex(newIndex);
 
         rafId = null;
       });
@@ -116,12 +120,32 @@ const Navigation = () => {
         </div>
       </motion.nav>
 
-      {/* Scroll Progress Bar */}
-      <motion.div
-        className="scroll-progress-bar"
-        style={{ scaleX: scrollProgress / 100 }}
-        initial={{ scaleX: 0 }}
-      />
+      {/* Bouncing Ball Section Indicator */}
+      <div className="section-progress-container">
+        <div className="section-progress-track">
+          {sections.map((section, index) => (
+            <div
+              key={section.id}
+              className={`section-marker ${index <= activeSectionIndex ? 'passed' : ''}`}
+            />
+          ))}
+        </div>
+        <motion.div
+          className={`progress-ball ${isBouncing ? 'bouncing' : ''}`}
+          animate={{
+            left: `${(activeSectionIndex / (sections.length - 1)) * 100}%`,
+          }}
+          transition={{
+            type: "spring",
+            stiffness: 300,
+            damping: 20,
+            mass: 0.8
+          }}
+        >
+          <div className="ball-glow" />
+          <div className="ball-core" />
+        </motion.div>
+      </div>
 
       {/* Vertical Section Indicators */}
       <motion.div

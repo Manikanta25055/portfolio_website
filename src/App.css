@@ -813,7 +813,7 @@ section {
 
 .projects-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(350px, 100%), 1fr));
   gap: 2rem;
 }
 
@@ -938,14 +938,13 @@ section {
   background: rgba(0, 0, 0, 0.85);
   backdrop-filter: blur(8px);
   z-index: 9998;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
 }
 
 .modal-container {
-  position: relative;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   width: 90%;
   max-width: 900px;
   max-height: 90vh;
@@ -961,8 +960,57 @@ section {
 @media (max-width: 768px) {
   .modal-container {
     width: 95%;
-    max-height: 95vh;
+    max-height: 92vh;
     border-radius: 12px;
+  }
+
+  .modal-close {
+    top: 1rem;
+    right: 1rem;
+    width: 36px;
+    height: 36px;
+  }
+
+  .modal-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .modal-header h3 {
+    font-size: 1rem;
+  }
+
+  .modal-section {
+    margin-bottom: 2rem;
+  }
+
+  .modal-section h4 {
+    font-size: 1rem;
+  }
+
+  .modal-section p {
+    font-size: 0.875rem;
+  }
+
+  .achievements-grid {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+  }
+
+  .achievement-item {
+    padding: 1rem;
+  }
+
+  .achievement-value {
+    font-size: 1.4rem;
+  }
+
+  .achievement-label {
+    font-size: 0.75rem;
+  }
+
+  .modal-tech-pill {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.75rem;
   }
 }
 
@@ -1431,6 +1479,28 @@ section {
 
   .projects-grid {
     grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .project-card {
+    padding: 1.5rem;
+  }
+
+  .project-card h3 {
+    font-size: 1.4rem;
+  }
+
+  .project-card h4 {
+    font-size: 1rem;
+  }
+
+  .project-card p {
+    font-size: 0.9rem;
+  }
+
+  .view-details {
+    opacity: 1;
+    transform: translateY(0);
   }
 
   .timeline {
@@ -1443,11 +1513,12 @@ section {
 
   .timeline-marker {
     left: 11px;
-    transform: translateX(0);
+    transform: translateX(-50%);
   }
 
   .timeline-dot {
-    left: 0;
+    left: 50%;
+    top: 50%;
     transform: translate(-50%, -50%);
   }
 

@@ -3,15 +3,25 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
+    "framer-motion": "^10.16.4",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "framer-motion": "^10.16.4"
+    "react-dom": "^18.2.0"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:debug": "playwright test --debug",
+    "test:e2e:chromium": "playwright test --project=chromium",
+    "test:e2e:firefox": "playwright test --project=firefox",
+    "test:e2e:webkit": "playwright test --project=webkit",
+    "test:e2e:mobile": "playwright test --project='Mobile Chrome' --project='Mobile Safari'",
+    "test:e2e:report": "playwright show-report",
+    "test:install": "playwright install --with-deps"
   },
   "eslintConfig": {
     "extends": [
@@ -31,6 +41,8 @@
     ]
   },
   "devDependencies": {
+    "@playwright/test": "^1.57.0",
+    "fast-check": "^4.5.3",
     "react-scripts": "5.0.1"
   }
 }

@@ -410,7 +410,7 @@ const DualDegree = () => {
             </AnimatePresence>
           </motion.div>
         </div>
-      </motion.div>
+      </SectionContainer>
     </section>
   );
 };

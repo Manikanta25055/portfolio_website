@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 const CustomCursor = () => {
   const cursorDotRef = useRef(null);
   const cursorOutlineRef = useRef(null);
-  const [isTouchDevice, setIsTouchDevice] = useState(false);
+  const [isTouchDevice, setIsTouchDevice] = useState(true);
 
   useEffect(() => {
     const checkTouchDevice = () => {
@@ -13,6 +13,11 @@ const CustomCursor = () => {
     };
 
     checkTouchDevice();
+    window.addEventListener('resize', checkTouchDevice);
+
+    return () => {
+      window.removeEventListener('resize', checkTouchDevice);
+    };
   }, []);
 
   useEffect(() => {

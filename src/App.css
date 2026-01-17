@@ -27,7 +27,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-@media (hover: hover) and (pointer: fine) {
+@media (hover: hover) and (pointer: fine) and (min-width: 1025px) {
   body {
     cursor: none;
   }
@@ -1484,6 +1484,8 @@ section {
 
   .project-card {
     padding: 1.5rem;
+    opacity: 1 !important;
+    transform: none !important;
   }
 
   .project-card h3 {
@@ -1501,6 +1503,16 @@ section {
   .view-details {
     opacity: 1;
     transform: translateY(0);
+  }
+
+  .project-badge {
+    font-size: 0.75rem;
+    padding: 0.4rem 1rem;
+  }
+
+  .project-tech span {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.75rem;
   }
 
   .timeline {

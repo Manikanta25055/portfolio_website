@@ -2424,6 +2424,11 @@ section {
   .circuit-progress-container {
     top: 70px;
     width: min(300px, 70vw);
+    margin-bottom: 2rem;
+  }
+
+  .hero {
+    padding-top: 140px;
   }
 
   .degrees-grid {

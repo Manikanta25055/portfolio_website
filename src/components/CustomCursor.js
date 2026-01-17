@@ -4,8 +4,6 @@ const CustomCursor = () => {
   const cursorDotRef = useRef(null);
   const cursorOutlineRef = useRef(null);
   const [isTouchDevice, setIsTouchDevice] = useState(true);
-  const [isHovering, setIsHovering] = useState(false);
-  const [isClicking, setIsClicking] = useState(false);
 
   useEffect(() => {
     const checkTouchDevice = () => {
@@ -25,46 +23,82 @@ const CustomCursor = () => {
 
     let mouseX = 0;
     let mouseY = 0;
+    let prevMouseX = 0;
+    let prevMouseY = 0;
+    let velocityX = 0;
+    let velocityY = 0;
     let outlineX = 0;
     let outlineY = 0;
     let animationFrameId;
-    let hoverCheckTimeout;
+    let lastHoverCheck = 0;
+    let isHovering = false;
+    let lastMoveTime = 0;
 
     const handleMouseMove = (e) => {
+      const now = performance.now();
+      const deltaTime = Math.max(1, now - lastMoveTime);
+      lastMoveTime = now;
+
+      prevMouseX = mouseX;
+      prevMouseY = mouseY;
       mouseX = e.clientX;
       mouseY = e.clientY;
 
+      // Calculate velocity for predictive movement
+      velocityX = (mouseX - prevMouseX) / deltaTime;
+      velocityY = (mouseY - prevMouseY) / deltaTime;
+
       if (cursorDot) {
-        cursorDot.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
+        cursorDot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
       }
 
-      // Throttle hover detection to improve performance
-      if (hoverCheckTimeout) return;
-      hoverCheckTimeout = setTimeout(() => {
+      // Throttle hover detection to every 150ms
+      if (now - lastHoverCheck > 150) {
+        lastHoverCheck = now;
         const target = e.target;
-        const isClickable = target.closest('a, button, .project-card, .skill-card, .category-btn, .timeline-content, .tech-pill, .section-dot, .hamburger, .mobile-menu-item, .degree-card, .expand-btn, .course-item, .phase-item');
-        setIsHovering(!!isClickable);
-        hoverCheckTimeout = null;
-      }, 50);
+        const isClickable = !!target.closest('a, button, .project-card, .skill-card, .category-btn, .timeline-content, .tech-pill, .section-dot, .hamburger, .mobile-menu-item, .degree-card, .expand-btn, .course-item, .phase-item');
+
+        // Only update DOM if hover state changed
+        if (isClickable !== isHovering) {
+          isHovering = isClickable;
+          if (isClickable) {
+            if (cursorDot) cursorDot.classList.add('hovering');
+            if (cursorOutline) cursorOutline.classList.add('hovering');
+          } else {
+            if (cursorDot) cursorDot.classList.remove('hovering');
+            if (cursorOutline) cursorOutline.classList.remove('hovering');
+          }
+        }
+      }
     };
 
     const handleMouseDown = () => {
-      setIsClicking(true);
+      if (cursorDot) cursorDot.classList.add('clicking');
+      if (cursorOutline) cursorOutline.classList.add('clicking');
     };
 
     const handleMouseUp = () => {
-      setIsClicking(false);
+      if (cursorDot) cursorDot.classList.remove('clicking');
+      if (cursorOutline) cursorOutline.classList.remove('clicking');
     };
 
     const animateOutline = () => {
       const deltaX = mouseX - outlineX;
       const deltaY = mouseY - outlineY;
+      const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 
-      outlineX += deltaX * 0.18;
-      outlineY += deltaY * 0.18;
+      // Adaptive damping: faster when farther, slower when closer
+      // Velocity-based prediction: add slight prediction for smoother tracking
+      const speed = Math.abs(velocityX) + Math.abs(velocityY);
+      const baseDamping = 0.25;
+      const adaptiveDamping = Math.min(0.4, baseDamping + (distance / 1000));
+      const prediction = Math.min(5, speed * 2);
+
+      outlineX += deltaX * adaptiveDamping + velocityX * prediction;
+      outlineY += deltaY * adaptiveDamping + velocityY * prediction;
 
       if (cursorOutline) {
-        cursorOutline.style.transform = `translate(${outlineX}px, ${outlineY}px)`;
+        cursorOutline.style.transform = `translate3d(${outlineX}px, ${outlineY}px, 0)`;
       }
 
       animationFrameId = requestAnimationFrame(animateOutline);
@@ -79,7 +113,6 @@ const CustomCursor = () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mousedown', handleMouseDown);
       window.removeEventListener('mouseup', handleMouseUp);
-      if (hoverCheckTimeout) clearTimeout(hoverCheckTimeout);
       cancelAnimationFrame(animationFrameId);
     };
   }, [isTouchDevice]);
@@ -90,11 +123,11 @@ const CustomCursor = () => {
     <>
       <div
         ref={cursorDotRef}
-        className={`cursor-dot ${isHovering ? 'hovering' : ''} ${isClicking ? 'clicking' : ''}`}
+        className="cursor-dot"
       ></div>
       <div
         ref={cursorOutlineRef}
-        className={`cursor-outline ${isHovering ? 'hovering' : ''} ${isClicking ? 'clicking' : ''}`}
+        className="cursor-outline"
       ></div>
     </>
   );

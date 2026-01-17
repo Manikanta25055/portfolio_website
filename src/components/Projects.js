@@ -36,6 +36,7 @@ const projects = [
     achievement: "1st Place - Gadget Expo 2025",
     description: "Intelligent home security system featuring real-time AI-based object detection with YOLOv8, multithreaded processing, and hardware integration with Raspberry Pi 5 and Hailo AI accelerator.",
     tech: ["Python", "YOLOv8", "Hailo AI", "Raspberry Pi 5", "GStreamer", "OpenCV", "PyQt5"],
+    githubLink: "https://github.com/Manikanta25055/Garuda",
     problemStatement: "Traditional security systems lack intelligent real-time threat detection and often generate false alarms. There was a need for an affordable, AI-powered security solution that could accurately detect persons in real-time with minimal latency.",
     solution: "Developed GARUDA, an AI-powered security system using Raspberry Pi 5 with Hailo 8L AI accelerator. Implemented YOLOv8 for person detection with GStreamer pipeline optimization, achieving real-time performance. Added voice-controlled interface using speech recognition and multi-user authentication with OTP verification.",
     keyFeatures: [
@@ -83,6 +84,7 @@ const projects = [
     achievement: "20-30% Lifespan Increase",
     description: "Flyback converter topology for bidirectional energy transfer in lithium-ion battery packs, extending battery lifespan significantly.",
     tech: ["Power Electronics", "EV Systems", "BMS", "LTSpice", "Circuit Design"],
+    githubLink: "https://github.com/Manikanta25055/Active_Battery_cell_Equalisation",
     problemStatement: "Lithium-ion battery packs in electric vehicles suffer from cell imbalance, where individual cells charge and discharge at different rates. This reduces overall pack capacity, efficiency, and lifespan.",
     solution: "Implemented an active cell equalization system using flyback converter topology for bidirectional energy transfer between cells. The system monitors individual cell voltages and actively transfers charge from higher voltage cells to lower voltage cells.",
     keyFeatures: [
@@ -105,6 +107,7 @@ const projects = [
     achievement: "15.24 dB Vibration Reduction",
     description: "PID controller design achieving significant improvements in vibration isolation compared to passive systems.",
     tech: ["Control Systems", "PID", "MATLAB", "Simulink", "System Modeling"],
+    githubLink: "https://github.com/Manikanta25055/Active_Suspension_system",
     problemStatement: "Passive suspension systems in vehicles cannot adapt to varying road conditions, resulting in poor ride comfort and handling. There was a need for an intelligent suspension system that could actively respond to road disturbances.",
     solution: "Designed and simulated an active suspension system using PID control methodology in MATLAB/Simulink. The system uses accelerometer feedback to adjust damping forces in real-time, significantly reducing vehicle body vibrations.",
     keyFeatures: [
@@ -127,6 +130,7 @@ const projects = [
     achievement: "14.91 dB Processing Gain",
     description: "MATLAB-based secure communication system implementing Direct Sequence Spread Spectrum (DSSS) with XOR-based encryption for jamming-resistant data transmission.",
     tech: ["MATLAB", "DSSS", "Digital Signal Processing", "Encryption", "Communication Theory"],
+    githubLink: "https://github.com/Manikanta25055/Secure_Communication_System",
     problemStatement: "Traditional communication systems are vulnerable to eavesdropping and jamming attacks. Sensitive data transmission requires robust protection against both unauthorized interception and intentional interference, especially in wireless environments.",
     solution: "Developed a multi-layered secure communication system combining Direct Sequence Spread Spectrum (DSSS) modulation with XOR-based encryption. The system uses a 31-chip spreading factor for signal spreading and correlation-based despreading at the receiver, providing both security and jamming resistance.",
     keyFeatures: [
@@ -150,6 +154,7 @@ const projects = [
     achievement: "5-10 dB SNR Improvement",
     description: "MATLAB implementation of frequency-domain speech enhancement using N-point FFT and spectral subtraction for noise reduction in audio signals.",
     tech: ["MATLAB", "FFT/IFFT", "Spectral Analysis", "Audio Processing", "Signal Processing"],
+    githubLink: "https://github.com/Manikanta25055/Speech_Denoising_Using_Spectral_Subtraction",
     problemStatement: "Speech signals are often corrupted by background noise in real-world applications such as telecommunication, voice recognition, and hearing aids. Traditional time-domain filtering methods struggle with non-stationary noise, requiring more sophisticated frequency-domain techniques.",
     solution: "Implemented a spectral subtraction algorithm using N-point Fast Fourier Transform to transform signals into the frequency domain. The system estimates noise characteristics from silent frames and subtracts the noise spectrum from the noisy speech spectrum, with spectral floor protection to prevent over-subtraction artifacts.",
     keyFeatures: [
@@ -173,6 +178,7 @@ const projects = [
     achievement: "IEEE 519 Compliance",
     description: "Comprehensive power quality assessment system using Discrete-Time Fourier Series for harmonic analysis, THD calculation, and power factor correction in electrical distribution systems.",
     tech: ["MATLAB", "DTFS", "Power Systems", "Harmonic Analysis", "IEEE 519"],
+    githubLink: "https://github.com/Manikanta25055/Power_Quality_Analysis_Using_DTFS",
     problemStatement: "Modern electrical loads like LED lighting, variable frequency drives, and switch-mode power supplies introduce harmonic distortion into power systems. This degrades power quality, increases losses, causes equipment malfunction, and violates IEEE 519 standards.",
     solution: "Developed a MATLAB-based power quality analysis tool using Discrete-Time Fourier Series (DTFS) to decompose distorted power signals into harmonic components. The system analyzes multiple real-world scenarios (LED lighting, motor drives, data centers), calculates comprehensive power quality metrics, and designs harmonic filters for mitigation.",
     keyFeatures: [
@@ -253,7 +259,7 @@ const Projects = () => {
         {...(shouldAnimate && {
           initial: "hidden",
           whileInView: "visible",
-          viewport: { once: true, amount: 0.1, margin: "0px 0px -100px 0px" },
+          viewport: { once: true, amount: 0.05, margin: "200px 0px -200px 0px" },
           variants: containerVariants
         })}
       >
@@ -278,7 +284,7 @@ const Projects = () => {
               {...(shouldAnimate && {
                 initial: "hidden",
                 whileInView: "visible",
-                viewport: { once: true, amount: 0.2, margin: "0px 0px -50px 0px" },
+                viewport: { once: true, amount: 0.1, margin: "150px 0px -150px 0px" },
                 variants: cardVariants(index),
                 whileHover: { y: -10, transition: { duration: 0.3 } }
               })}

@@ -67,7 +67,7 @@ const Hero = () => {
             </div>
             <div className="badge-content">
               <span className="badge-value">Dual Degree</span>
-              <span className="badge-label">MIT 8.07 • IIT-M 7.33</span>
+              <span className="badge-label">MIT 8.01 • IIT-M 7.33</span>
             </div>
           </motion.div>
 
@@ -87,7 +87,7 @@ const Hero = () => {
             </div>
             <div className="badge-content">
               <span className="badge-value">1st Place Winner</span>
-              <span className="badge-label">Gadget Expo 2025</span>
+              <span className="badge-label">Gadget Expo 2025, IIT Madras</span>
             </div>
           </motion.a>
 
@@ -108,7 +108,7 @@ const Hero = () => {
             </div>
             <div className="badge-content">
               <span className="badge-value">Patent Filed</span>
-              <span className="badge-label">Healthcare Innovation</span>
+              <span className="badge-label">Healthcare Innovation, MIT</span>
             </div>
           </motion.a>
         </motion.div>

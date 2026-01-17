@@ -1,74 +1,119 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 
 const DotGrid = () => {
-  const [mousePos, setMousePos] = useState({ x: -1000, y: -1000 });
-  const containerRef = useRef(null);
-  const dotSpacing = 24;
-  const hoverRadius = 120; // pixels
+  const canvasRef = useRef(null);
+  const mousePos = useRef({ x: -1000, y: -1000 });
+  const animationFrameId = useRef(null);
+  const isMobile = useRef(window.innerWidth <= 768);
 
-  // Generate dot positions only once
-  const dots = useMemo(() => {
-    const dotsArray = [];
-    const cols = Math.ceil(window.innerWidth / dotSpacing) + 2;
-    const rows = Math.ceil(window.innerHeight / dotSpacing) + 2;
+  const draw = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
 
-    for (let row = 0; row < rows; row++) {
-      for (let col = 0; col < cols; col++) {
-        dotsArray.push({
-          id: `${row}-${col}`,
-          x: col * dotSpacing,
-          y: row * dotSpacing,
-        });
+    const ctx = canvas.getContext('2d');
+    const width = canvas.width;
+    const height = canvas.height;
+
+    ctx.clearRect(0, 0, width, height);
+
+    const dotSpacing = 24;
+    const hoverRadius = 120;
+    const dotSize = 1.5;
+
+    // Only draw hover effect on desktop
+    const shouldDrawHover = !isMobile.current;
+
+    for (let x = 0; x < width; x += dotSpacing) {
+      for (let y = 0; y < height; y += dotSpacing) {
+        let opacity = 0.35;
+        let size = dotSize;
+
+        if (shouldDrawHover) {
+          const dx = mousePos.current.x - x;
+          const dy = mousePos.current.y - y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          if (distance < hoverRadius) {
+            const intensity = 1 - (distance / hoverRadius);
+            size = dotSize * (1 - intensity * 0.7);
+            opacity = 0.35 * (1 - intensity * 0.8);
+          }
+        }
+
+        ctx.fillStyle = `rgba(255, 107, 53, ${opacity})`;
+        ctx.beginPath();
+        ctx.arc(x, y, size, 0, Math.PI * 2);
+        ctx.fill();
       }
     }
-    return dotsArray;
   }, []);
 
   useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    // Set canvas size
+    const setCanvasSize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      draw();
+    };
+
+    setCanvasSize();
+
+    let lastUpdate = 0;
+    const throttleDelay = 16; // ~60fps
+
     const handleMouseMove = (e) => {
-      setMousePos({ x: e.clientX, y: e.clientY });
+      const now = Date.now();
+      if (now - lastUpdate < throttleDelay) return;
+
+      lastUpdate = now;
+      mousePos.current = { x: e.clientX, y: e.clientY };
+
+      if (animationFrameId.current) {
+        cancelAnimationFrame(animationFrameId.current);
+      }
+      animationFrameId.current = requestAnimationFrame(draw);
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
+    let resizeTimeout;
+    const handleResize = () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        isMobile.current = window.innerWidth <= 768;
+        setCanvasSize();
+      }, 150);
+    };
 
-  const calculateDotStyle = (dotX, dotY) => {
-    const dx = mousePos.x - dotX;
-    const dy = mousePos.y - dotY;
-    const distance = Math.sqrt(dx * dx + dy * dy);
-
-    if (distance < hoverRadius) {
-      const intensity = 1 - (distance / hoverRadius);
-      const scale = 1 - (intensity * 0.7); // Shrink up to 70%
-      const opacity = 1 - (intensity * 0.8); // Fade up to 80%
-
-      return {
-        transform: `scale(${scale})`,
-        opacity: opacity,
-      };
+    if (!isMobile.current) {
+      window.addEventListener('mousemove', handleMouseMove, { passive: true });
     }
+    window.addEventListener('resize', handleResize, { passive: true });
 
-    return {
-      transform: 'scale(1)',
-      opacity: 1,
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('resize', handleResize);
+      if (animationFrameId.current) {
+        cancelAnimationFrame(animationFrameId.current);
+      }
     };
-  };
+  }, [draw]);
 
   return (
-    <div className="dot-grid" ref={containerRef}>
-      {dots.map((dot) => (
-        <div
-          key={dot.id}
-          className="dot-grid-item"
-          style={{
-            left: `${dot.x}px`,
-            top: `${dot.y}px`,
-            ...calculateDotStyle(dot.x, dot.y),
-          }}
-        />
-      ))}
-    </div>
+    <canvas
+      ref={canvasRef}
+      className="dot-grid"
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: -1,
+        pointerEvents: 'none',
+        opacity: 0.6,
+        maskImage: 'radial-gradient(ellipse 120% 120% at 50% 50%, black 0%, black 30%, transparent 90%)',
+        WebkitMaskImage: 'radial-gradient(ellipse 120% 120% at 50% 50%, black 0%, black 30%, transparent 90%)',
+      }}
+    />
   );
 };
 

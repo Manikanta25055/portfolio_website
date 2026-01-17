@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useMemo } from 'react';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 
 const DualDegree = () => {
   const [expandedMIT, setExpandedMIT] = useState(false);
   const [expandedIIT, setExpandedIIT] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
+  const isMobile = useMemo(() => window.innerWidth <= 768, []);
+  const shouldAnimate = !isMobile && !prefersReducedMotion;
 
   const mitData = {
     institution: "Manipal Institute of Technology",
@@ -38,7 +41,7 @@ const DualDegree = () => {
     institution: "Indian Institute of Technology Madras",
     degree: "BS in Electronic Systems",
     currentPhase: "Diploma",
-    cgpa: "7.4",
+    cgpa: "7.33",
     maxCgpa: "10.0",
     phases: [
       {
@@ -75,6 +78,8 @@ const DualDegree = () => {
     const circumference = radius * 2 * Math.PI;
     const offset = circumference - (progress / 100) * circumference;
 
+    const ProgressCircle = shouldAnimate ? motion.circle : 'circle';
+
     return (
       <svg
         width={size}
@@ -91,7 +96,7 @@ const DualDegree = () => {
           strokeWidth={strokeWidth}
           fill="none"
         />
-        <motion.circle
+        <ProgressCircle
           cx={size / 2}
           cy={size / 2}
           r={radius}
@@ -100,9 +105,11 @@ const DualDegree = () => {
           fill="none"
           strokeLinecap="round"
           strokeDasharray={circumference}
-          strokeDashoffset={circumference}
-          animate={{ strokeDashoffset: offset }}
-          transition={{ duration: 1.5, ease: "easeOut", delay: 0.3 }}
+          strokeDashoffset={shouldAnimate ? circumference : offset}
+          {...(shouldAnimate && {
+            animate: { strokeDashoffset: offset },
+            transition: { duration: 1.5, ease: "easeOut", delay: 0.3 }
+          })}
           style={{ transformOrigin: 'center', transform: 'rotate(-90deg)' }}
         />
         <text
@@ -120,24 +127,34 @@ const DualDegree = () => {
     );
   };
 
+  const SectionContainer = shouldAnimate ? motion.div : 'div';
+  const TitleContainer = shouldAnimate ? motion.h2 : 'h2';
+  const DegreeCard = shouldAnimate ? motion.div : 'div';
+  const MotionDiv = shouldAnimate ? motion.div : 'div';
+  const MotionButton = shouldAnimate ? motion.button : 'button';
+
   return (
     <section className="dual-degree" id="about">
-      <motion.div
+      <SectionContainer
         className="section-container"
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 0.8 }}
+        {...(shouldAnimate && {
+          initial: { opacity: 0, y: 50 },
+          whileInView: { opacity: 1, y: 0 },
+          viewport: { once: true, amount: 0.1, margin: "200px 0px -200px 0px" },
+          transition: { duration: 0.6, ease: "easeOut" }
+        })}
       >
-        <motion.h2
+        <TitleContainer
           className="section-title"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          {...(shouldAnimate && {
+            initial: { opacity: 0, y: 30 },
+            whileInView: { opacity: 1, y: 0 },
+            viewport: { once: true },
+            transition: { duration: 0.6 }
+          })}
         >
           Dual Degree Journey
-        </motion.h2>
+        </TitleContainer>
 
         <div className="degrees-grid">
           {/* MIT Card */}

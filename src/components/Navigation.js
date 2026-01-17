@@ -17,50 +17,68 @@ const Navigation = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
+    let rafId = null;
+    let lastScrollTime = 0;
+
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      const now = performance.now();
 
-      // Calculate scroll progress
-      const windowHeight = window.innerHeight;
-      const documentHeight = document.documentElement.scrollHeight;
-      const scrollTop = window.scrollY;
-      const maxScroll = Math.max(1, documentHeight - windowHeight);
-      const progress = (scrollTop / maxScroll) * 100;
-      setScrollProgress(progress);
+      // Throttle to ~60fps
+      if (now - lastScrollTime < 16) return;
+      lastScrollTime = now;
 
-      // Determine active section
-      const sectionElements = sections.map(s => document.getElementById(s.id));
+      if (rafId) return;
 
-      // Check if we're at the bottom of the page
-      const isAtBottom = (scrollTop + windowHeight) >= (documentHeight - 50);
+      rafId = requestAnimationFrame(() => {
+        setIsScrolled(window.scrollY > 50);
 
-      if (isAtBottom) {
-        // At the bottom, always set contact as active
-        setActiveSection('contact');
-      } else {
-        // Find section that's currently in view
-        let foundSection = null;
+        // Calculate scroll progress
+        const windowHeight = window.innerHeight;
+        const documentHeight = document.documentElement.scrollHeight;
+        const scrollTop = window.scrollY;
+        const maxScroll = Math.max(1, documentHeight - windowHeight);
+        const progress = (scrollTop / maxScroll) * 100;
+        setScrollProgress(progress);
 
-        for (let i = sectionElements.length - 1; i >= 0; i--) {
-          const el = sectionElements[i];
-          if (el) {
-            const rect = el.getBoundingClientRect();
-            // Check if section is in the viewport (top is above or at viewport center)
-            if (rect.top <= windowHeight / 2) {
-              foundSection = sections[i];
-              break;
+        // Determine active section
+        const sectionElements = sections.map(s => document.getElementById(s.id));
+
+        // Check if we're at the bottom of the page
+        const isAtBottom = (scrollTop + windowHeight) >= (documentHeight - 50);
+
+        if (isAtBottom) {
+          // At the bottom, always set contact as active
+          setActiveSection('contact');
+        } else {
+          // Find section that's currently in view
+          let foundSection = null;
+
+          for (let i = sectionElements.length - 1; i >= 0; i--) {
+            const el = sectionElements[i];
+            if (el) {
+              const rect = el.getBoundingClientRect();
+              // Check if section is in the viewport (top is above or at viewport center)
+              if (rect.top <= windowHeight / 2) {
+                foundSection = sections[i];
+                break;
+              }
             }
+          }
+
+          if (foundSection) {
+            setActiveSection(foundSection.id);
           }
         }
 
-        if (foundSection) {
-          setActiveSection(foundSection.id);
-        }
-      }
+        rafId = null;
+      });
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
   }, []);
 
   return (

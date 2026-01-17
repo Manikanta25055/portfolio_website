@@ -8,6 +8,20 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Performance optimizations */
+section {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 800px;
+}
+
+[data-animated] {
+  will-change: transform, opacity;
+}
+
+[data-animated].animated {
+  will-change: auto;
+}
+
 :root {
   --orange: #FF6B35;
   --orange-light: #FF8C5F;
@@ -25,6 +39,36 @@ body {
   color: var(--white);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeSpeed;
+}
+
+/* GPU acceleration for animations */
+.project-card, .skill-card, .achievement-badge, .degree-card,
+.timeline-item, .phase-item, .course-item {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Optimize images and media */
+img, video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Reduce repaints for frequently updated elements */
+.scroll-progress-bar, .circular-progress, .progress-text {
+  will-change: transform, stroke-dashoffset;
+}
+
+/* Optimize hover interactions */
+@media (hover: hover) {
+  a, button, .project-card, .skill-card {
+    transition-property: transform, opacity, background, color, border-color;
+    transition-duration: 0.2s;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
 }
 
 
@@ -59,6 +103,8 @@ h1, h2, h3, h4, h5, h6,
   z-index: 10000;
   border-radius: 50%;
   will-change: transform;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
 }
 
 .cursor-dot {
@@ -67,26 +113,15 @@ h1, h2, h3, h4, h5, h6,
   background: var(--orange);
   margin-left: -4px;
   margin-top: -4px;
-  transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-              height 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-              background 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-              margin 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background 0.15s ease-out;
 }
 
 .cursor-dot.hovering {
-  width: 20px;
-  height: 20px;
   background: rgba(255, 107, 53, 0.8);
-  margin-left: -10px;
-  margin-top: -10px;
 }
 
 .cursor-dot.clicking {
-  width: 16px;
-  height: 16px;
-  margin-left: -8px;
-  margin-top: -8px;
-  animation: clickPulse 0.3s ease-out;
+  animation: clickPulse 0.2s ease-out;
 }
 
 .cursor-outline {
@@ -97,47 +132,33 @@ h1, h2, h3, h4, h5, h6,
   opacity: 0.5;
   margin-left: -20px;
   margin-top: -20px;
-  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-              height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-              opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-              border-width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-              margin 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 0.15s ease-out, border-width 0.15s ease-out;
 }
 
 .cursor-outline.hovering {
-  width: 50px;
-  height: 50px;
   opacity: 0.7;
   border-width: 3px;
-  margin-left: -25px;
-  margin-top: -25px;
 }
 
 .cursor-outline.clicking {
-  animation: clickOutline 0.3s ease-out;
+  animation: clickOutline 0.2s ease-out;
 }
 
 @keyframes clickPulse {
-  0% {
-    transform: scale(1);
+  0%, 100% {
+    filter: brightness(1);
   }
   50% {
-    transform: scale(0.7);
-  }
-  100% {
-    transform: scale(1);
+    filter: brightness(1.5);
   }
 }
 
 @keyframes clickOutline {
-  0% {
-    opacity: 0.7;
+  0%, 100% {
+    opacity: 0.5;
   }
   50% {
     opacity: 1;
-  }
-  100% {
-    opacity: 0.7;
   }
 }
 
@@ -172,35 +193,7 @@ h1, h2, h3, h4, h5, h6,
 }
 
 /* ==================== DOT GRID ==================== */
-.dot-grid {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  opacity: 0.6;
-  mask-image: radial-gradient(
-    ellipse 120% 120% at 50% 50%,
-    black 0%,
-    black 30%,
-    transparent 90%
-  );
-  -webkit-mask-image: radial-gradient(
-    ellipse 120% 120% at 50% 50%,
-    black 0%,
-    black 30%,
-    transparent 90%
-  );
-}
-
-.dot-grid-item {
-  position: absolute;
-  width: 3px;
-  height: 3px;
-  background: rgba(255, 107, 53, 0.35);
-  border-radius: 50%;
-  transition: transform 0.15s ease-out, opacity 0.15s ease-out;
-  will-change: transform, opacity;
-}
+/* Canvas-based dot grid - styling handled inline */
 
 /* ==================== NAVIGATION ==================== */
 .navigation {
@@ -1563,6 +1556,37 @@ section {
   font-size: 1.25rem;
   color: var(--orange);
   font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+.github-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: rgba(255, 107, 53, 0.1);
+  border: 2px solid var(--orange);
+  color: var(--orange);
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  margin-top: 1rem;
+}
+
+.github-link-btn:hover {
+  background: var(--orange);
+  color: var(--black);
+  transform: translateY(-2px);
+}
+
+.github-link-btn svg {
+  transition: transform 0.2s ease;
+}
+
+.github-link-btn:hover svg {
+  transform: scale(1.1);
 }
 
 .modal-section {

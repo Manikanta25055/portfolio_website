@@ -109,7 +109,6 @@ const Navigation = () => {
 
   // Scroll to a specific progress position
   const scrollToProgress = useCallback((progress) => {
-    const sectionElements = sections.map(s => document.getElementById(s.id));
     const documentHeight = document.documentElement.scrollHeight - window.innerHeight;
 
     // Calculate scroll position based on progress

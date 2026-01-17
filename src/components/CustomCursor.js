@@ -65,8 +65,8 @@ const CustomCursor = () => {
       const deltaX = mouseX - outlineX;
       const deltaY = mouseY - outlineY;
 
-      outlineX += deltaX * 0.25;
-      outlineY += deltaY * 0.25;
+      outlineX += deltaX * 0.18;
+      outlineY += deltaY * 0.18;
 
       if (cursorOutline) {
         cursorOutline.style.transform = `translate(${outlineX}px, ${outlineY}px)`;

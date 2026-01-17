@@ -14,17 +14,17 @@ const DualDegree = () => {
     maxCgpa: "10.0",
     progress: 75, // 6/8 = 75%
     semesters: [
-      { sem: "1-2", status: "completed", icon: "✓", description: "Foundation Year" },
-      { sem: "3-4", status: "completed", icon: "✓", description: "Core Subjects" },
-      { sem: "5-6", status: "in-progress", icon: "→", description: "Specialization Track" },
-      { sem: "7-8", status: "upcoming", icon: "○", description: "Advanced & Projects" }
+      { sem: "1-2", status: "completed", icon: "I", description: "Foundation Year" },
+      { sem: "3-4", status: "completed", icon: "II", description: "Core Subjects" },
+      { sem: "5-6", status: "in-progress", icon: "III", description: "Specialization Track" },
+      { sem: "7-8", status: "upcoming", icon: "IV", description: "Advanced & Projects" }
     ],
     currentCourses: [
       { code: "AI", name: "Artificial Intelligence", category: "Program Elective" },
       { code: "ML", name: "Machine Learning", category: "Program Elective" },
-      { code: "SSD", name: "Solid State Drives", category: "Core" },
+      { code: "SSD", name: "Solid State Drives", category: "Flexi Core" },
       { code: "EEFM", name: "Engineering Economics Fundamentals", category: "Core" },
-      { code: "CE", name: "Consumer Electronics", category: "Core" },
+      { code: "CE", name: "Consumer Electronics", category: "Open Elective" },
       { code: "M&I", name: "Measurement and Instrumentation", category: "Core" }
     ],
     specialization: {
@@ -44,19 +44,19 @@ const DualDegree = () => {
       {
         name: "Foundation",
         status: "completed",
-        icon: "✓",
+        icon: "1",
         description: "Core fundamentals completed"
       },
       {
         name: "Diploma",
         status: "in-progress",
-        icon: "→",
+        icon: "2",
         description: "Currently pursuing"
       },
       {
         name: "Degree",
         status: "upcoming",
-        icon: "○",
+        icon: "3",
         description: "Final phase"
       }
     ],

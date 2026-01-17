@@ -30,14 +30,32 @@ const Navigation = () => {
 
       // Determine active section
       const sectionElements = sections.map(s => document.getElementById(s.id));
-      const currentSection = sectionElements.find((el, index) => {
-        if (!el) return false;
-        const rect = el.getBoundingClientRect();
-        return rect.top <= 100 && rect.bottom >= 100;
-      });
 
-      if (currentSection) {
-        setActiveSection(currentSection.id);
+      // Check if we're at the bottom of the page
+      const isAtBottom = (scrollTop + windowHeight) >= (documentHeight - 50);
+
+      if (isAtBottom) {
+        // At the bottom, always set contact as active
+        setActiveSection('contact');
+      } else {
+        // Find section that's currently in view
+        let foundSection = null;
+
+        for (let i = sectionElements.length - 1; i >= 0; i--) {
+          const el = sectionElements[i];
+          if (el) {
+            const rect = el.getBoundingClientRect();
+            // Check if section is in the viewport (top is above or at viewport center)
+            if (rect.top <= windowHeight / 2) {
+              foundSection = sections[i];
+              break;
+            }
+          }
+        }
+
+        if (foundSection) {
+          setActiveSection(foundSection.id);
+        }
       }
     };
 

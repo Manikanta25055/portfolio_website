@@ -1427,20 +1427,26 @@ section {
 /* ==================== PROJECT MODAL ==================== */
 .modal-overlay {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
   background: rgba(0, 0, 0, 0.85);
   backdrop-filter: blur(8px);
   z-index: 9998;
+  overflow: hidden;
 }
 
 .modal-container {
-  position: fixed !important;
-  top: 50% !important;
-  left: 50% !important;
-  transform: translate(-50%, -50%) !important;
+  position: fixed;
+  top: 50vh;
+  left: 50vw;
   width: 90%;
   max-width: 900px;
-  max-height: 90vh;
+  max-height: 85vh;
+  transform: translate(-50%, -50%);
   background: var(--black-light);
   border: 1px solid rgba(255, 107, 53, 0.3);
   border-radius: 16px;
@@ -1448,25 +1454,34 @@ section {
   overflow-x: hidden;
   z-index: 9999;
   box-shadow: 0 24px 64px rgba(0, 0, 0, 0.8);
-  animation: modalFadeIn 0.25s ease-out;
+  margin: 0;
+  padding: 0;
 }
 
-@keyframes modalFadeIn {
-  from {
-    opacity: 0;
-    transform: translate(-50%, -45%);
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, -50%);
-  }
+.modal-container * {
+  box-sizing: border-box;
 }
 
 @media (max-width: 768px) {
   .modal-container {
     width: 95%;
-    max-height: 92vh;
+    max-width: 95vw;
+    max-height: 85vh;
     border-radius: 12px;
+    top: 50vh;
+    left: 50vw;
+    transform: translate(-50%, -50%);
+  }
+
+  .modal-overlay {
+    position: fixed;
+    overflow: hidden;
+  }
+
+  body.modal-open {
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
   }
 
   .modal-close {

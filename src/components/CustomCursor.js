@@ -90,9 +90,9 @@ const CustomCursor = () => {
       // Adaptive damping: faster when farther, slower when closer
       // Velocity-based prediction: add slight prediction for smoother tracking
       const speed = Math.abs(velocityX) + Math.abs(velocityY);
-      const baseDamping = 0.15;
-      const adaptiveDamping = Math.min(0.3, baseDamping + (distance / 1500));
-      const prediction = Math.min(3, speed * 1.5);
+      const baseDamping = 0.08;
+      const adaptiveDamping = Math.min(0.2, baseDamping + (distance / 2000));
+      const prediction = Math.min(2, speed * 1);
 
       outlineX += deltaX * adaptiveDamping + velocityX * prediction;
       outlineY += deltaY * adaptiveDamping + velocityY * prediction;

@@ -74,15 +74,6 @@ const Navigation = () => {
       >
         <div className="nav-container">
           <motion.a
-            href="#home"
-            className="nav-logo"
-            whileHover={{ scale: 1.05 }}
-          >
-            <span className="logo-text">GVM</span>
-            <span className="logo-subtext">Portfolio</span>
-          </motion.a>
-
-          <motion.a
             href="#contact"
             className="nav-cta-btn"
             whileHover={{ scale: 1.05 }}

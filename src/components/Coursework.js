@@ -46,28 +46,17 @@ const Coursework = () => {
       { name: "VLSI Design", level: 2 }
     ],
     software: [
-      { name: "Python", level: 3 },
       { name: "Verilog/SystemVerilog", level: 3 },
       { name: "Embedded C", level: 3 },
       { name: "C", level: 2 },
       { name: "Linux", level: 2 },
       { name: "Git", level: 2 }
     ],
-    aiml: [
-      { name: "YOLOv8", level: 3 },
-      { name: "Machine Learning", level: 2 },
-      { name: "Computer Vision", level: 3 },
-      { name: "AI Deployment", level: 2 },
-      { name: "OpenCV", level: 2 },
-      { name: "TensorFlow", level: 1 }
-    ],
     tools: [
       { name: "MATLAB/Simulink", level: 3 },
       { name: "LTSpice", level: 3 },
       { name: "Vivado", level: 2 },
-      { name: "KiCad", level: 2 },
-      { name: "GStreamer", level: 2 },
-      { name: "PyQt5", level: 2 }
+      { name: "KiCad", level: 2 }
     ]
   };
 
@@ -86,7 +75,6 @@ const Coursework = () => {
     { id: 'all', label: 'All Skills' },
     { id: 'hardware', label: 'Hardware' },
     { id: 'software', label: 'Software' },
-    { id: 'aiml', label: 'AI/ML' },
     { id: 'tools', label: 'Tools' }
   ];
 

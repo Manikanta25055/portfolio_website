@@ -31,6 +31,13 @@ body {
   body {
     cursor: none;
   }
+
+  a, button, .project-card, .skill-card, .category-btn,
+  .timeline-content, .tech-pill, .section-dot, .hamburger,
+  .mobile-menu-item, [role="button"], input[type="submit"],
+  input[type="button"], .modal-close, .view-details {
+    cursor: none !important;
+  }
 }
 
 h1, h2, h3, h4, h5, h6,
@@ -56,7 +63,19 @@ h1, h2, h3, h4, h5, h6,
   width: 8px;
   height: 8px;
   background: var(--orange);
-  transition: width 0.2s ease, height 0.2s ease;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cursor-dot.hovering {
+  width: 20px;
+  height: 20px;
+  background: rgba(255, 107, 53, 0.8);
+}
+
+.cursor-dot.clicking {
+  width: 16px;
+  height: 16px;
+  animation: clickPulse 0.3s ease-out;
 }
 
 .cursor-outline {
@@ -65,12 +84,45 @@ h1, h2, h3, h4, h5, h6,
   border: 2px solid var(--orange);
   background: transparent;
   opacity: 0.5;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-a:hover ~ .cursor-dot,
-button:hover ~ .cursor-dot {
-  width: 16px;
-  height: 16px;
+.cursor-outline.hovering {
+  width: 50px;
+  height: 50px;
+  opacity: 0.7;
+  border-width: 3px;
+}
+
+.cursor-outline.clicking {
+  animation: clickOutline 0.3s ease-out;
+}
+
+@keyframes clickPulse {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(0.7);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes clickOutline {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(0.85);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.7;
+  }
 }
 
 /* ==================== LOADER ==================== */

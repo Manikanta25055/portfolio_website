@@ -4,6 +4,8 @@ const CustomCursor = () => {
   const cursorDotRef = useRef(null);
   const cursorOutlineRef = useRef(null);
   const [isTouchDevice, setIsTouchDevice] = useState(true);
+  const [isHovering, setIsHovering] = useState(false);
+  const [isClicking, setIsClicking] = useState(false);
 
   useEffect(() => {
     const checkTouchDevice = () => {
@@ -38,6 +40,19 @@ const CustomCursor = () => {
 
       cursorDot.style.left = `${mouseX}px`;
       cursorDot.style.top = `${mouseY}px`;
+
+      // Check if hovering over clickable element
+      const target = e.target;
+      const isClickable = target.closest('a, button, .project-card, .skill-card, .category-btn, .timeline-content, .tech-pill, .section-dot, .hamburger, .mobile-menu-item');
+      setIsHovering(!!isClickable);
+    };
+
+    const handleMouseDown = () => {
+      setIsClicking(true);
+    };
+
+    const handleMouseUp = () => {
+      setIsClicking(false);
     };
 
     const animateOutline = () => {
@@ -51,10 +66,14 @@ const CustomCursor = () => {
     };
 
     window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mouseup', handleMouseUp);
     animateOutline();
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mousedown', handleMouseDown);
+      window.removeEventListener('mouseup', handleMouseUp);
       cancelAnimationFrame(animationFrameId);
     };
   }, [isTouchDevice]);
@@ -63,8 +82,14 @@ const CustomCursor = () => {
 
   return (
     <>
-      <div ref={cursorDotRef} className="cursor-dot"></div>
-      <div ref={cursorOutlineRef} className="cursor-outline"></div>
+      <div
+        ref={cursorDotRef}
+        className={`cursor-dot ${isHovering ? 'hovering' : ''} ${isClicking ? 'clicking' : ''}`}
+      ></div>
+      <div
+        ref={cursorOutlineRef}
+        className={`cursor-outline ${isHovering ? 'hovering' : ''} ${isClicking ? 'clicking' : ''}`}
+      ></div>
     </>
   );
 };

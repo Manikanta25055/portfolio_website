@@ -33,18 +33,25 @@ const CustomCursor = () => {
     let outlineX = 0;
     let outlineY = 0;
     let animationFrameId;
+    let hoverCheckTimeout;
 
     const handleMouseMove = (e) => {
       mouseX = e.clientX;
       mouseY = e.clientY;
 
-      cursorDot.style.left = `${mouseX}px`;
-      cursorDot.style.top = `${mouseY}px`;
+      if (cursorDot) {
+        cursorDot.style.left = `${mouseX}px`;
+        cursorDot.style.top = `${mouseY}px`;
+      }
 
-      // Check if hovering over clickable element
-      const target = e.target;
-      const isClickable = target.closest('a, button, .project-card, .skill-card, .category-btn, .timeline-content, .tech-pill, .section-dot, .hamburger, .mobile-menu-item');
-      setIsHovering(!!isClickable);
+      // Throttle hover detection to improve performance
+      if (hoverCheckTimeout) return;
+      hoverCheckTimeout = setTimeout(() => {
+        const target = e.target;
+        const isClickable = target.closest('a, button, .project-card, .skill-card, .category-btn, .timeline-content, .tech-pill, .section-dot, .hamburger, .mobile-menu-item, .degree-card, .expand-btn, .course-item, .phase-item');
+        setIsHovering(!!isClickable);
+        hoverCheckTimeout = null;
+      }, 50);
     };
 
     const handleMouseDown = () => {
@@ -56,16 +63,24 @@ const CustomCursor = () => {
     };
 
     const animateOutline = () => {
-      outlineX += (mouseX - outlineX) * 0.15;
-      outlineY += (mouseY - outlineY) * 0.15;
+      const deltaX = mouseX - outlineX;
+      const deltaY = mouseY - outlineY;
 
-      cursorOutline.style.left = `${outlineX}px`;
-      cursorOutline.style.top = `${outlineY}px`;
+      // Only update if there's meaningful movement
+      if (Math.abs(deltaX) > 0.1 || Math.abs(deltaY) > 0.1) {
+        outlineX += deltaX * 0.15;
+        outlineY += deltaY * 0.15;
+
+        if (cursorOutline) {
+          cursorOutline.style.left = `${outlineX}px`;
+          cursorOutline.style.top = `${outlineY}px`;
+        }
+      }
 
       animationFrameId = requestAnimationFrame(animateOutline);
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
     window.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('mouseup', handleMouseUp);
     animateOutline();
@@ -74,6 +89,7 @@ const CustomCursor = () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mousedown', handleMouseDown);
       window.removeEventListener('mouseup', handleMouseUp);
+      if (hoverCheckTimeout) clearTimeout(hoverCheckTimeout);
       cancelAnimationFrame(animationFrameId);
     };
   }, [isTouchDevice]);

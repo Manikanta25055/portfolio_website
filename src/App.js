@@ -6,7 +6,7 @@ import DotGrid from './components/DotGrid';
 import Navigation from './components/Navigation';
 import ScrollToTop from './components/ScrollToTop';
 import Hero from './components/Hero';
-import About from './components/About';
+import DualDegree from './components/DualDegree';
 import WorkTimeline from './components/WorkTimeline';
 import Projects from './components/Projects';
 import Coursework from './components/Coursework';
@@ -52,7 +52,7 @@ function App() {
       <DotGrid />
       <Navigation />
       <Hero />
-      <About />
+      <DualDegree />
       <WorkTimeline />
       <Projects />
       <Coursework />

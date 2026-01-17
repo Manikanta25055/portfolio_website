@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import ProjectModal from './ProjectModal';
 
@@ -201,6 +201,7 @@ const projects = [
 const Projects = () => {
   const [selectedProject, setSelectedProject] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const touchStartRef = useRef({ x: 0, y: 0 });
 
   const isMobile = useMediaQuery('(max-width: 768px)');
   const prefersReducedMotion = useReducedMotion();
@@ -217,6 +218,22 @@ const Projects = () => {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setTimeout(() => setSelectedProject(null), 300);
+  };
+
+  const handleTouchStart = (e) => {
+    const touch = e.touches[0];
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+  };
+
+  const handleTouchEnd = (e, project) => {
+    const touch = e.changedTouches[0];
+    const deltaX = Math.abs(touch.clientX - touchStartRef.current.x);
+    const deltaY = Math.abs(touch.clientY - touchStartRef.current.y);
+
+    // Only trigger click if movement was less than 10px (a tap, not a scroll)
+    if (deltaX < 10 && deltaY < 10) {
+      handleProjectClick(project);
+    }
   };
 
   const containerVariants = {
@@ -289,10 +306,8 @@ const Projects = () => {
                 whileHover: { y: -10, transition: { duration: 0.3 } }
               })}
               onClick={() => handleProjectClick(project)}
-              onTouchEnd={(e) => {
-                e.preventDefault();
-                handleProjectClick(project);
-              }}
+              onTouchStart={handleTouchStart}
+              onTouchEnd={(e) => handleTouchEnd(e, project)}
               role="button"
               tabIndex={0}
               onKeyDown={(e) => {

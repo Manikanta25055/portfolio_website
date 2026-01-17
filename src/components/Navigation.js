@@ -14,7 +14,7 @@ const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
   const [activeSectionIndex, setActiveSectionIndex] = useState(0);
-  const [isBouncing, setIsBouncing] = useState(false);
+  const [isPulsing, setIsPulsing] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const prevSectionRef = useRef('home');
 
@@ -64,11 +64,11 @@ const Navigation = () => {
           }
         }
 
-        // Trigger bounce animation when section changes
+        // Trigger pulse animation when section changes
         if (newSection !== prevSectionRef.current) {
           prevSectionRef.current = newSection;
-          setIsBouncing(true);
-          setTimeout(() => setIsBouncing(false), 500);
+          setIsPulsing(true);
+          setTimeout(() => setIsPulsing(false), 600);
         }
 
         setActiveSection(newSection);
@@ -120,31 +120,44 @@ const Navigation = () => {
         </div>
       </motion.nav>
 
-      {/* Bouncing Ball Section Indicator */}
-      <div className="section-progress-container">
-        <div className="section-progress-track">
+      {/* Circuit Path Progress Indicator */}
+      <div className="circuit-progress-container">
+        <div className="circuit-track">
+          {/* Base PCB trace */}
+          <div className="circuit-trace" />
+
+          {/* Active trace (fills as you scroll) */}
+          <motion.div
+            className="circuit-trace-active"
+            animate={{ width: `${(activeSectionIndex / (sections.length - 1)) * 100}%` }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+          />
+
+          {/* Circuit nodes */}
           {sections.map((section, index) => (
             <div
               key={section.id}
-              className={`section-marker ${index <= activeSectionIndex ? 'passed' : ''}`}
-            />
+              className={`circuit-node ${index <= activeSectionIndex ? 'powered' : ''} ${index === activeSectionIndex ? 'active' : ''}`}
+              style={{ left: `${(index / (sections.length - 1)) * 100}%` }}
+            >
+              <div className="node-ring" />
+              <div className="node-core" />
+              {index === activeSectionIndex && isPulsing && (
+                <div className="node-pulse" />
+              )}
+            </div>
           ))}
+
+          {/* Current indicator */}
+          <motion.div
+            className={`circuit-current ${isPulsing ? 'pulsing' : ''}`}
+            animate={{ left: `${(activeSectionIndex / (sections.length - 1)) * 100}%` }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+          >
+            <div className="current-glow" />
+            <div className="current-spark" />
+          </motion.div>
         </div>
-        <motion.div
-          className={`progress-ball ${isBouncing ? 'bouncing' : ''}`}
-          animate={{
-            left: `${(activeSectionIndex / (sections.length - 1)) * 100}%`,
-          }}
-          transition={{
-            type: "spring",
-            stiffness: 300,
-            damping: 20,
-            mass: 0.8
-          }}
-        >
-          <div className="ball-glow" />
-          <div className="ball-core" />
-        </motion.div>
       </div>
 
       {/* Vertical Section Indicators */}

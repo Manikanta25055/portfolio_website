@@ -58,7 +58,7 @@ img, video {
 }
 
 /* Reduce repaints for frequently updated elements */
-.section-progress-container, .circular-progress, .progress-text {
+.circuit-progress-container, .circular-progress, .progress-text {
   will-change: transform, stroke-dashoffset;
 }
 
@@ -400,32 +400,75 @@ h1, h2, h3, h4, h5, h6,
   transform: rotate(-45deg) translateY(-8px);
 }
 
-/* Bouncing Ball Section Progress */
-.section-progress-container {
+/* Circuit Path Progress Indicator */
+.circuit-progress-container {
   position: fixed;
   top: 70px;
   left: 50%;
   transform: translateX(-50%);
   width: min(400px, 80vw);
-  height: 20px;
+  height: 30px;
   z-index: 999;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.section-progress-track {
+.circuit-track {
   position: relative;
   width: 100%;
-  height: 2px;
-  background: rgba(255, 107, 53, 0.15);
-  border-radius: 2px;
+  height: 100%;
   display: flex;
-  justify-content: space-between;
   align-items: center;
 }
 
-.section-marker {
+/* Base PCB trace */
+.circuit-trace {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(255, 107, 53, 0.15);
+  border-radius: 2px;
+}
+
+/* Active trace that fills */
+.circuit-trace-active {
+  position: absolute;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--orange) 0%, rgba(255, 107, 53, 0.8) 100%);
+  border-radius: 2px;
+  box-shadow: 0 0 8px rgba(255, 107, 53, 0.4);
+}
+
+/* Circuit nodes */
+.circuit-node {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  transform: translateX(-50%);
+  z-index: 2;
+}
+
+.node-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 107, 53, 0.3);
+  border-radius: 50%;
+  background: var(--black);
+  transition: all 0.3s ease;
+}
+
+.node-core {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   width: 6px;
   height: 6px;
   border-radius: 50%;
@@ -433,86 +476,123 @@ h1, h2, h3, h4, h5, h6,
   transition: all 0.3s ease;
 }
 
-.section-marker.passed {
+/* Powered node state */
+.circuit-node.powered .node-ring {
+  border-color: var(--orange);
+  box-shadow: 0 0 6px rgba(255, 107, 53, 0.3);
+}
+
+.circuit-node.powered .node-core {
   background: var(--orange);
-  box-shadow: 0 0 6px rgba(255, 107, 53, 0.5);
 }
 
-.progress-ball {
-  position: absolute;
-  width: 16px;
-  height: 16px;
-  transform: translate(-50%, -50%);
-  top: 50%;
-  z-index: 2;
+/* Active node state (current section) */
+.circuit-node.active .node-ring {
+  border-color: var(--orange);
+  box-shadow: 0 0 12px rgba(255, 107, 53, 0.6);
 }
 
-.ball-core {
+.circuit-node.active .node-core {
+  background: var(--orange);
+  box-shadow: 0 0 8px rgba(255, 107, 53, 0.8);
+}
+
+/* Node pulse effect */
+.node-pulse {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 10px;
-  height: 10px;
-  background: var(--orange);
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--orange);
   border-radius: 50%;
-  z-index: 2;
+  animation: nodePulse 0.6s ease-out forwards;
 }
 
-.ball-glow {
+@keyframes nodePulse {
+  0% {
+    width: 14px;
+    height: 14px;
+    opacity: 1;
+  }
+  100% {
+    width: 40px;
+    height: 40px;
+    opacity: 0;
+  }
+}
+
+/* Current position indicator */
+.circuit-current {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  transform: translateX(-50%);
+  z-index: 3;
+  pointer-events: none;
+}
+
+.current-glow {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 20px;
-  height: 20px;
-  background: radial-gradient(circle, rgba(255, 107, 53, 0.6) 0%, rgba(255, 107, 53, 0) 70%);
+  width: 24px;
+  height: 24px;
+  background: radial-gradient(circle, rgba(255, 107, 53, 0.4) 0%, rgba(255, 107, 53, 0) 70%);
   border-radius: 50%;
-  animation: ballPulse 2s ease-in-out infinite;
+  animation: currentPulse 1.5s ease-in-out infinite;
 }
 
-.progress-ball.bouncing .ball-core {
-  animation: ballBounce 0.5s cubic-bezier(0.36, 0, 0.66, -0.56);
+.current-spark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 4px;
+  height: 4px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 6px var(--orange), 0 0 12px var(--orange);
 }
 
-.progress-ball.bouncing .ball-glow {
-  animation: glowBurst 0.5s ease-out;
+.circuit-current.pulsing .current-glow {
+  animation: currentBurst 0.6s ease-out;
 }
 
-@keyframes ballPulse {
+.circuit-current.pulsing .current-spark {
+  animation: sparkFlash 0.6s ease-out;
+}
+
+@keyframes currentPulse {
   0%, 100% {
     transform: translate(-50%, -50%) scale(1);
     opacity: 0.6;
   }
   50% {
-    transform: translate(-50%, -50%) scale(1.5);
+    transform: translate(-50%, -50%) scale(1.3);
     opacity: 0.3;
   }
 }
 
-@keyframes ballBounce {
-  0%, 100% {
-    transform: translate(-50%, -50%) translateY(0);
-  }
-  25% {
-    transform: translate(-50%, -50%) translateY(-8px);
-  }
-  50% {
-    transform: translate(-50%, -50%) translateY(0);
-  }
-  75% {
-    transform: translate(-50%, -50%) translateY(-4px);
-  }
-}
-
-@keyframes glowBurst {
+@keyframes currentBurst {
   0% {
     transform: translate(-50%, -50%) scale(1);
     opacity: 1;
   }
   100% {
-    transform: translate(-50%, -50%) scale(2.5);
+    transform: translate(-50%, -50%) scale(2);
     opacity: 0;
+  }
+}
+
+@keyframes sparkFlash {
+  0%, 100% {
+    box-shadow: 0 0 6px var(--orange), 0 0 12px var(--orange);
+  }
+  50% {
+    box-shadow: 0 0 12px var(--orange), 0 0 24px var(--orange), 0 0 36px rgba(255, 107, 53, 0.5);
   }
 }
 
@@ -1750,6 +1830,7 @@ section {
 .modal-header {
   margin-bottom: 2.5rem;
   padding-bottom: 2rem;
+  padding-right: 60px;
   border-bottom: 1px solid rgba(255, 107, 53, 0.2);
 }
 
@@ -2247,7 +2328,7 @@ section {
     display: none;
   }
 
-  .section-progress-container {
+  .circuit-progress-container {
     top: 70px;
     width: min(300px, 70vw);
   }

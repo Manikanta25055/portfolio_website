@@ -85,23 +85,41 @@ const Navigation = () => {
             </svg>
           </motion.a>
 
-          <div
+          <button
             className={`hamburger ${isMobileMenuOpen ? 'active' : ''}`}
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label={isMobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+            aria-expanded={isMobileMenuOpen}
           >
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+          </button>
         </div>
       </motion.nav>
 
       {/* Scroll Progress Bar */}
-      <motion.div
-        className="scroll-progress-bar"
-        style={{ scaleX: scrollProgress / 100 }}
-        initial={{ scaleX: 0 }}
-      />
+      <div className="scroll-progress-container">
+        <motion.div
+          className="scroll-progress-bar"
+          style={{ scaleX: scrollProgress / 100 }}
+          initial={{ scaleX: 0 }}
+        />
+        <motion.div
+          className="scroll-droplet"
+          style={{ left: `${scrollProgress}%` }}
+          initial={{ left: '0%' }}
+        >
+          <svg width="16" height="20" viewBox="0 0 16 20" className="droplet-svg">
+            <path
+              d="M8 0C8 0 0 8 0 13C0 16.866 3.58172 20 8 20C12.4183 20 16 16.866 16 13C16 8 8 0 8 0Z"
+              fill="var(--orange)"
+              className="droplet-path"
+            />
+          </svg>
+          <div className="droplet-trail"></div>
+        </motion.div>
+      </div>
 
       {/* Vertical Section Indicators */}
       <motion.div
@@ -133,16 +151,20 @@ const Navigation = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setIsMobileMenuOpen(false)}
+            role="presentation"
+            aria-hidden="true"
           />
         )}
       </AnimatePresence>
 
       {/* Mobile Menu */}
-      <motion.div
+      <motion.nav
         className={`mobile-menu ${isMobileMenuOpen ? 'active' : ''}`}
         initial={{ x: '100%' }}
         animate={{ x: isMobileMenuOpen ? 0 : '100%' }}
         transition={{ duration: 0.3 }}
+        aria-label="Mobile navigation"
+        role="navigation"
       >
         {sections.map((section) => (
           <motion.a
@@ -155,7 +177,7 @@ const Navigation = () => {
             {section.label}
           </motion.a>
         ))}
-      </motion.div>
+      </motion.nav>
     </>
   );
 };

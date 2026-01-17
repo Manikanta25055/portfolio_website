@@ -76,7 +76,13 @@ const DualDegree = () => {
     const offset = circumference - (progress / 100) * circumference;
 
     return (
-      <svg width={size} height={size} className="circular-progress">
+      <svg
+        width={size}
+        height={size}
+        viewBox={`0 0 ${size} ${size}`}
+        className="circular-progress"
+        style={{ overflow: 'visible', display: 'block' }}
+      >
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -103,9 +109,10 @@ const DualDegree = () => {
           x="50%"
           y="50%"
           textAnchor="middle"
-          dy=".3em"
+          dy=".35em"
           className="progress-text"
           fill={color}
+          style={{ fontSize: `${size * 0.125}px`, fontWeight: 700 }}
         >
           {Math.round(progress)}%
         </text>
@@ -223,9 +230,11 @@ const DualDegree = () => {
               onClick={() => setExpandedMIT(!expandedMIT)}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
+              aria-expanded={expandedMIT}
+              aria-label={expandedMIT ? 'Hide MIT current courses' : 'View MIT current courses'}
             >
               {expandedMIT ? 'Hide' : 'View'} Current Courses
-              <span className={`arrow ${expandedMIT ? 'up' : 'down'}`}>▼</span>
+              <span className={`arrow ${expandedMIT ? 'up' : 'down'}`} aria-hidden="true">▼</span>
             </motion.button>
 
             <AnimatePresence>
@@ -335,9 +344,11 @@ const DualDegree = () => {
               onClick={() => setExpandedIIT(!expandedIIT)}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
+              aria-expanded={expandedIIT}
+              aria-label={expandedIIT ? 'Hide IITM current courses' : 'View IITM current courses'}
             >
               {expandedIIT ? 'Hide' : 'View'} Current Courses
-              <span className={`arrow ${expandedIIT ? 'up' : 'down'}`}>▼</span>
+              <span className={`arrow ${expandedIIT ? 'up' : 'down'}`} aria-hidden="true">▼</span>
             </motion.button>
 
             <AnimatePresence>

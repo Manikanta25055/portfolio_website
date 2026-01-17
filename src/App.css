@@ -281,6 +281,10 @@ h1, h2, h3, h4, h5, h6,
   gap: 6px;
   cursor: pointer;
   z-index: 1001;
+  background: none;
+  border: none;
+  padding: 8px;
+  margin: -8px;
 }
 
 .hamburger span {
@@ -304,15 +308,84 @@ h1, h2, h3, h4, h5, h6,
 }
 
 /* Scroll Progress Bar */
-.scroll-progress-bar {
+.scroll-progress-container {
   position: fixed;
   top: 70px;
   left: 0;
+  width: 100%;
   height: 3px;
+  z-index: 999;
+  pointer-events: none;
+}
+
+.scroll-progress-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
   background: linear-gradient(90deg, var(--orange), var(--orange-light));
   transform-origin: left;
-  z-index: 999;
   width: 100%;
+  box-shadow: 0 0 8px rgba(255, 107, 53, 0.5);
+}
+
+.scroll-droplet {
+  position: absolute;
+  top: -8px;
+  transform: translateX(-50%);
+  filter: drop-shadow(0 2px 4px rgba(255, 107, 53, 0.4));
+  z-index: 2;
+  transition: left 0.1s ease-out;
+}
+
+.droplet-svg {
+  display: block;
+  animation: dropletBounce 2s ease-in-out infinite;
+}
+
+.droplet-path {
+  animation: dropletPulse 2s ease-in-out infinite;
+}
+
+.droplet-trail {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 15px;
+  background: linear-gradient(to bottom, var(--orange), transparent);
+  opacity: 0.6;
+  animation: trailStretch 2s ease-in-out infinite;
+}
+
+@keyframes dropletBounce {
+  0%, 100% {
+    transform: translateY(0) scaleY(1);
+  }
+  50% {
+    transform: translateY(-2px) scaleY(1.05);
+  }
+}
+
+@keyframes dropletPulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+@keyframes trailStretch {
+  0%, 100% {
+    height: 15px;
+    opacity: 0.6;
+  }
+  50% {
+    height: 18px;
+    opacity: 0.4;
+  }
 }
 
 /* Vertical Section Indicators */
@@ -761,12 +834,13 @@ section {
 
 .circular-progress {
   filter: drop-shadow(0 0 10px rgba(255, 107, 53, 0.3));
+  max-width: 100%;
+  height: auto;
 }
 
 .progress-text {
-  font-size: 1.5rem;
-  font-weight: 700;
   font-family: 'Space Grotesk', sans-serif;
+  user-select: none;
 }
 
 .stat-info {
@@ -1944,8 +2018,12 @@ section {
     display: none;
   }
 
-  .scroll-progress-bar {
+  .scroll-progress-container {
     top: 70px;
+  }
+
+  .scroll-droplet {
+    display: none;
   }
 
   .degrees-grid {

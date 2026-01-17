@@ -13,6 +13,12 @@ const DualDegree = () => {
     cgpa: "8.01",
     maxCgpa: "10.0",
     progress: 75, // 6/8 = 75%
+    semesters: [
+      { sem: "1-2", status: "completed", icon: "✓", description: "Foundation Year" },
+      { sem: "3-4", status: "completed", icon: "✓", description: "Core Subjects" },
+      { sem: "5-6", status: "in-progress", icon: "→", description: "Specialization Track" },
+      { sem: "7-8", status: "upcoming", icon: "○", description: "Advanced & Projects" }
+    ],
     currentCourses: [
       { code: "AI", name: "Artificial Intelligence", category: "Program Elective" },
       { code: "ML", name: "Machine Learning", category: "Program Elective" },
@@ -181,6 +187,37 @@ const DualDegree = () => {
               </div>
             </motion.div>
 
+            <motion.div
+              className="phase-timeline"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.7 }}
+            >
+              <h4>Semester Progression</h4>
+              <div className="phases">
+                {mitData.semesters.map((semester, index) => (
+                  <motion.div
+                    key={index}
+                    className={`phase-item ${semester.status}`}
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4, delay: 0.8 + index * 0.1 }}
+                  >
+                    <div className="phase-icon">{semester.icon}</div>
+                    <div className="phase-content">
+                      <strong>Semester {semester.sem}</strong>
+                      <span>{semester.description}</span>
+                    </div>
+                    {index < mitData.semesters.length - 1 && (
+                      <div className="phase-connector"></div>
+                    )}
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+
             <motion.button
               className="expand-btn"
               onClick={() => setExpandedMIT(!expandedMIT)}
@@ -258,7 +295,7 @@ const DualDegree = () => {
                   </motion.div>
                   <span className="cgpa-max">/ {iitData.maxCgpa}</span>
                 </div>
-                <span className="stat-label">CGPA (Till 5th Sem, Excl. Labs)</span>
+                <span className="stat-label">CGPA (Till 5th Sem, Incl. Labs)</span>
               </div>
             </div>
 

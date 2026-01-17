@@ -57,25 +57,30 @@ h1, h2, h3, h4, h5, h6,
   pointer-events: none;
   z-index: 10000;
   border-radius: 50%;
-  transform: translate(-50%, -50%);
+  will-change: transform;
 }
 
 .cursor-dot {
   width: 8px;
   height: 8px;
   background: var(--orange);
-  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: width 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+              height 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+              background 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translate(-4px, -4px);
 }
 
 .cursor-dot.hovering {
   width: 20px;
   height: 20px;
   background: rgba(255, 107, 53, 0.8);
+  transform: translate(-10px, -10px);
 }
 
 .cursor-dot.clicking {
   width: 16px;
   height: 16px;
+  transform: translate(-8px, -8px);
   animation: clickPulse 0.3s ease-out;
 }
 
@@ -85,7 +90,11 @@ h1, h2, h3, h4, h5, h6,
   border: 2px solid var(--orange);
   background: transparent;
   opacity: 0.5;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translate(-20px, -20px);
+  transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              height 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              border-width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .cursor-outline.hovering {
@@ -93,6 +102,7 @@ h1, h2, h3, h4, h5, h6,
   height: 50px;
   opacity: 0.7;
   border-width: 3px;
+  transform: translate(-25px, -25px);
 }
 
 .cursor-outline.clicking {
@@ -101,27 +111,24 @@ h1, h2, h3, h4, h5, h6,
 
 @keyframes clickPulse {
   0% {
-    transform: translate(-50%, -50%) scale(1);
+    transform: translate(-8px, -8px) scale(1);
   }
   50% {
-    transform: translate(-50%, -50%) scale(0.7);
+    transform: translate(-8px, -8px) scale(0.7);
   }
   100% {
-    transform: translate(-50%, -50%) scale(1);
+    transform: translate(-8px, -8px) scale(1);
   }
 }
 
 @keyframes clickOutline {
   0% {
-    transform: translate(-50%, -50%) scale(1);
     opacity: 0.7;
   }
   50% {
-    transform: translate(-50%, -50%) scale(0.85);
     opacity: 1;
   }
   100% {
-    transform: translate(-50%, -50%) scale(1);
     opacity: 0.7;
   }
 }
@@ -864,6 +871,8 @@ section {
 .phase-item.completed .phase-icon {
   background: var(--orange);
   color: var(--black);
+  border-color: var(--orange-dark);
+  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.2);
 }
 
 .phase-item.in-progress {
@@ -874,29 +883,33 @@ section {
 .phase-item.in-progress .phase-icon {
   background: var(--orange-light);
   color: var(--black);
+  border-color: var(--orange);
   animation: pulse 2s ease-in-out infinite;
+  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.2);
 }
 
 .phase-item.upcoming {
   border-left-color: rgba(255, 107, 53, 0.2);
-  opacity: 0.6;
+  opacity: 0.8;
 }
 
 .phase-item.upcoming .phase-icon {
-  background: rgba(255, 107, 53, 0.2);
-  color: var(--gray);
+  background: rgba(255, 107, 53, 0.15);
+  color: var(--white);
+  border-color: rgba(255, 107, 53, 0.4);
 }
 
 .phase-icon {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 1rem;
   flex-shrink: 0;
+  border: 2px solid transparent;
 }
 
 .phase-content {
@@ -1997,9 +2010,9 @@ section {
   }
 
   .phase-icon {
-    width: 32px;
-    height: 32px;
-    font-size: 0.8rem;
+    width: 36px;
+    height: 36px;
+    font-size: 0.9rem;
   }
 
   .phase-content strong {

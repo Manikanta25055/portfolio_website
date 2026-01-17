@@ -40,8 +40,7 @@ const CustomCursor = () => {
       mouseY = e.clientY;
 
       if (cursorDot) {
-        cursorDot.style.left = `${mouseX}px`;
-        cursorDot.style.top = `${mouseY}px`;
+        cursorDot.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
       }
 
       // Throttle hover detection to improve performance
@@ -66,15 +65,11 @@ const CustomCursor = () => {
       const deltaX = mouseX - outlineX;
       const deltaY = mouseY - outlineY;
 
-      // Only update if there's meaningful movement
-      if (Math.abs(deltaX) > 0.1 || Math.abs(deltaY) > 0.1) {
-        outlineX += deltaX * 0.15;
-        outlineY += deltaY * 0.15;
+      outlineX += deltaX * 0.25;
+      outlineY += deltaY * 0.25;
 
-        if (cursorOutline) {
-          cursorOutline.style.left = `${outlineX}px`;
-          cursorOutline.style.top = `${outlineY}px`;
-        }
+      if (cursorOutline) {
+        cursorOutline.style.transform = `translate(${outlineX}px, ${outlineY}px)`;
       }
 
       animationFrameId = requestAnimationFrame(animateOutline);

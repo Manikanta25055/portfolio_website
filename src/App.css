@@ -1531,7 +1531,7 @@ section {
   }
 
   .timeline-marker {
-    left: 15px;
+    left: -35px;
     transform: translateX(-50%);
     width: 20px;
     height: 20px;

@@ -129,9 +129,6 @@ const DualDegree = () => {
 
   const SectionContainer = shouldAnimate ? motion.div : 'div';
   const TitleContainer = shouldAnimate ? motion.h2 : 'h2';
-  const DegreeCard = shouldAnimate ? motion.div : 'div';
-  const MotionDiv = shouldAnimate ? motion.div : 'div';
-  const MotionButton = shouldAnimate ? motion.button : 'button';
 
   return (
     <section className="dual-degree" id="about">

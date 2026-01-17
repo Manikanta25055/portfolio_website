@@ -1518,45 +1518,75 @@ section {
   }
 
   .timeline {
-    padding-left: 40px;
+    padding-left: 50px;
+    padding-right: 0;
   }
 
   .timeline::before {
-    left: 11px;
+    left: 15px;
+  }
+
+  .timeline-item {
+    margin-bottom: 2.5rem;
   }
 
   .timeline-marker {
-    left: 11px;
+    left: 15px;
     transform: translateX(-50%);
+    width: 20px;
+    height: 20px;
+    border-width: 2px;
   }
 
   .timeline-dot {
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
   }
 
   .timeline-content {
     margin-left: 0 !important;
     margin-right: 0 !important;
-    padding: 1.5rem;
+    padding: 1.25rem;
+    border-radius: 10px;
   }
 
   .timeline-content h3 {
-    font-size: 1.2rem;
+    font-size: 1.15rem;
+    margin-bottom: 0.4rem;
   }
 
   .timeline-content h4 {
-    font-size: 1rem;
+    font-size: 0.95rem;
+    margin-bottom: 0.85rem;
   }
 
   .timeline-content p {
-    font-size: 0.9rem;
+    font-size: 0.875rem;
+    line-height: 1.6;
   }
 
   .timeline-meta {
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.4rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .timeline-location,
+  .timeline-period {
+    font-size: 0.8rem;
+  }
+
+  .timeline-skills {
+    gap: 0.4rem;
+    margin-top: 1rem;
+  }
+
+  .timeline-skill {
+    font-size: 0.7rem;
+    padding: 0.35rem 0.7rem;
   }
 
   .contact-cards {

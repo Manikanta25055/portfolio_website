@@ -1,8 +1,40 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect, useMemo } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
+
+const useMediaQuery = (query) => {
+  const getMatches = (query) => {
+    if (typeof window !== 'undefined') {
+      return window.matchMedia(query).matches;
+    }
+    return false;
+  };
+
+  const [matches, setMatches] = useState(() => getMatches(query));
+
+  useEffect(() => {
+    const media = window.matchMedia(query);
+
+    const updateMatch = () => {
+      setMatches(media.matches);
+    };
+
+    updateMatch();
+    media.addEventListener('change', updateMatch);
+
+    return () => media.removeEventListener('change', updateMatch);
+  }, [query]);
+
+  return matches;
+};
 
 const Coursework = () => {
   const [activeCategory, setActiveCategory] = useState('all');
+  const isMobile = useMediaQuery('(max-width: 768px)');
+  const prefersReducedMotion = useReducedMotion();
+
+  const shouldAnimate = useMemo(() => {
+    return !isMobile && !prefersReducedMotion;
+  }, [isMobile, prefersReducedMotion]);
 
   const skills = {
     hardware: [
@@ -74,94 +106,120 @@ const Coursework = () => {
     ));
   };
 
+  const SectionContainer = shouldAnimate ? motion.div : 'div';
+  const TitleContainer = shouldAnimate ? motion.h2 : 'h2';
+  const CategoriesContainer = shouldAnimate ? motion.div : 'div';
+  const SkillsGridContainer = shouldAnimate ? motion.div : 'div';
+  const SkillCard = shouldAnimate ? motion.div : 'div';
+  const TechSection = shouldAnimate ? motion.div : 'div';
+  const TechPill = shouldAnimate ? motion.span : 'span';
+
   return (
     <section className="coursework" id="coursework">
-      <motion.div
+      <SectionContainer
         className="section-container"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 0.8 }}
+        {...(shouldAnimate && {
+          initial: { opacity: 0 },
+          whileInView: { opacity: 1 },
+          viewport: { once: true, amount: 0.2 },
+          transition: { duration: 0.8 }
+        })}
       >
-        <motion.h2
+        <TitleContainer
           className="section-title"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          {...(shouldAnimate && {
+            initial: { opacity: 0, y: 30 },
+            whileInView: { opacity: 1, y: 0 },
+            viewport: { once: true },
+            transition: { duration: 0.6 }
+          })}
         >
           Technical Arsenal
-        </motion.h2>
+        </TitleContainer>
 
-        <motion.div
+        <CategoriesContainer
           className="skills-categories"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.2 }}
+          {...(shouldAnimate && {
+            initial: { opacity: 0, y: 20 },
+            whileInView: { opacity: 1, y: 0 },
+            viewport: { once: true },
+            transition: { duration: 0.6, delay: 0.2 }
+          })}
         >
           {categories.map((category) => (
             <motion.button
               key={category.id}
               className={`category-btn ${activeCategory === category.id ? 'active' : ''}`}
               onClick={() => setActiveCategory(category.id)}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              {...(shouldAnimate && {
+                whileHover: { scale: 1.05 },
+                whileTap: { scale: 0.95 }
+              })}
             >
               {category.label}
             </motion.button>
           ))}
-        </motion.div>
+        </CategoriesContainer>
 
-        <motion.div
+        <SkillsGridContainer
           className="skills-grid"
           key={activeCategory}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
+          {...(shouldAnimate && {
+            initial: { opacity: 0, y: 20 },
+            animate: { opacity: 1, y: 0 },
+            transition: { duration: 0.4 }
+          })}
+          style={!shouldAnimate ? { opacity: 1, transform: 'none' } : {}}
         >
           {getDisplaySkills().map((skill, index) => (
-            <motion.div
+            <SkillCard
               key={`${skill.name}-${index}`}
               className="skill-card"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.3, delay: index * 0.05 }}
-              whileHover={{ y: -4, boxShadow: "0 8px 20px rgba(255, 107, 53, 0.2)" }}
+              {...(shouldAnimate && {
+                initial: { opacity: 0, scale: 0.9 },
+                animate: { opacity: 1, scale: 1 },
+                transition: { duration: 0.3, delay: index * 0.05 },
+                whileHover: { y: -4, boxShadow: "0 8px 20px rgba(255, 107, 53, 0.2)" }
+              })}
+              style={!shouldAnimate ? { opacity: 1, transform: 'none' } : {}}
             >
               <span className="skill-name">{skill.name}</span>
               <div className="proficiency-dots">
                 {getProficiencyDots(skill.level)}
               </div>
-            </motion.div>
+            </SkillCard>
           ))}
-        </motion.div>
+        </SkillsGridContainer>
 
-        <motion.div
+        <TechSection
           className="tech-section"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.4 }}
+          {...(shouldAnimate && {
+            initial: { opacity: 0, y: 20 },
+            whileInView: { opacity: 1, y: 0 },
+            viewport: { once: true },
+            transition: { duration: 0.6, delay: 0.4 }
+          })}
         >
           <h3 className="tech-subtitle">Hardware & Development Kits</h3>
           <div className="tech-pills">
             {hardware.map((hw, index) => (
-              <motion.span
+              <TechPill
                 key={index}
                 className="tech-pill"
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.3, delay: 0.5 + index * 0.04 }}
-                whileHover={{ scale: 1.05, y: -2 }}
+                {...(shouldAnimate && {
+                  initial: { opacity: 0, scale: 0.8 },
+                  whileInView: { opacity: 1, scale: 1 },
+                  viewport: { once: true },
+                  transition: { duration: 0.3, delay: 0.5 + index * 0.04 },
+                  whileHover: { scale: 1.05, y: -2 }
+                })}
               >
                 {hw}
-              </motion.span>
+              </TechPill>
             ))}
           </div>
-        </motion.div>
-      </motion.div>
+        </TechSection>
+      </SectionContainer>
     </section>
   );
 };

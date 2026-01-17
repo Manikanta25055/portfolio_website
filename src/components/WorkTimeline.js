@@ -1,7 +1,40 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect, useMemo } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
+
+const useMediaQuery = (query) => {
+  const getMatches = (query) => {
+    if (typeof window !== 'undefined') {
+      return window.matchMedia(query).matches;
+    }
+    return false;
+  };
+
+  const [matches, setMatches] = useState(() => getMatches(query));
+
+  useEffect(() => {
+    const media = window.matchMedia(query);
+
+    const updateMatch = () => {
+      setMatches(media.matches);
+    };
+
+    updateMatch();
+    media.addEventListener('change', updateMatch);
+
+    return () => media.removeEventListener('change', updateMatch);
+  }, [query]);
+
+  return matches;
+};
 
 const WorkTimeline = () => {
+  const isMobile = useMediaQuery('(max-width: 768px)');
+  const prefersReducedMotion = useReducedMotion();
+
+  const shouldAnimate = useMemo(() => {
+    return !isMobile && !prefersReducedMotion;
+  }, [isMobile, prefersReducedMotion]);
+
   const experiences = [
     {
       role: "Project Intern",
@@ -31,42 +64,75 @@ const WorkTimeline = () => {
     }
   ];
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { duration: 0.8 } }
+  };
+
+  const titleVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
+  };
+
+  const itemVariants = (index) => ({
+    hidden: { opacity: 0, x: index % 2 === 0 ? -50 : 50 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: { duration: 0.6, delay: shouldAnimate ? index * 0.2 : 0 }
+    }
+  });
+
+  const SectionContainer = shouldAnimate ? motion.div : 'div';
+  const TitleContainer = shouldAnimate ? motion.h2 : 'h2';
+  const TimelineItem = shouldAnimate ? motion.div : 'div';
+  const TimelineContent = shouldAnimate ? motion.div : 'div';
+
   return (
     <section className="work-timeline" id="experience">
-      <motion.div
+      <SectionContainer
         className="section-container"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 0.8 }}
+        {...(shouldAnimate && {
+          initial: "hidden",
+          whileInView: "visible",
+          viewport: { once: true, amount: 0.1 },
+          variants: containerVariants
+        })}
       >
-        <motion.h2
+        <TitleContainer
           className="section-title"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          {...(shouldAnimate && {
+            initial: "hidden",
+            whileInView: "visible",
+            viewport: { once: true },
+            variants: titleVariants
+          })}
         >
           Work Experience
-        </motion.h2>
+        </TitleContainer>
 
         <div className="timeline">
           {experiences.map((exp, index) => (
-            <motion.div
+            <TimelineItem
               key={index}
               className="timeline-item"
-              initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: index * 0.2 }}
+              {...(shouldAnimate && {
+                initial: "hidden",
+                whileInView: "visible",
+                viewport: { once: true, amount: 0.3 },
+                variants: itemVariants(index)
+              })}
+              style={!shouldAnimate ? { opacity: 1, transform: 'none' } : {}}
             >
               <div className="timeline-marker">
                 <div className="timeline-dot"></div>
               </div>
-              <motion.div
+              <TimelineContent
                 className="timeline-content"
-                whileHover={{ y: -5, boxShadow: "0 12px 32px rgba(255, 107, 53, 0.2)" }}
-                transition={{ duration: 0.3 }}
+                {...(shouldAnimate && {
+                  whileHover: { y: -5, boxShadow: "0 12px 32px rgba(255, 107, 53, 0.2)" },
+                  transition: { duration: 0.3 }
+                })}
               >
                 {exp.current && <div className="current-badge">Current</div>}
                 <h3>{exp.role}</h3>
@@ -81,11 +147,11 @@ const WorkTimeline = () => {
                     <span key={idx} className="timeline-skill">{skill}</span>
                   ))}
                 </div>
-              </motion.div>
-            </motion.div>
+              </TimelineContent>
+            </TimelineItem>
           ))}
         </div>
-      </motion.div>
+      </SectionContainer>
     </section>
   );
 };

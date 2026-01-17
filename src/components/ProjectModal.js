@@ -1,27 +1,25 @@
 import React, { useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const ProjectModal = ({ project, isOpen, onClose }) => {
   useEffect(() => {
     if (isOpen) {
       document.body.classList.add('modal-open');
-      document.body.style.overflow = 'hidden';
-      document.documentElement.style.overflow = 'hidden';
+      document.documentElement.classList.add('modal-open');
     } else {
       document.body.classList.remove('modal-open');
-      document.body.style.overflow = '';
-      document.documentElement.style.overflow = '';
+      document.documentElement.classList.remove('modal-open');
     }
     return () => {
       document.body.classList.remove('modal-open');
-      document.body.style.overflow = '';
-      document.documentElement.style.overflow = '';
+      document.documentElement.classList.remove('modal-open');
     };
   }, [isOpen]);
 
   if (!project) return null;
 
-  return (
+  const modalContent = (
     <AnimatePresence>
       {isOpen && (
         <motion.div
@@ -118,6 +116,8 @@ const ProjectModal = ({ project, isOpen, onClose }) => {
       )}
     </AnimatePresence>
   );
+
+  return ReactDOM.createPortal(modalContent, document.body);
 };
 
 export default ProjectModal;

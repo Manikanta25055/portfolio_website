@@ -289,6 +289,17 @@ const Projects = () => {
                 whileHover: { y: -10, transition: { duration: 0.3 } }
               })}
               onClick={() => handleProjectClick(project)}
+              onTouchEnd={(e) => {
+                e.preventDefault();
+                handleProjectClick(project);
+              }}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  handleProjectClick(project);
+                }
+              }}
               style={!shouldAnimate ? { opacity: 1, transform: 'none' } : {}}
             >
               <div className="project-badge">{project.achievement}</div>

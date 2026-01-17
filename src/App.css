@@ -1484,8 +1484,10 @@ section {
 
   .project-card {
     padding: 1.5rem;
-    opacity: 1 !important;
-    transform: none !important;
+  }
+
+  .project-card.featured {
+    grid-column: span 1;
   }
 
   .project-card h3 {

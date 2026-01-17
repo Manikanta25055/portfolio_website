@@ -1,6 +1,32 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect, useMemo } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
 import ProjectModal from './ProjectModal';
+
+const useMediaQuery = (query) => {
+  const getMatches = (query) => {
+    if (typeof window !== 'undefined') {
+      return window.matchMedia(query).matches;
+    }
+    return false;
+  };
+
+  const [matches, setMatches] = useState(() => getMatches(query));
+
+  useEffect(() => {
+    const media = window.matchMedia(query);
+
+    const updateMatch = () => {
+      setMatches(media.matches);
+    };
+
+    updateMatch();
+    media.addEventListener('change', updateMatch);
+
+    return () => media.removeEventListener('change', updateMatch);
+  }, [query]);
+
+  return matches;
+};
 
 const projects = [
   {
@@ -170,6 +196,13 @@ const Projects = () => {
   const [selectedProject, setSelectedProject] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const isMobile = useMediaQuery('(max-width: 768px)');
+  const prefersReducedMotion = useReducedMotion();
+
+  const shouldAnimate = useMemo(() => {
+    return !isMobile && !prefersReducedMotion;
+  }, [isMobile, prefersReducedMotion]);
+
   const handleProjectClick = (project) => {
     setSelectedProject(project);
     setIsModalOpen(true);
@@ -180,37 +213,77 @@ const Projects = () => {
     setTimeout(() => setSelectedProject(null), 300);
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { duration: 0.8 }
+    }
+  };
+
+  const titleVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6 }
+    }
+  };
+
+  const cardVariants = (index) => ({
+    hidden: { opacity: 0, y: 50 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        delay: shouldAnimate ? index * 0.1 : 0
+      }
+    }
+  });
+
+  const SectionContainer = shouldAnimate ? motion.div : 'div';
+  const TitleContainer = shouldAnimate ? motion.h2 : 'h2';
+  const CardContainer = shouldAnimate ? motion.div : 'div';
+
   return (
     <section className="projects" id="projects">
-      <motion.div
+      <SectionContainer
         className="section-container"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 0.8 }}
+        {...(shouldAnimate && {
+          initial: "hidden",
+          whileInView: "visible",
+          viewport: { once: true, amount: 0.1, margin: "0px 0px -100px 0px" },
+          variants: containerVariants
+        })}
       >
-        <motion.h2
+        <TitleContainer
           className="section-title"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          {...(shouldAnimate && {
+            initial: "hidden",
+            whileInView: "visible",
+            viewport: { once: true, margin: "0px 0px -50px 0px" },
+            variants: titleVariants
+          })}
         >
           Featured Projects
-        </motion.h2>
+        </TitleContainer>
 
         <div className="projects-grid">
           {projects.map((project, index) => (
-            <motion.div
+            <CardContainer
               key={index}
               id={project.id}
               className={`project-card ${index === 0 ? 'featured' : ''}`}
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              whileHover={{ y: -10, transition: { duration: 0.3 } }}
+              {...(shouldAnimate && {
+                initial: "hidden",
+                whileInView: "visible",
+                viewport: { once: true, amount: 0.2, margin: "0px 0px -50px 0px" },
+                variants: cardVariants(index),
+                whileHover: { y: -10, transition: { duration: 0.3 } }
+              })}
               onClick={() => handleProjectClick(project)}
+              style={!shouldAnimate ? { opacity: 1, transform: 'none' } : {}}
             >
               <div className="project-badge">{project.achievement}</div>
               <h3>{project.title}</h3>
@@ -227,10 +300,10 @@ const Projects = () => {
                   <path d="M5 12h14M12 5l7 7-7 7"/>
                 </svg>
               </div>
-            </motion.div>
+            </CardContainer>
           ))}
         </div>
-      </motion.div>
+      </SectionContainer>
 
       <ProjectModal
         project={selectedProject}

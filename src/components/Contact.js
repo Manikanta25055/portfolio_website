@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import FloatingParticles from './FloatingParticles';
 
 const Contact = () => {
   const contactMethods = [
@@ -57,6 +58,7 @@ const Contact = () => {
 
   return (
     <section className="contact" id="contact">
+      <FloatingParticles />
       <motion.div
         className="section-container"
         initial={{ opacity: 0 }}

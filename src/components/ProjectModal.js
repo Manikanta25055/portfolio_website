@@ -1,19 +1,33 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const ProjectModal = ({ project, isOpen, onClose }) => {
+  const scrollPositionRef = useRef(0);
+
   useEffect(() => {
     if (isOpen) {
+      // Save current scroll position
+      scrollPositionRef.current = window.scrollY;
+
+      // Apply fixed position with negative top to maintain visual position
+      document.body.style.top = `-${scrollPositionRef.current}px`;
       document.body.classList.add('modal-open');
       document.documentElement.classList.add('modal-open');
     } else {
+      // Remove classes
       document.body.classList.remove('modal-open');
       document.documentElement.classList.remove('modal-open');
+      document.body.style.top = '';
+
+      // Restore scroll position
+      window.scrollTo(0, scrollPositionRef.current);
     }
+
     return () => {
       document.body.classList.remove('modal-open');
       document.documentElement.classList.remove('modal-open');
+      document.body.style.top = '';
     };
   }, [isOpen]);
 

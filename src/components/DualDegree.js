@@ -112,7 +112,7 @@ const DualDegree = () => {
           dy=".35em"
           className="progress-text"
           fill={color}
-          style={{ fontSize: `${size * 0.125}px`, fontWeight: 700 }}
+          style={{ fontSize: `${size * 0.15}px`, fontWeight: 700 }}
         >
           {Math.round(progress)}%
         </text>

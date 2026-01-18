@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 
 const sections = [
   { id: 'home', label: 'Home' },
@@ -10,23 +10,41 @@ const sections = [
 
 const Navigation = () => {
   const [activeSection, setActiveSection] = useState('home');
+  const [activeIndex, setActiveIndex] = useState(0);
   const prevSectionRef = useRef('home');
 
-  // Slideable nav states
+  // Sliding pill states
   const [isSliding, setIsSliding] = useState(false);
-  const [slideIndex, setSlideIndex] = useState(0);
+  const [pillPosition, setPillPosition] = useState(0); // Actual pixel position
+  const [pillTargetIndex, setPillTargetIndex] = useState(0);
   const navContainerRef = useRef(null);
-  const touchStartX = useRef(0);
-  const touchStartIndex = useRef(0);
-  const lastSlideIndex = useRef(0);
-  const minDragDistance = 30; // Minimum pixels to drag before switching
+  const navItemsRef = useRef([]);
+  const dragStartX = useRef(0);
+  const dragStartPillPos = useRef(0);
 
+  // Calculate item width
+  const getItemWidth = useCallback(() => {
+    if (navContainerRef.current) {
+      return navContainerRef.current.offsetWidth / sections.length;
+    }
+    return 80;
+  }, []);
+
+  // Update pill position when active section changes (from scroll)
+  useEffect(() => {
+    if (!isSliding) {
+      const itemWidth = getItemWidth();
+      setPillPosition(activeIndex * itemWidth);
+      setPillTargetIndex(activeIndex);
+    }
+  }, [activeIndex, isSliding, getItemWidth]);
+
+  // Scroll detection
   useEffect(() => {
     let rafId = null;
 
     const handleScroll = () => {
       if (isSliding) return;
-
       if (rafId) return;
 
       rafId = requestAnimationFrame(() => {
@@ -61,8 +79,7 @@ const Navigation = () => {
         }
 
         setActiveSection(newSection);
-        if (!isSliding) setSlideIndex(newIndex);
-
+        setActiveIndex(newIndex);
         rafId = null;
       });
     };
@@ -82,55 +99,89 @@ const Navigation = () => {
     }
   };
 
-  // Touch/Mouse handlers for slideable nav
-  const handlePointerDown = (e, index) => {
+  // Handle drag start on the pill or nav items
+  const handleDragStart = (e) => {
     e.preventDefault();
-    e.stopPropagation();
-
-    setIsSliding(true);
-    setSlideIndex(index);
 
     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    touchStartX.current = clientX;
-    touchStartIndex.current = index;
+    dragStartX.current = clientX;
+    dragStartPillPos.current = pillPosition;
+    setIsSliding(true);
   };
 
-  const handlePointerMove = (e) => {
+  // Handle drag move - pill follows finger/mouse freely
+  const handleDragMove = useCallback((e) => {
     if (!isSliding || !navContainerRef.current) return;
 
     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const totalDeltaX = clientX - touchStartX.current;
+    const deltaX = clientX - dragStartX.current;
+    const itemWidth = getItemWidth();
+    const maxPosition = (sections.length - 1) * itemWidth;
 
-    // Only switch if dragged more than minimum distance
-    if (Math.abs(totalDeltaX) < minDragDistance) return;
+    // Calculate new position with bounds
+    let newPosition = dragStartPillPos.current + deltaX;
+    newPosition = Math.max(0, Math.min(maxPosition, newPosition));
 
-    const itemWidth = navContainerRef.current.offsetWidth / sections.length;
-    // Calculate how many items to move based on drag distance
-    const indexDelta = Math.floor(totalDeltaX / itemWidth);
-    const newIndex = Math.max(0, Math.min(sections.length - 1, touchStartIndex.current + indexDelta));
+    setPillPosition(newPosition);
 
-    if (newIndex !== slideIndex) {
-      setSlideIndex(newIndex);
-      lastSlideIndex.current = newIndex;
-    }
-  };
+    // Calculate which index the pill is closest to (for highlighting)
+    const closestIndex = Math.round(newPosition / itemWidth);
+    setPillTargetIndex(Math.max(0, Math.min(sections.length - 1, closestIndex)));
+  }, [isSliding, getItemWidth]);
 
-  const handlePointerUp = (e) => {
-    if (isSliding) {
-      e.preventDefault();
-      e.stopPropagation();
-      scrollToSection(slideIndex);
-      setIsSliding(false);
-    }
-  };
+  // Handle drag end - snap to nearest section
+  const handleDragEnd = useCallback(() => {
+    if (!isSliding) return;
 
+    const itemWidth = getItemWidth();
+    const closestIndex = Math.round(pillPosition / itemWidth);
+    const snappedIndex = Math.max(0, Math.min(sections.length - 1, closestIndex));
+
+    // Snap pill to final position
+    setPillPosition(snappedIndex * itemWidth);
+    setPillTargetIndex(snappedIndex);
+    setActiveIndex(snappedIndex);
+    setActiveSection(sections[snappedIndex].id);
+    setIsSliding(false);
+
+    // Scroll to section
+    scrollToSection(snappedIndex);
+  }, [isSliding, pillPosition, getItemWidth]);
+
+  // Handle click on nav item
   const handleItemClick = (e, index) => {
     e.preventDefault();
     e.stopPropagation();
+
     if (!isSliding) {
+      const itemWidth = getItemWidth();
+      setPillPosition(index * itemWidth);
+      setPillTargetIndex(index);
+      setActiveIndex(index);
+      setActiveSection(sections[index].id);
       scrollToSection(index);
     }
   };
+
+  // Global mouse/touch event handlers
+  useEffect(() => {
+    if (isSliding) {
+      const handleGlobalMove = (e) => handleDragMove(e);
+      const handleGlobalEnd = () => handleDragEnd();
+
+      window.addEventListener('mousemove', handleGlobalMove);
+      window.addEventListener('mouseup', handleGlobalEnd);
+      window.addEventListener('touchmove', handleGlobalMove, { passive: false });
+      window.addEventListener('touchend', handleGlobalEnd);
+
+      return () => {
+        window.removeEventListener('mousemove', handleGlobalMove);
+        window.removeEventListener('mouseup', handleGlobalEnd);
+        window.removeEventListener('touchmove', handleGlobalMove);
+        window.removeEventListener('touchend', handleGlobalEnd);
+      };
+    }
+  }, [isSliding, handleDragMove, handleDragEnd]);
 
   const getIcon = (id) => {
     const icons = {
@@ -143,28 +194,40 @@ const Navigation = () => {
     return icons[id];
   };
 
+  const itemWidth = getItemWidth();
+
   return (
     <>
-      {/* iOS-style Glass Bottom Navigation - Both Mobile & Desktop */}
       <nav
         className={`glass-bottom-nav ${isSliding ? 'sliding' : ''}`}
         ref={navContainerRef}
-        onTouchMove={handlePointerMove}
-        onTouchEnd={handlePointerUp}
-        onMouseMove={handlePointerMove}
-        onMouseUp={handlePointerUp}
-        onMouseLeave={handlePointerUp}
       >
         <div className="glass-nav-container">
+          {/* Sliding Pill Indicator */}
+          <div
+            className={`sliding-pill ${isSliding ? 'enlarged' : ''}`}
+            style={{
+              transform: `translateX(${pillPosition}px)`,
+              width: `${itemWidth}px`,
+              transition: isSliding ? 'none' : 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.2s ease'
+            }}
+            onMouseDown={handleDragStart}
+            onTouchStart={handleDragStart}
+          >
+            <div className="pill-inner"></div>
+          </div>
+
+          {/* Nav Items */}
           {sections.map((section, index) => {
-            const isActive = isSliding ? slideIndex === index : activeSection === section.id;
+            const isActive = pillTargetIndex === index;
             return (
               <div
                 key={section.id}
-                className={`glass-nav-item ${isActive ? 'active' : ''} ${isSliding && isActive ? 'enlarged' : ''}`}
-                onTouchStart={(e) => handlePointerDown(e, index)}
-                onMouseDown={(e) => handlePointerDown(e, index)}
+                ref={el => navItemsRef.current[index] = el}
+                className={`glass-nav-item ${isActive ? 'active' : ''}`}
                 onClick={(e) => handleItemClick(e, index)}
+                onMouseDown={handleDragStart}
+                onTouchStart={handleDragStart}
               >
                 <div className="glass-nav-icon">
                   {getIcon(section.id)}

@@ -682,6 +682,24 @@ h1, h2, h3, h4, h5, h6,
   color: var(--orange);
 }
 
+/* Enlarged state when sliding */
+.glass-nav-item.enlarged {
+  transform: scale(1.15);
+  background: rgba(60, 60, 60, 0.95);
+}
+
+.glass-nav-item.enlarged .glass-nav-icon {
+  transform: scale(1.1);
+}
+
+.glass-bottom-nav.sliding {
+  touch-action: none;
+}
+
+.glass-bottom-nav.sliding .glass-nav-container {
+  transform: scale(1.02);
+}
+
 /* Vertical Section Indicators */
 .section-indicators {
   position: fixed;

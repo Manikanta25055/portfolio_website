@@ -2460,7 +2460,7 @@ section {
   }
 
   .hero {
-    padding-top: 30px;
+    padding-top: 10px;
     padding-bottom: 120px;
   }
 
@@ -2601,10 +2601,6 @@ section {
   .project-status {
     font-size: 0.7rem;
     padding: 0.2rem 0.6rem;
-  }
-
-  .hero {
-    padding: 120px 0 80px;
   }
 
   .hero-achievements {

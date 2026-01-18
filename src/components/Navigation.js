@@ -100,14 +100,12 @@ const Navigation = () => {
   const handlePointerMove = (e) => {
     if (!isSliding || !navContainerRef.current) return;
 
-    e.preventDefault();
-    e.stopPropagation();
-
     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
     const deltaX = clientX - touchStartX.current;
     const itemWidth = navContainerRef.current.offsetWidth / sections.length;
-    const indexDelta = Math.round(deltaX / itemWidth);
-    const newIndex = Math.max(0, Math.min(sections.length - 1, touchStartIndex.current - indexDelta));
+    // Positive deltaX = moving right = next items, negative = moving left = previous items
+    const indexDelta = Math.round(deltaX / (itemWidth * 0.8));
+    const newIndex = Math.max(0, Math.min(sections.length - 1, touchStartIndex.current + indexDelta));
 
     if (newIndex !== slideIndex) {
       setSlideIndex(newIndex);

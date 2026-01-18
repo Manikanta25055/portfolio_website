@@ -4,7 +4,6 @@ import './App.css';
 import CustomCursor from './components/CustomCursor';
 import DotGrid from './components/DotGrid';
 import Navigation from './components/Navigation';
-import ScrollToTop from './components/ScrollToTop';
 import Hero from './components/Hero';
 import DualDegree from './components/DualDegree';
 import WorkTimeline from './components/WorkTimeline';
@@ -134,7 +133,6 @@ function App() {
       <Projects />
       <Coursework />
       <Contact />
-      <ScrollToTop />
     </div>
   );
 }

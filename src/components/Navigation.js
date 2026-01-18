@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 const sections = [
   { id: 'home', label: 'Home' },
@@ -13,11 +13,9 @@ const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
   const [activeSectionIndex, setActiveSectionIndex] = useState(0);
-  const [isPulsing, setIsPulsing] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const prevSectionRef = useRef('home');
 
-  // Slideable bottom nav states
+  // Slideable nav states
   const [isSliding, setIsSliding] = useState(false);
   const [slideIndex, setSlideIndex] = useState(0);
   const navContainerRef = useRef(null);
@@ -26,14 +24,9 @@ const Navigation = () => {
 
   useEffect(() => {
     let rafId = null;
-    let lastScrollTime = 0;
 
     const handleScroll = () => {
-      if (isSliding) return; // Don't update during sliding
-
-      const now = performance.now();
-      if (now - lastScrollTime < 16) return;
-      lastScrollTime = now;
+      if (isSliding) return;
 
       if (rafId) return;
 
@@ -68,13 +61,11 @@ const Navigation = () => {
 
         if (newSection !== prevSectionRef.current) {
           prevSectionRef.current = newSection;
-          setIsPulsing(true);
-          setTimeout(() => setIsPulsing(false), 600);
         }
 
         setActiveSection(newSection);
         setActiveSectionIndex(newIndex);
-        setSlideIndex(newIndex);
+        if (!isSliding) setSlideIndex(newIndex);
 
         rafId = null;
       });
@@ -87,7 +78,6 @@ const Navigation = () => {
     };
   }, [isSliding]);
 
-  // Scroll to section by index
   const scrollToSection = (index) => {
     const section = sections[index];
     const el = document.getElementById(section.id);
@@ -96,19 +86,27 @@ const Navigation = () => {
     }
   };
 
-  // Touch handlers for slideable nav
-  const handleNavTouchStart = (e, index) => {
+  // Touch/Mouse handlers for slideable nav
+  const handlePointerDown = (e, index) => {
+    e.preventDefault();
+    e.stopPropagation();
+
     setIsSliding(true);
     setSlideIndex(index);
-    touchStartX.current = e.touches[0].clientX;
+
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    touchStartX.current = clientX;
     touchStartIndex.current = index;
   };
 
-  const handleNavTouchMove = (e) => {
+  const handlePointerMove = (e) => {
     if (!isSliding || !navContainerRef.current) return;
 
-    const touchX = e.touches[0].clientX;
-    const deltaX = touchX - touchStartX.current;
+    e.preventDefault();
+    e.stopPropagation();
+
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const deltaX = clientX - touchStartX.current;
     const itemWidth = navContainerRef.current.offsetWidth / sections.length;
     const indexDelta = Math.round(deltaX / itemWidth);
     const newIndex = Math.max(0, Math.min(sections.length - 1, touchStartIndex.current - indexDelta));
@@ -118,17 +116,23 @@ const Navigation = () => {
     }
   };
 
-  const handleNavTouchEnd = () => {
+  const handlePointerUp = (e) => {
     if (isSliding) {
+      e.preventDefault();
+      e.stopPropagation();
       scrollToSection(slideIndex);
       setIsSliding(false);
     }
   };
 
-  // Display progress for desktop circuit
-  const displayProgress = activeSectionIndex / (sections.length - 1);
+  const handleItemClick = (e, index) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!isSliding) {
+      scrollToSection(index);
+    }
+  };
 
-  // Icons for each section
   const getIcon = (id) => {
     const icons = {
       home: <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>,
@@ -142,9 +146,9 @@ const Navigation = () => {
 
   return (
     <>
-      {/* Top Navigation */}
+      {/* Top Navigation - Desktop only */}
       <motion.nav
-        className={`navigation ${isScrolled ? 'scrolled' : ''}`}
+        className={`navigation desktop-only ${isScrolled ? 'scrolled' : ''}`}
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.6, ease: [0.6, 0.05, 0.01, 0.9] }}
@@ -161,146 +165,39 @@ const Navigation = () => {
               <path d="M5 12h14M12 5l7 7-7 7"/>
             </svg>
           </motion.a>
-
-          <button
-            className={`hamburger ${isMobileMenuOpen ? 'active' : ''}`}
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            aria-label={isMobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
-            aria-expanded={isMobileMenuOpen}
-          >
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-          </button>
         </div>
       </motion.nav>
 
-      {/* Circuit Path Progress - Desktop Only */}
-      <div className="circuit-progress-container desktop-only">
-        <div className="circuit-track">
-          <div className="circuit-trace" />
-          <motion.div
-            className="circuit-trace-active"
-            animate={{ width: `${displayProgress * 100}%` }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
-          />
-          {sections.map((section, index) => {
-            const nodeProgress = index / (sections.length - 1);
-            const isPowered = nodeProgress <= displayProgress;
-            const isActive = Math.abs(displayProgress - nodeProgress) < 0.1;
-            return (
-              <div
-                key={section.id}
-                className={`circuit-node ${isPowered ? 'powered' : ''} ${isActive ? 'active' : ''}`}
-                style={{ left: `${nodeProgress * 100}%` }}
-              >
-                <div className="node-ring" />
-                <div className="node-core" />
-                {isActive && isPulsing && <div className="node-pulse" />}
-              </div>
-            );
-          })}
-          <motion.div
-            className={`circuit-current ${isPulsing ? 'pulsing' : ''}`}
-            animate={{ left: `${displayProgress * 100}%` }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
-          >
-            <div className="current-glow" />
-            <div className="current-spark" />
-          </motion.div>
-        </div>
-      </div>
-
-      {/* iOS-style Glass Bottom Navigation - Mobile Only */}
+      {/* iOS-style Glass Bottom Navigation - Both Mobile & Desktop */}
       <nav
-        className={`glass-bottom-nav mobile-only ${isSliding ? 'sliding' : ''}`}
+        className={`glass-bottom-nav ${isSliding ? 'sliding' : ''}`}
         ref={navContainerRef}
-        onTouchMove={handleNavTouchMove}
-        onTouchEnd={handleNavTouchEnd}
+        onTouchMove={handlePointerMove}
+        onTouchEnd={handlePointerUp}
+        onMouseMove={handlePointerMove}
+        onMouseUp={handlePointerUp}
+        onMouseLeave={handlePointerUp}
       >
         <div className="glass-nav-container">
           {sections.map((section, index) => {
             const isActive = isSliding ? slideIndex === index : activeSection === section.id;
             return (
-              <a
+              <div
                 key={section.id}
-                href={`#${section.id}`}
                 className={`glass-nav-item ${isActive ? 'active' : ''} ${isSliding && isActive ? 'enlarged' : ''}`}
-                onTouchStart={(e) => handleNavTouchStart(e, index)}
-                onClick={(e) => {
-                  if (!isSliding) {
-                    e.preventDefault();
-                    scrollToSection(index);
-                  }
-                }}
+                onTouchStart={(e) => handlePointerDown(e, index)}
+                onMouseDown={(e) => handlePointerDown(e, index)}
+                onClick={(e) => handleItemClick(e, index)}
               >
                 <div className="glass-nav-icon">
                   {getIcon(section.id)}
                 </div>
                 <span className="glass-nav-label">{section.label}</span>
-              </a>
+              </div>
             );
           })}
         </div>
       </nav>
-
-      {/* Vertical Section Indicators - Desktop */}
-      <motion.div
-        className="section-indicators"
-        initial={{ x: 100, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        transition={{ duration: 0.8, delay: 0.5 }}
-      >
-        {sections.map((section) => (
-          <motion.a
-            key={section.id}
-            href={`#${section.id}`}
-            className={`section-dot ${activeSection === section.id ? 'active' : ''}`}
-            whileHover={{ scale: 1.2 }}
-            whileTap={{ scale: 0.9 }}
-          >
-            <span className="dot-tooltip">{section.label}</span>
-            <span className="dot"></span>
-          </motion.a>
-        ))}
-      </motion.div>
-
-      {/* Mobile Menu Overlay */}
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <motion.div
-            className="mobile-menu-overlay"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setIsMobileMenuOpen(false)}
-            role="presentation"
-            aria-hidden="true"
-          />
-        )}
-      </AnimatePresence>
-
-      {/* Mobile Menu */}
-      <motion.nav
-        className={`mobile-menu ${isMobileMenuOpen ? 'active' : ''}`}
-        initial={{ x: '100%' }}
-        animate={{ x: isMobileMenuOpen ? 0 : '100%' }}
-        transition={{ duration: 0.3 }}
-        aria-label="Mobile navigation"
-        role="navigation"
-      >
-        {sections.map((section) => (
-          <motion.a
-            key={section.id}
-            href={`#${section.id}`}
-            className="mobile-menu-item"
-            onClick={() => setIsMobileMenuOpen(false)}
-            whileHover={{ x: 10 }}
-          >
-            {section.label}
-          </motion.a>
-        ))}
-      </motion.nav>
     </>
   );
 };

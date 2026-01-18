@@ -12,7 +12,6 @@ const sections = [
 const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
-  const [activeSectionIndex, setActiveSectionIndex] = useState(0);
   const prevSectionRef = useRef('home');
 
   // Slideable nav states
@@ -64,7 +63,6 @@ const Navigation = () => {
         }
 
         setActiveSection(newSection);
-        setActiveSectionIndex(newIndex);
         if (!isSliding) setSlideIndex(newIndex);
 
         rafId = null;

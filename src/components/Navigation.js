@@ -11,15 +11,18 @@ const sections = [
 const Navigation = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isSliding, setIsSliding] = useState(false);
-  const [pillStyle, setPillStyle] = useState({ left: 0, width: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [pillLeft, setPillLeft] = useState(0);
+  const [pillWidth, setPillWidth] = useState(0);
 
   const navContainerRef = useRef(null);
   const navItemsRef = useRef([]);
   const dragStartX = useRef(0);
   const dragStartLeft = useRef(0);
-  const currentDragIndex = useRef(0);
   const hasMovedRef = useRef(false);
   const prevSectionRef = useRef('home');
+  const scrollCooldownRef = useRef(false);
+  const animationFrameRef = useRef(null);
 
   // Get actual item positions from DOM
   const getItemRect = useCallback((index) => {
@@ -37,54 +40,80 @@ const Navigation = () => {
     return { left: 0, width: 80, center: 40 };
   }, []);
 
-  // Update pill position to match active item
-  const updatePillToIndex = useCallback((index, animate = true) => {
-    const rect = getItemRect(index);
-    setPillStyle({
-      left: rect.left,
-      width: rect.width,
-      animate
-    });
-  }, [getItemRect]);
+  // Smoothly animate pill to target position
+  const animatePillTo = useCallback((targetLeft, targetWidth, duration = 300) => {
+    const startLeft = pillLeft;
+    const startWidth = pillWidth;
+    const startTime = performance.now();
 
-  // Initialize and update pill position on mount/resize
-  useLayoutEffect(() => {
-    const updatePill = () => {
-      if (!isSliding) {
-        updatePillToIndex(activeIndex, false);
+    const animate = (currentTime) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+
+      // Smooth easing - ease out cubic for fluid feel
+      const eased = 1 - Math.pow(1 - progress, 3);
+
+      const newLeft = startLeft + (targetLeft - startLeft) * eased;
+      const newWidth = startWidth + (targetWidth - startWidth) * eased;
+
+      setPillLeft(newLeft);
+      setPillWidth(newWidth);
+
+      if (progress < 1) {
+        animationFrameRef.current = requestAnimationFrame(animate);
       }
     };
 
-    updatePill();
-    window.addEventListener('resize', updatePill);
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+    }
+    animationFrameRef.current = requestAnimationFrame(animate);
+  }, [pillLeft, pillWidth]);
 
-    // Small delay to ensure DOM is ready
-    const timer = setTimeout(updatePill, 100);
+  // Update pill to specific index
+  const updatePillToIndex = useCallback((index, animate = true) => {
+    const rect = getItemRect(index);
+    if (animate) {
+      animatePillTo(rect.left, rect.width, 280);
+    } else {
+      setPillLeft(rect.left);
+      setPillWidth(rect.width);
+    }
+  }, [getItemRect, animatePillTo]);
+
+  // Initialize pill position
+  useLayoutEffect(() => {
+    const initPill = () => {
+      if (!isSliding && !scrollCooldownRef.current) {
+        const rect = getItemRect(activeIndex);
+        setPillLeft(rect.left);
+        setPillWidth(rect.width);
+      }
+    };
+
+    initPill();
+    const timer = setTimeout(initPill, 50);
+    window.addEventListener('resize', initPill);
 
     return () => {
-      window.removeEventListener('resize', updatePill);
+      window.removeEventListener('resize', initPill);
       clearTimeout(timer);
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
     };
-  }, [activeIndex, isSliding, updatePillToIndex]);
+  }, [activeIndex, isSliding, getItemRect]);
 
-  // Scroll detection
+  // Scroll detection with cooldown
   useEffect(() => {
     let rafId = null;
-    let lastScrollY = window.scrollY;
 
     const handleScroll = () => {
-      if (isSliding) return;
+      // Skip if sliding or in cooldown period
+      if (isSliding || scrollCooldownRef.current) return;
       if (rafId) return;
 
       rafId = requestAnimationFrame(() => {
-        const currentScrollY = window.scrollY;
-        // Only update if scroll changed significantly
-        if (Math.abs(currentScrollY - lastScrollY) < 5) {
-          rafId = null;
-          return;
-        }
-        lastScrollY = currentScrollY;
-
         const windowHeight = window.innerHeight;
         const documentHeight = document.documentElement.scrollHeight;
         const scrollTop = window.scrollY;
@@ -135,9 +164,9 @@ const Navigation = () => {
     }
   };
 
-  // Find which item the pill center is closest to
-  const getClosestIndex = useCallback((pillLeft, pillWidth) => {
-    const pillCenter = pillLeft + pillWidth / 2;
+  // Find closest item based on pill center
+  const getClosestIndex = useCallback((currentLeft, currentWidth) => {
+    const pillCenter = currentLeft + currentWidth / 2;
     let closestIndex = 0;
     let closestDistance = Infinity;
 
@@ -154,46 +183,45 @@ const Navigation = () => {
   }, [getItemRect]);
 
   // Handle drag start
-  const handleDragStart = useCallback((e, index) => {
+  const handleDragStart = useCallback((e) => {
     e.preventDefault();
     e.stopPropagation();
 
+    // Cancel any ongoing animation
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+    }
+
     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
     dragStartX.current = clientX;
-    dragStartLeft.current = pillStyle.left;
-    currentDragIndex.current = index;
+    dragStartLeft.current = pillLeft;
     hasMovedRef.current = false;
 
     setIsSliding(true);
-  }, [pillStyle.left]);
+    setIsDragging(true);
+  }, [pillLeft]);
 
-  // Handle drag move
+  // Handle drag move - ultra fluid
   const handleDragMove = useCallback((e) => {
     if (!isSliding || !navContainerRef.current) return;
 
     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
     const deltaX = clientX - dragStartX.current;
 
-    // Mark as moved if dragged more than 5px
-    if (Math.abs(deltaX) > 5) {
+    if (Math.abs(deltaX) > 3) {
       hasMovedRef.current = true;
     }
 
-    const containerRect = navContainerRef.current.getBoundingClientRect();
-    const containerPadding = 8; // Matches CSS padding
-    const maxLeft = containerRect.width - pillStyle.width - containerPadding;
+    const containerPadding = 8;
+    const containerWidth = navContainerRef.current.offsetWidth;
+    const maxLeft = containerWidth - pillWidth - containerPadding;
 
-    // Calculate new position with bounds
     let newLeft = dragStartLeft.current + deltaX;
     newLeft = Math.max(containerPadding, Math.min(maxLeft, newLeft));
 
-    // Update pill position directly during drag
-    setPillStyle(prev => ({
-      ...prev,
-      left: newLeft,
-      animate: false
-    }));
-  }, [isSliding, pillStyle.width]);
+    // Direct state update for instant response
+    setPillLeft(newLeft);
+  }, [isSliding, pillWidth]);
 
   // Handle drag end
   const handleDragEnd = useCallback((e) => {
@@ -202,39 +230,66 @@ const Navigation = () => {
     e?.preventDefault?.();
     e?.stopPropagation?.();
 
-    // Find closest item and snap to it
-    const closestIndex = getClosestIndex(pillStyle.left, pillStyle.width);
+    const closestIndex = getClosestIndex(pillLeft, pillWidth);
+    const targetRect = getItemRect(closestIndex);
+
+    // Set cooldown to prevent scroll from interfering
+    scrollCooldownRef.current = true;
+
+    // Animate to final position
+    animatePillTo(targetRect.left, targetRect.width, 250);
 
     setActiveIndex(closestIndex);
-    updatePillToIndex(closestIndex, true);
+    prevSectionRef.current = sections[closestIndex].id;
     setIsSliding(false);
+    setIsDragging(false);
 
-    // Only scroll if user actually dragged
+    // Scroll only if user actually dragged
     if (hasMovedRef.current) {
-      scrollToSection(closestIndex);
+      setTimeout(() => {
+        scrollToSection(closestIndex);
+      }, 50);
     }
-  }, [isSliding, pillStyle.left, pillStyle.width, getClosestIndex, updatePillToIndex]);
 
-  // Handle click (tap without drag)
+    // Clear cooldown after animation completes
+    setTimeout(() => {
+      scrollCooldownRef.current = false;
+    }, 400);
+  }, [isSliding, pillLeft, pillWidth, getClosestIndex, getItemRect, animatePillTo]);
+
+  // Handle click
   const handleItemClick = useCallback((e, index) => {
     e.preventDefault();
     e.stopPropagation();
 
-    // If we were sliding and moved, ignore the click
     if (hasMovedRef.current) {
       hasMovedRef.current = false;
       return;
     }
 
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+    }
+
+    scrollCooldownRef.current = true;
+
     setActiveIndex(index);
+    prevSectionRef.current = sections[index].id;
     updatePillToIndex(index, true);
     scrollToSection(index);
+
+    setTimeout(() => {
+      scrollCooldownRef.current = false;
+    }, 400);
   }, [updatePillToIndex]);
 
-  // Global event listeners for drag
+  // Global event listeners
   useEffect(() => {
     if (isSliding) {
-      const onMove = (e) => handleDragMove(e);
+      const onMove = (e) => {
+        e.preventDefault();
+        handleDragMove(e);
+      };
       const onEnd = (e) => handleDragEnd(e);
 
       window.addEventListener('mousemove', onMove, { passive: false });
@@ -253,13 +308,8 @@ const Navigation = () => {
     }
   }, [isSliding, handleDragMove, handleDragEnd]);
 
-  // Determine which item the pill is currently over
-  const getHoveredIndex = useCallback(() => {
-    if (!isSliding) return activeIndex;
-    return getClosestIndex(pillStyle.left, pillStyle.width);
-  }, [isSliding, activeIndex, pillStyle.left, pillStyle.width, getClosestIndex]);
-
-  const hoveredIndex = getHoveredIndex();
+  // Current hovered index during drag
+  const hoveredIndex = isSliding ? getClosestIndex(pillLeft, pillWidth) : activeIndex;
 
   const getIcon = (id) => {
     const icons = {
@@ -277,16 +327,13 @@ const Navigation = () => {
       <div className="glass-nav-container" ref={navContainerRef}>
         {/* Sliding Pill */}
         <div
-          className={`sliding-pill ${isSliding ? 'dragging' : ''}`}
+          className={`sliding-pill ${isDragging ? 'dragging' : ''}`}
           style={{
-            transform: `translateX(${pillStyle.left}px)`,
-            width: `${pillStyle.width}px`,
-            transition: pillStyle.animate && !isSliding
-              ? 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.3s ease'
-              : 'none'
+            transform: `translateX(${pillLeft}px)`,
+            width: `${pillWidth}px`
           }}
-          onMouseDown={(e) => handleDragStart(e, activeIndex)}
-          onTouchStart={(e) => handleDragStart(e, activeIndex)}
+          onMouseDown={handleDragStart}
+          onTouchStart={handleDragStart}
         />
 
         {/* Nav Items */}
@@ -297,8 +344,8 @@ const Navigation = () => {
               key={section.id}
               ref={el => navItemsRef.current[index] = el}
               className={`glass-nav-item ${isActive ? 'active' : ''}`}
-              onMouseDown={(e) => handleDragStart(e, index)}
-              onTouchStart={(e) => handleDragStart(e, index)}
+              onMouseDown={handleDragStart}
+              onTouchStart={handleDragStart}
               onClick={(e) => handleItemClick(e, index)}
             >
               <div className="glass-nav-icon">

@@ -614,8 +614,8 @@ h1, h2, h3, h4, h5, h6,
   left: 50%;
   transform: translateX(-50%);
   z-index: 9999;
-  width: calc(100% - 20px);
-  max-width: 420px;
+  width: calc(100% - 24px);
+  max-width: 400px;
   pointer-events: auto;
 }
 
@@ -623,14 +623,16 @@ h1, h2, h3, h4, h5, h6,
   display: flex;
   align-items: center;
   gap: 0;
-  padding: 8px;
-  background: rgba(20, 20, 20, 0.6);
-  backdrop-filter: blur(25px);
-  -webkit-backdrop-filter: blur(25px);
-  border-radius: 32px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  transition: transform 0.2s ease;
+  padding: 6px;
+  background: rgba(15, 15, 15, 0.45);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border-radius: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 2px 8px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
   pointer-events: auto;
   position: relative;
 }
@@ -638,40 +640,39 @@ h1, h2, h3, h4, h5, h6,
 /* Sliding Pill Indicator */
 .sliding-pill {
   position: absolute;
-  top: 8px;
+  top: 6px;
   left: 0;
-  height: calc(100% - 16px);
-  border-radius: 20px;
+  height: calc(100% - 12px);
+  border-radius: 50px;
   pointer-events: auto;
   cursor: grab;
   z-index: 1;
   touch-action: none;
-  will-change: transform, width;
-  /* Glassy effect */
-  background: rgba(70, 70, 70, 0.85);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  will-change: transform;
+  /* Default grey state */
+  background: rgba(60, 60, 60, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow:
-    0 4px 16px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+    0 2px 8px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: background 0.2s ease, border 0.2s ease, box-shadow 0.2s ease;
 }
 
 .sliding-pill:active {
   cursor: grabbing;
 }
 
-/* Dragging state - more prominent glass effect */
+/* Dragging/Touching state - transforms to glass */
 .sliding-pill.dragging {
-  background: rgba(85, 85, 85, 0.9);
-  border: 1px solid rgba(255, 107, 53, 0.2);
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   box-shadow:
-    0 6px 24px rgba(0, 0, 0, 0.4),
-    0 0 20px rgba(255, 107, 53, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.1);
-  transform-origin: center center;
+    0 4px 20px rgba(0, 0, 0, 0.3),
+    0 0 30px rgba(255, 107, 53, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .glass-nav-item {
@@ -679,10 +680,10 @@ h1, h2, h3, h4, h5, h6,
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 10px 8px;
-  border-radius: 20px;
+  padding: 10px 6px;
+  border-radius: 50px;
   text-decoration: none;
-  transition: all 0.15s ease;
+  transition: all 0.2s ease;
   flex: 1;
   user-select: none;
   -webkit-user-select: none;
@@ -692,6 +693,7 @@ h1, h2, h3, h4, h5, h6,
   z-index: 2;
   cursor: grab;
   touch-action: none;
+  min-width: 0;
 }
 
 .glass-nav-item:active {
@@ -699,9 +701,9 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .glass-nav-item .glass-nav-icon {
-  width: 22px;
-  height: 22px;
-  color: rgba(255, 255, 255, 0.5);
+  width: 20px;
+  height: 20px;
+  color: rgba(255, 255, 255, 0.45);
   transition: all 0.2s ease;
 }
 
@@ -711,17 +713,18 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .glass-nav-item .glass-nav-label {
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.5);
-  margin-top: 3px;
+  color: rgba(255, 255, 255, 0.45);
+  margin-top: 2px;
   transition: all 0.2s ease;
+  letter-spacing: 0.02em;
 }
 
-/* Active state - pill is behind, just change colors */
+/* Active state - pill is behind, change colors */
 .glass-nav-item.active .glass-nav-icon {
   color: var(--orange);
-  transform: scale(1.1);
+  transform: scale(1.05);
 }
 
 .glass-nav-item.active .glass-nav-label {
@@ -734,8 +737,7 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .glass-bottom-nav.sliding .glass-nav-container {
-  transform: scale(1.02);
-  background: rgba(25, 25, 25, 0.75);
+  background: rgba(20, 20, 20, 0.5);
 }
 
 .glass-bottom-nav.sliding .glass-nav-item {
@@ -746,34 +748,32 @@ h1, h2, h3, h4, h5, h6,
 @media (min-width: 769px) {
   .glass-bottom-nav {
     bottom: 30px;
-    max-width: 500px;
+    max-width: 480px;
   }
 
   .glass-nav-container {
-    padding: 10px;
-    gap: 0;
+    padding: 8px;
+    background: rgba(15, 15, 15, 0.4);
   }
 
   .sliding-pill {
-    top: 10px;
-    height: calc(100% - 20px);
-    border-radius: 22px;
+    top: 8px;
+    height: calc(100% - 16px);
   }
 
   .glass-nav-item {
-    padding: 14px 18px;
-    min-width: 85px;
-    border-radius: 22px;
+    padding: 12px 14px;
+    min-width: 80px;
   }
 
   .glass-nav-item .glass-nav-icon {
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
   }
 
   .glass-nav-item .glass-nav-label {
-    font-size: 0.72rem;
-    margin-top: 4px;
+    font-size: 0.68rem;
+    margin-top: 3px;
   }
 }
 

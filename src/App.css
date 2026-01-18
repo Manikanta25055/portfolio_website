@@ -836,7 +836,7 @@ h1, h2, h3, h4, h5, h6,
   min-height: 100vh;
   display: flex;
   align-items: center;
-  padding: 140px 0 100px;
+  padding: 60px 0 100px;
 }
 
 .hero-container {
@@ -2460,12 +2460,8 @@ section {
   }
 
   .hero {
-    padding-top: 60px;
+    padding-top: 30px;
     padding-bottom: 120px;
-  }
-
-  .navigation.desktop-only {
-    display: none !important;
   }
 
   .degrees-grid {

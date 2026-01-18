@@ -56,7 +56,7 @@ const CustomCursor = () => {
       if (now - lastHoverCheck > 150) {
         lastHoverCheck = now;
         const target = e.target;
-        const isClickable = !!target.closest('a, button, .project-card, .skill-card, .category-btn, .timeline-content, .tech-pill, .section-dot, .hamburger, .mobile-menu-item, .degree-card, .expand-btn, .course-item, .phase-item');
+        const isClickable = !!target.closest('a, button, .project-card, .skill-card, .category-btn, .timeline-content, .tech-pill, .section-dot, .hamburger, .mobile-menu-item, .degree-card, .expand-btn, .course-item, .phase-item, .glass-nav-item');
 
         // Only update DOM if hover state changed
         if (isClickable !== isHovering) {

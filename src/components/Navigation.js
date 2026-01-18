@@ -10,7 +10,6 @@ const sections = [
 ];
 
 const Navigation = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
   const prevSectionRef = useRef('home');
 
@@ -20,6 +19,8 @@ const Navigation = () => {
   const navContainerRef = useRef(null);
   const touchStartX = useRef(0);
   const touchStartIndex = useRef(0);
+  const lastSlideIndex = useRef(0);
+  const minDragDistance = 30; // Minimum pixels to drag before switching
 
   useEffect(() => {
     let rafId = null;
@@ -30,8 +31,6 @@ const Navigation = () => {
       if (rafId) return;
 
       rafId = requestAnimationFrame(() => {
-        setIsScrolled(window.scrollY > 50);
-
         const windowHeight = window.innerHeight;
         const documentHeight = document.documentElement.scrollHeight;
         const scrollTop = window.scrollY;
@@ -101,14 +100,19 @@ const Navigation = () => {
     if (!isSliding || !navContainerRef.current) return;
 
     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const deltaX = clientX - touchStartX.current;
+    const totalDeltaX = clientX - touchStartX.current;
+
+    // Only switch if dragged more than minimum distance
+    if (Math.abs(totalDeltaX) < minDragDistance) return;
+
     const itemWidth = navContainerRef.current.offsetWidth / sections.length;
-    // Positive deltaX = moving right = next items, negative = moving left = previous items
-    const indexDelta = Math.round(deltaX / (itemWidth * 0.8));
+    // Calculate how many items to move based on drag distance
+    const indexDelta = Math.floor(totalDeltaX / itemWidth);
     const newIndex = Math.max(0, Math.min(sections.length - 1, touchStartIndex.current + indexDelta));
 
     if (newIndex !== slideIndex) {
       setSlideIndex(newIndex);
+      lastSlideIndex.current = newIndex;
     }
   };
 
@@ -142,28 +146,6 @@ const Navigation = () => {
 
   return (
     <>
-      {/* Top Navigation - Desktop only */}
-      <motion.nav
-        className={`navigation desktop-only ${isScrolled ? 'scrolled' : ''}`}
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.6, ease: [0.6, 0.05, 0.01, 0.9] }}
-      >
-        <div className="nav-container">
-          <motion.a
-            href="#contact"
-            className="nav-cta-btn"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <span>Get In Touch</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-          </motion.a>
-        </div>
-      </motion.nav>
-
       {/* iOS-style Glass Bottom Navigation - Both Mobile & Desktop */}
       <nav
         className={`glass-bottom-nav ${isSliding ? 'sliding' : ''}`}

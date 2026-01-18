@@ -9,7 +9,6 @@ const sections = [
 ];
 
 const Navigation = () => {
-  const [activeSection, setActiveSection] = useState('home');
   const [activeIndex, setActiveIndex] = useState(0);
   const prevSectionRef = useRef('home');
 
@@ -78,7 +77,6 @@ const Navigation = () => {
           prevSectionRef.current = newSection;
         }
 
-        setActiveSection(newSection);
         setActiveIndex(newIndex);
         rafId = null;
       });
@@ -141,7 +139,6 @@ const Navigation = () => {
     setPillPosition(snappedIndex * itemWidth);
     setPillTargetIndex(snappedIndex);
     setActiveIndex(snappedIndex);
-    setActiveSection(sections[snappedIndex].id);
     setIsSliding(false);
 
     // Scroll to section
@@ -158,7 +155,6 @@ const Navigation = () => {
       setPillPosition(index * itemWidth);
       setPillTargetIndex(index);
       setActiveIndex(index);
-      setActiveSection(sections[index].id);
       scrollToSection(index);
     }
   };

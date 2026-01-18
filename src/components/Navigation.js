@@ -239,30 +239,19 @@ const Navigation = () => {
         </div>
       </motion.nav>
 
-      {/* Circuit Path Progress Indicator */}
-      <div
-        className={`circuit-progress-container ${isDragging ? 'dragging' : ''}`}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-      >
+      {/* Circuit Path Progress Indicator - Desktop Only */}
+      <div className="circuit-progress-container desktop-only">
         <div className="circuit-track" ref={trackRef}>
-          {/* Base PCB trace */}
           <div className="circuit-trace" />
-
-          {/* Active trace (fills as you scroll) */}
           <motion.div
             className="circuit-trace-active"
             animate={{ width: `${displayProgress * 100}%` }}
-            transition={isDragging ? { duration: 0 } : { duration: 0.4, ease: "easeOut" }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
           />
-
-          {/* Circuit nodes */}
           {sections.map((section, index) => {
             const nodeProgress = index / (sections.length - 1);
             const isPowered = nodeProgress <= displayProgress;
             const isActive = Math.abs(displayProgress - nodeProgress) < 0.1;
-
             return (
               <div
                 key={section.id}
@@ -271,40 +260,52 @@ const Navigation = () => {
               >
                 <div className="node-ring" />
                 <div className="node-core" />
-                {isActive && isPulsing && !isDragging && (
-                  <div className="node-pulse" />
-                )}
+                {isActive && isPulsing && <div className="node-pulse" />}
               </div>
             );
           })}
-
-          {/* Current indicator with deformation */}
           <motion.div
-            className={`circuit-current ${isPulsing ? 'pulsing' : ''} ${isDragging ? 'dragging' : ''}`}
+            className={`circuit-current ${isPulsing ? 'pulsing' : ''}`}
             animate={{ left: `${displayProgress * 100}%` }}
-            transition={isDragging ? { duration: 0 } : { duration: 0.3, ease: "easeOut" }}
-            style={{
-              transform: `translateX(-50%) scaleX(${deformScaleX}) scaleY(${deformScaleY})`,
-            }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
           >
             <div className="current-glow" />
             <div className="current-spark" />
           </motion.div>
-
-          {/* Section preview tooltip (mobile only) */}
-          {isMobile && previewSection && isDragging && (
-            <motion.div
-              className="section-preview"
-              initial={{ opacity: 0, y: -5 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -5 }}
-              style={{ left: `${displayProgress * 100}%` }}
-            >
-              {previewSection.label}
-            </motion.div>
-          )}
         </div>
       </div>
+
+      {/* iOS-style Glass Bottom Navigation - Mobile Only */}
+      <nav className="glass-bottom-nav mobile-only">
+        <div className="glass-nav-container">
+          {sections.filter(s => ['home', 'about', 'experience', 'projects', 'contact'].includes(s.id)).map((section) => (
+            <a
+              key={section.id}
+              href={`#${section.id}`}
+              className={`glass-nav-item ${activeSection === section.id ? 'active' : ''}`}
+            >
+              <div className="glass-nav-icon">
+                {section.id === 'home' && (
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                )}
+                {section.id === 'about' && (
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z"/></svg>
+                )}
+                {section.id === 'experience' && (
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/></svg>
+                )}
+                {section.id === 'projects' && (
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"/></svg>
+                )}
+                {section.id === 'contact' && (
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                )}
+              </div>
+              <span className="glass-nav-label">{section.label}</span>
+            </a>
+          ))}
+        </div>
+      </nav>
 
       {/* Vertical Section Indicators */}
       <motion.div

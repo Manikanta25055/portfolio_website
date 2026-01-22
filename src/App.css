@@ -635,6 +635,7 @@ h1, h2, h3, h4, h5, h6,
     inset 0 1px 0 rgba(255, 255, 255, 0.04);
   pointer-events: auto;
   position: relative;
+  overflow: visible;
 }
 
 /* Sliding Pill Indicator */
@@ -646,33 +647,41 @@ h1, h2, h3, h4, h5, h6,
   border-radius: 50px;
   pointer-events: auto;
   cursor: grab;
-  z-index: 1;
+  z-index: 10;
   touch-action: none;
   will-change: transform;
   /* Default grey state */
-  background: rgba(60, 60, 60, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(60, 60, 60, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow:
     0 2px 8px rgba(0, 0, 0, 0.25),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  transition: background 0.2s ease, border 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    top 0.2s ease,
+    height 0.2s ease,
+    background 0.2s ease,
+    border 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.05s ease;
 }
 
 .sliding-pill:active {
   cursor: grabbing;
 }
 
-/* Dragging/Touching state - transforms to glass */
+/* Dragging state - iOS 26 style: ENLARGES and pops OUT of container */
 .sliding-pill.dragging {
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(20px) saturate(150%);
-  -webkit-backdrop-filter: blur(20px) saturate(150%);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  top: -8px;
+  height: calc(100% + 16px);
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   box-shadow:
-    0 4px 20px rgba(0, 0, 0, 0.3),
-    0 0 30px rgba(255, 107, 53, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.25),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 40px rgba(226, 127, 90, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .glass-nav-item {

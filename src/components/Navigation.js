@@ -8,6 +8,8 @@ const sections = [
   { id: 'contact', label: 'Contact' }
 ];
 
+const TAP_THRESHOLD = 8; // pixels - below this is a tap, above is a slide
+
 const Navigation = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [, forceUpdate] = useState(0);
@@ -25,6 +27,7 @@ const Navigation = () => {
   const prevSectionRef = useRef('home');
   const isScrollingRef = useRef(false);
   const animationRef = useRef(null);
+  const tappedIndexRef = useRef(null); // Track which item was tapped
 
   // Get item rect from DOM
   const getItemRect = useCallback((index) => {
@@ -108,6 +111,17 @@ const Navigation = () => {
     animationRef.current = requestAnimationFrame(animate);
   }, [updatePill]);
 
+  // Navigate to specific section
+  const navigateToSection = useCallback((index) => {
+    setActiveIndex(index);
+    prevSectionRef.current = sections[index].id;
+
+    const rect = getItemRect(index);
+    animatePill(rect.left, rect.width, () => {
+      scrollToSection(index);
+    });
+  }, [getItemRect, animatePill, scrollToSection]);
+
   // Initialize pill position
   useLayoutEffect(() => {
     const init = () => {
@@ -170,8 +184,8 @@ const Navigation = () => {
     return () => window.removeEventListener('scroll', onScroll);
   }, [getItemRect, animatePill]);
 
-  // Drag start handler
-  const handleDragStart = useCallback((e) => {
+  // Drag start handler - stores tapped index for tap detection
+  const handleDragStart = useCallback((e, itemIndex = null) => {
     e.preventDefault();
     e.stopPropagation();
 
@@ -181,6 +195,7 @@ const Navigation = () => {
     dragStartX.current = clientX;
     dragStartLeft.current = pillLeftRef.current;
     dragDistanceRef.current = 0;
+    tappedIndexRef.current = itemIndex; // Store which item was tapped
 
     if (animationRef.current) {
       cancelAnimationFrame(animationRef.current);
@@ -200,58 +215,60 @@ const Navigation = () => {
     const delta = clientX - dragStartX.current;
     dragDistanceRef.current = Math.abs(delta);
 
-    const padding = 6;
-    const containerWidth = navContainerRef.current.offsetWidth;
-    const maxLeft = containerWidth - pillWidthRef.current - padding;
+    // Only move pill if actually sliding (past threshold)
+    if (dragDistanceRef.current > TAP_THRESHOLD) {
+      const padding = 6;
+      const containerWidth = navContainerRef.current.offsetWidth;
+      const maxLeft = containerWidth - pillWidthRef.current - padding;
 
-    let newLeft = dragStartLeft.current + delta;
-    newLeft = Math.max(padding, Math.min(maxLeft, newLeft));
+      let newLeft = dragStartLeft.current + delta;
+      newLeft = Math.max(padding, Math.min(maxLeft, newLeft));
 
-    pillLeftRef.current = newLeft;
-    forceUpdate(n => n + 1);
+      pillLeftRef.current = newLeft;
+      forceUpdate(n => n + 1);
+    }
   }, []);
 
-  // Drag end handler
+  // Drag end handler - handles both tap and slide
   const handleDragEnd = useCallback(() => {
     if (!isDraggingRef.current) return;
 
     isDraggingRef.current = false;
+    const wasTap = dragDistanceRef.current <= TAP_THRESHOLD;
+    const tappedIndex = tappedIndexRef.current;
 
-    // Find closest section and snap
-    const closest = getClosestIndex(pillLeftRef.current, pillWidthRef.current);
-    const rect = getItemRect(closest);
+    if (wasTap && tappedIndex !== null) {
+      // It was a tap on a specific nav item - navigate directly
+      navigateToSection(tappedIndex);
+    } else {
+      // It was a slide - snap to closest section
+      const closest = getClosestIndex(pillLeftRef.current, pillWidthRef.current);
+      const rect = getItemRect(closest);
 
-    setActiveIndex(closest);
-    prevSectionRef.current = sections[closest].id;
+      setActiveIndex(closest);
+      prevSectionRef.current = sections[closest].id;
 
-    // Animate to snap position
-    animatePill(rect.left, rect.width, () => {
-      if (dragDistanceRef.current > 5) {
+      animatePill(rect.left, rect.width, () => {
         scrollToSection(closest);
-      }
-    });
+      });
+    }
 
+    tappedIndexRef.current = null;
     forceUpdate(n => n + 1);
-  }, [getClosestIndex, getItemRect, animatePill, scrollToSection]);
+  }, [getClosestIndex, getItemRect, animatePill, scrollToSection, navigateToSection]);
 
-  // Click handler for direct navigation
+  // Click handler for mouse clicks (desktop)
   const handleItemClick = useCallback((e, index) => {
-    if (dragDistanceRef.current > 10) {
+    // Only handle if not from a drag
+    if (dragDistanceRef.current > TAP_THRESHOLD) {
       dragDistanceRef.current = 0;
       return;
     }
 
     e.preventDefault();
     e.stopPropagation();
-
-    setActiveIndex(index);
-    prevSectionRef.current = sections[index].id;
-
-    const rect = getItemRect(index);
-    animatePill(rect.left, rect.width, () => {
-      scrollToSection(index);
-    });
-  }, [getItemRect, animatePill, scrollToSection]);
+    navigateToSection(index);
+  }, [navigateToSection]);
 
   // Global event listeners for drag
   useEffect(() => {
@@ -267,7 +284,6 @@ const Navigation = () => {
       }
     };
 
-    // Add listeners
     window.addEventListener('mousemove', onMove, { passive: false });
     window.addEventListener('mouseup', onEnd);
     window.addEventListener('touchmove', onMove, { passive: false });
@@ -286,7 +302,9 @@ const Navigation = () => {
   const isDragging = isDraggingRef.current;
   const pillLeft = pillLeftRef.current;
   const pillWidth = pillWidthRef.current;
-  const hoverIdx = isDragging ? getClosestIndex(pillLeft, pillWidth) : activeIndex;
+  // Only show as dragging if actually moved past threshold
+  const isSliding = isDragging && dragDistanceRef.current > TAP_THRESHOLD;
+  const hoverIdx = isSliding ? getClosestIndex(pillLeft, pillWidth) : activeIndex;
 
   const icons = {
     home: <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>,
@@ -297,17 +315,17 @@ const Navigation = () => {
   };
 
   return (
-    <nav className={`glass-bottom-nav ${isDragging ? 'sliding' : ''}`}>
+    <nav className={`glass-bottom-nav ${isSliding ? 'sliding' : ''}`}>
       <div className="glass-nav-container" ref={navContainerRef}>
         {/* Sliding Pill */}
         <div
-          className={`sliding-pill ${isDragging ? 'dragging' : ''}`}
+          className={`sliding-pill ${isSliding ? 'dragging' : ''}`}
           style={{
-            transform: `translateX(${isDragging ? pillLeft - 10 : pillLeft}px)`,
-            width: `${isDragging ? pillWidth + 20 : pillWidth}px`
+            transform: `translateX(${isSliding ? pillLeft - 20 : pillLeft}px)`,
+            width: `${isSliding ? pillWidth + 40 : pillWidth}px`
           }}
-          onMouseDown={handleDragStart}
-          onTouchStart={handleDragStart}
+          onMouseDown={(e) => handleDragStart(e, null)}
+          onTouchStart={(e) => handleDragStart(e, null)}
         />
 
         {/* Nav Items */}
@@ -316,8 +334,8 @@ const Navigation = () => {
             key={section.id}
             ref={el => navItemsRef.current[idx] = el}
             className={`glass-nav-item ${hoverIdx === idx ? 'active' : ''}`}
-            onMouseDown={handleDragStart}
-            onTouchStart={handleDragStart}
+            onMouseDown={(e) => handleDragStart(e, idx)}
+            onTouchStart={(e) => handleDragStart(e, idx)}
             onClick={(e) => handleItemClick(e, idx)}
           >
             <div className="glass-nav-icon">{icons[section.id]}</div>

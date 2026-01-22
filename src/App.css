@@ -23,9 +23,9 @@ section {
 }
 
 :root {
-  --orange: #F5935C;
-  --orange-light: #FFB07A;
-  --orange-dark: #E27F5A;
+  --orange: #FF6B00;
+  --orange-light: #FF8533;
+  --orange-dark: #E05A00;
   --black: #0a0a0a;
   --black-light: #141414;
   --gray: #a3a3a3;
@@ -671,18 +671,15 @@ h1, h2, h3, h4, h5, h6,
   cursor: grabbing;
 }
 
-/* Dragging state - iOS 26 style: ENLARGES and pops OUT of container */
+/* Dragging state - iOS 26 style: ENLARGES and pops OUT of container, more oval */
 .sliding-pill.dragging {
-  top: -8px;
-  height: calc(100% + 16px);
+  top: -6px;
+  height: calc(100% + 12px);
   background: rgba(255, 255, 255, 0.12);
   backdrop-filter: blur(20px) saturate(150%);
   -webkit-backdrop-filter: blur(20px) saturate(150%);
   border: 1px solid rgba(255, 255, 255, 0.18);
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.25),
-    0 0 30px rgba(245, 147, 92, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
 .glass-nav-item {
@@ -731,17 +728,15 @@ h1, h2, h3, h4, h5, h6,
   letter-spacing: 0.02em;
 }
 
-/* Active state - pill is behind, change colors with intense orange */
+/* Active state - high contrast orange, no glow */
 .glass-nav-item.active .glass-nav-icon {
-  color: #FF8C42;
-  transform: scale(1.1);
-  filter: drop-shadow(0 0 4px rgba(255, 140, 66, 0.4));
+  color: #FF6B00;
+  transform: scale(1.08);
 }
 
 .glass-nav-item.active .glass-nav-label {
-  color: #FF8C42;
+  color: #FF6B00;
   font-weight: 700;
-  text-shadow: 0 0 8px rgba(255, 140, 66, 0.3);
 }
 
 .glass-bottom-nav.sliding {

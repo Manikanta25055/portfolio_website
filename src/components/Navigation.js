@@ -21,6 +21,7 @@ const Navigation = () => {
   const dragDistanceRef = useRef(0);
   const prevSectionRef = useRef('home');
   const isScrollingRef = useRef(false);
+  const isSnappingRef = useRef(false);
 
   // Get item rect from DOM
   const getItemRect = (index) => {
@@ -95,7 +96,8 @@ const Navigation = () => {
   // Initialize pill
   useLayoutEffect(() => {
     const init = () => {
-      if (!isDragging) {
+      // Don't reset during drag or snap animation
+      if (!isDragging && !isSnappingRef.current) {
         const rect = getItemRect(activeIndex);
         setPillLeft(rect.left);
         setPillWidth(rect.width);
@@ -181,6 +183,9 @@ const Navigation = () => {
 
   const onDragEnd = () => {
     if (!isDragging) return;
+
+    // Prevent useLayoutEffect from resetting during snap
+    isSnappingRef.current = true;
     setIsDragging(false);
 
     // Find closest and snap
@@ -193,6 +198,7 @@ const Navigation = () => {
 
     // Animate to snap position
     animatePill(rect.left, rect.width, () => {
+      isSnappingRef.current = false;
       // Scroll to section if user actually dragged
       if (dragDistanceRef.current > 5) {
         scrollToSection(closest);
@@ -209,11 +215,13 @@ const Navigation = () => {
     }
 
     e.preventDefault();
+    isSnappingRef.current = true;
     setActiveIndex(index);
     prevSectionRef.current = sections[index].id;
 
     const rect = getItemRect(index);
     animatePill(rect.left, rect.width, () => {
+      isSnappingRef.current = false;
       scrollToSection(index);
     });
   };
@@ -261,8 +269,8 @@ const Navigation = () => {
         <div
           className={`sliding-pill ${isDragging ? 'dragging' : ''}`}
           style={{
-            transform: `translateX(${pillLeft}px)`,
-            width: `${pillWidth}px`
+            transform: `translateX(${isDragging ? pillLeft - 10 : pillLeft}px)`,
+            width: `${isDragging ? pillWidth + 20 : pillWidth}px`
           }}
           onMouseDown={onDragStart}
           onTouchStart={onDragStart}

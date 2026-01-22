@@ -23,9 +23,9 @@ section {
 }
 
 :root {
-  --orange: #E27F5A;
-  --orange-light: #ECA07C;
-  --orange-dark: #CC6740;
+  --orange: #F5935C;
+  --orange-light: #FFB07A;
+  --orange-dark: #E27F5A;
   --black: #0a0a0a;
   --black-light: #141414;
   --gray: #a3a3a3;
@@ -649,7 +649,7 @@ h1, h2, h3, h4, h5, h6,
   cursor: grab;
   z-index: 10;
   touch-action: none;
-  will-change: transform;
+  will-change: transform, width;
   /* Default grey state */
   background: rgba(60, 60, 60, 0.75);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -659,10 +659,10 @@ h1, h2, h3, h4, h5, h6,
   transition:
     top 0.2s ease,
     height 0.2s ease,
+    width 0.15s ease,
     background 0.2s ease,
     border 0.2s ease,
-    box-shadow 0.2s ease,
-    transform 0.05s ease;
+    box-shadow 0.2s ease;
 }
 
 .sliding-pill:active {

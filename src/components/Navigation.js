@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect, useCallback } from 'react';
 
 const sections = [
   { id: 'home', label: 'Home' },
@@ -10,21 +10,24 @@ const sections = [
 
 const Navigation = () => {
   const [activeIndex, setActiveIndex] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
-  const [pillLeft, setPillLeft] = useState(0);
-  const [pillWidth, setPillWidth] = useState(0);
+  const [, forceUpdate] = useState(0);
 
   const navContainerRef = useRef(null);
   const navItemsRef = useRef([]);
+
+  // Use refs for all drag state to avoid closure issues
+  const isDraggingRef = useRef(false);
+  const pillLeftRef = useRef(0);
+  const pillWidthRef = useRef(80);
   const dragStartX = useRef(0);
   const dragStartLeft = useRef(0);
   const dragDistanceRef = useRef(0);
   const prevSectionRef = useRef('home');
   const isScrollingRef = useRef(false);
-  const isSnappingRef = useRef(false);
+  const animationRef = useRef(null);
 
   // Get item rect from DOM
-  const getItemRect = (index) => {
+  const getItemRect = useCallback((index) => {
     const item = navItemsRef.current[index];
     const container = navContainerRef.current;
     if (item && container) {
@@ -37,10 +40,10 @@ const Navigation = () => {
       };
     }
     return { left: 0, width: 80, center: 40 };
-  };
+  }, []);
 
   // Find closest index based on pill center position
-  const getClosestIndex = (left, width) => {
+  const getClosestIndex = useCallback((left, width) => {
     const pillCenter = left + width / 2;
     let closest = 0;
     let minDist = Infinity;
@@ -54,25 +57,35 @@ const Navigation = () => {
       }
     }
     return closest;
-  };
+  }, [getItemRect]);
 
   // Scroll to section
-  const scrollToSection = (index) => {
+  const scrollToSection = useCallback((index) => {
     const el = document.getElementById(sections[index].id);
     if (el) {
       isScrollingRef.current = true;
       el.scrollIntoView({ behavior: 'smooth' });
-      // Reset after scroll completes
       setTimeout(() => {
         isScrollingRef.current = false;
       }, 800);
     }
-  };
+  }, []);
+
+  // Update pill position (with refs, triggers re-render)
+  const updatePill = useCallback((left, width) => {
+    pillLeftRef.current = left;
+    pillWidthRef.current = width;
+    forceUpdate(n => n + 1);
+  }, []);
 
   // Animate pill to position
-  const animatePill = (targetLeft, targetWidth, callback) => {
-    const startLeft = pillLeft;
-    const startWidth = pillWidth;
+  const animatePill = useCallback((targetLeft, targetWidth, callback) => {
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
+    }
+
+    const startLeft = pillLeftRef.current;
+    const startWidth = pillWidthRef.current;
     const duration = 180;
     const startTime = Date.now();
 
@@ -81,40 +94,42 @@ const Navigation = () => {
       const progress = Math.min(elapsed / duration, 1);
       const eased = 1 - Math.pow(1 - progress, 2);
 
-      setPillLeft(startLeft + (targetLeft - startLeft) * eased);
-      setPillWidth(startWidth + (targetWidth - startWidth) * eased);
+      const newLeft = startLeft + (targetLeft - startLeft) * eased;
+      const newWidth = startWidth + (targetWidth - startWidth) * eased;
+      updatePill(newLeft, newWidth);
 
       if (progress < 1) {
-        requestAnimationFrame(animate);
-      } else if (callback) {
-        callback();
+        animationRef.current = requestAnimationFrame(animate);
+      } else {
+        animationRef.current = null;
+        if (callback) callback();
       }
     };
-    requestAnimationFrame(animate);
-  };
+    animationRef.current = requestAnimationFrame(animate);
+  }, [updatePill]);
 
-  // Initialize pill
+  // Initialize pill position
   useLayoutEffect(() => {
     const init = () => {
-      // Don't reset during drag or snap animation
-      if (!isDragging && !isSnappingRef.current) {
+      if (!isDraggingRef.current) {
         const rect = getItemRect(activeIndex);
-        setPillLeft(rect.left);
-        setPillWidth(rect.width);
+        pillLeftRef.current = rect.left;
+        pillWidthRef.current = rect.width;
+        forceUpdate(n => n + 1);
       }
     };
     init();
     setTimeout(init, 50);
     window.addEventListener('resize', init);
     return () => window.removeEventListener('resize', init);
-  }, [activeIndex, isDragging]);
+  }, [activeIndex, getItemRect]);
 
-  // Scroll listener
+  // Scroll listener - updates nav based on scroll position
   useEffect(() => {
     let ticking = false;
 
     const onScroll = () => {
-      if (isDragging || isScrollingRef.current) return;
+      if (isDraggingRef.current || isScrollingRef.current) return;
       if (ticking) return;
 
       ticking = true;
@@ -153,105 +168,124 @@ const Navigation = () => {
 
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isDragging]);
+  }, [getItemRect, animatePill]);
 
-  // Drag handlers
-  const onDragStart = (e) => {
+  // Drag start handler
+  const handleDragStart = useCallback((e) => {
     e.preventDefault();
-    const x = e.touches ? e.touches[0].clientX : e.clientX;
-    dragStartX.current = x;
-    dragStartLeft.current = pillLeft;
+    e.stopPropagation();
+
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+
+    isDraggingRef.current = true;
+    dragStartX.current = clientX;
+    dragStartLeft.current = pillLeftRef.current;
     dragDistanceRef.current = 0;
-    setIsDragging(true);
-  };
 
-  const onDragMove = (e) => {
-    if (!isDragging || !navContainerRef.current) return;
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
+      animationRef.current = null;
+    }
 
-    const x = e.touches ? e.touches[0].clientX : e.clientX;
-    const delta = x - dragStartX.current;
+    forceUpdate(n => n + 1);
+  }, []);
+
+  // Drag move handler
+  const handleDragMove = useCallback((e) => {
+    if (!isDraggingRef.current || !navContainerRef.current) return;
+
+    e.preventDefault();
+
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const delta = clientX - dragStartX.current;
     dragDistanceRef.current = Math.abs(delta);
 
     const padding = 6;
-    const maxLeft = navContainerRef.current.offsetWidth - pillWidth - padding;
+    const containerWidth = navContainerRef.current.offsetWidth;
+    const maxLeft = containerWidth - pillWidthRef.current - padding;
+
     let newLeft = dragStartLeft.current + delta;
     newLeft = Math.max(padding, Math.min(maxLeft, newLeft));
 
-    setPillLeft(newLeft);
-  };
+    pillLeftRef.current = newLeft;
+    forceUpdate(n => n + 1);
+  }, []);
 
-  const onDragEnd = () => {
-    if (!isDragging) return;
+  // Drag end handler
+  const handleDragEnd = useCallback(() => {
+    if (!isDraggingRef.current) return;
 
-    // Prevent useLayoutEffect from resetting during snap
-    isSnappingRef.current = true;
-    setIsDragging(false);
+    isDraggingRef.current = false;
 
-    // Find closest and snap
-    const closest = getClosestIndex(pillLeft, pillWidth);
+    // Find closest section and snap
+    const closest = getClosestIndex(pillLeftRef.current, pillWidthRef.current);
     const rect = getItemRect(closest);
 
-    // Update state
     setActiveIndex(closest);
     prevSectionRef.current = sections[closest].id;
 
     // Animate to snap position
     animatePill(rect.left, rect.width, () => {
-      isSnappingRef.current = false;
-      // Scroll to section if user actually dragged
       if (dragDistanceRef.current > 5) {
         scrollToSection(closest);
       }
     });
-  };
+
+    forceUpdate(n => n + 1);
+  }, [getClosestIndex, getItemRect, animatePill, scrollToSection]);
 
   // Click handler for direct navigation
-  const onItemClick = (e, index) => {
-    // If user dragged, don't navigate on click
+  const handleItemClick = useCallback((e, index) => {
     if (dragDistanceRef.current > 10) {
       dragDistanceRef.current = 0;
       return;
     }
 
     e.preventDefault();
-    isSnappingRef.current = true;
+    e.stopPropagation();
+
     setActiveIndex(index);
     prevSectionRef.current = sections[index].id;
 
     const rect = getItemRect(index);
     animatePill(rect.left, rect.width, () => {
-      isSnappingRef.current = false;
       scrollToSection(index);
     });
-  };
+  }, [getItemRect, animatePill, scrollToSection]);
 
-  // Global mouse/touch listeners
+  // Global event listeners for drag
   useEffect(() => {
-    if (!isDragging) return;
-
-    const move = (e) => {
-      e.preventDefault();
-      onDragMove(e);
+    const onMove = (e) => {
+      if (isDraggingRef.current) {
+        handleDragMove(e);
+      }
     };
-    const end = () => onDragEnd();
 
-    window.addEventListener('mousemove', move, { passive: false });
-    window.addEventListener('mouseup', end);
-    window.addEventListener('touchmove', move, { passive: false });
-    window.addEventListener('touchend', end);
-    window.addEventListener('touchcancel', end);
+    const onEnd = () => {
+      if (isDraggingRef.current) {
+        handleDragEnd();
+      }
+    };
+
+    // Add listeners
+    window.addEventListener('mousemove', onMove, { passive: false });
+    window.addEventListener('mouseup', onEnd);
+    window.addEventListener('touchmove', onMove, { passive: false });
+    window.addEventListener('touchend', onEnd);
+    window.addEventListener('touchcancel', onEnd);
 
     return () => {
-      window.removeEventListener('mousemove', move);
-      window.removeEventListener('mouseup', end);
-      window.removeEventListener('touchmove', move);
-      window.removeEventListener('touchend', end);
-      window.removeEventListener('touchcancel', end);
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onEnd);
+      window.removeEventListener('touchmove', onMove);
+      window.removeEventListener('touchend', onEnd);
+      window.removeEventListener('touchcancel', onEnd);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isDragging]);
+  }, [handleDragMove, handleDragEnd]);
 
+  const isDragging = isDraggingRef.current;
+  const pillLeft = pillLeftRef.current;
+  const pillWidth = pillWidthRef.current;
   const hoverIdx = isDragging ? getClosestIndex(pillLeft, pillWidth) : activeIndex;
 
   const icons = {
@@ -265,15 +299,15 @@ const Navigation = () => {
   return (
     <nav className={`glass-bottom-nav ${isDragging ? 'sliding' : ''}`}>
       <div className="glass-nav-container" ref={navContainerRef}>
-        {/* Sliding Pill - enlarges outside container when dragging */}
+        {/* Sliding Pill */}
         <div
           className={`sliding-pill ${isDragging ? 'dragging' : ''}`}
           style={{
             transform: `translateX(${isDragging ? pillLeft - 10 : pillLeft}px)`,
             width: `${isDragging ? pillWidth + 20 : pillWidth}px`
           }}
-          onMouseDown={onDragStart}
-          onTouchStart={onDragStart}
+          onMouseDown={handleDragStart}
+          onTouchStart={handleDragStart}
         />
 
         {/* Nav Items */}
@@ -282,9 +316,9 @@ const Navigation = () => {
             key={section.id}
             ref={el => navItemsRef.current[idx] = el}
             className={`glass-nav-item ${hoverIdx === idx ? 'active' : ''}`}
-            onMouseDown={onDragStart}
-            onTouchStart={onDragStart}
-            onClick={(e) => onItemClick(e, idx)}
+            onMouseDown={handleDragStart}
+            onTouchStart={handleDragStart}
+            onClick={(e) => handleItemClick(e, idx)}
           >
             <div className="glass-nav-icon">{icons[section.id]}</div>
             <span className="glass-nav-label">{section.label}</span>

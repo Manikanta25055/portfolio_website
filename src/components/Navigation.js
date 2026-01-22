@@ -191,6 +191,9 @@ const Navigation = () => {
 
   // DRAG START
   const handleDragStart = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
     if (isAnimating) {
       cancelAnimationFrame(animationRef.current);
       setIsAnimating(false);
@@ -258,27 +261,31 @@ const Navigation = () => {
 
   // Global event listeners for drag
   useEffect(() => {
-    if (isDragging) {
-      const onMove = (e) => {
-        e.preventDefault();
-        handleDragMove(e);
-      };
-      const onEnd = () => handleDragEnd();
+    if (!isDragging) return;
 
-      window.addEventListener('mousemove', onMove, { passive: false });
-      window.addEventListener('mouseup', onEnd);
-      window.addEventListener('touchmove', onMove, { passive: false });
-      window.addEventListener('touchend', onEnd);
-      window.addEventListener('touchcancel', onEnd);
+    const onMove = (e) => {
+      e.preventDefault();
+      handleDragMove(e);
+    };
 
-      return () => {
-        window.removeEventListener('mousemove', onMove);
-        window.removeEventListener('mouseup', onEnd);
-        window.removeEventListener('touchmove', onMove);
-        window.removeEventListener('touchend', onEnd);
-        window.removeEventListener('touchcancel', onEnd);
-      };
-    }
+    const onEnd = (e) => {
+      e?.preventDefault?.();
+      handleDragEnd();
+    };
+
+    window.addEventListener('mousemove', onMove, { passive: false });
+    window.addEventListener('mouseup', onEnd, { passive: false });
+    window.addEventListener('touchmove', onMove, { passive: false });
+    window.addEventListener('touchend', onEnd, { passive: false });
+    window.addEventListener('touchcancel', onEnd, { passive: false });
+
+    return () => {
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onEnd);
+      window.removeEventListener('touchmove', onMove);
+      window.removeEventListener('touchend', onEnd);
+      window.removeEventListener('touchcancel', onEnd);
+    };
   }, [isDragging, handleDragMove, handleDragEnd]);
 
   // Determine which item is currently highlighted

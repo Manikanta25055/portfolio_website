@@ -10,21 +10,21 @@ const sections = [
 
 const Navigation = () => {
   const [activeIndex, setActiveIndex] = useState(0);
-  const [isSliding, setIsSliding] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [pillLeft, setPillLeft] = useState(0);
   const [pillWidth, setPillWidth] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   const navContainerRef = useRef(null);
   const navItemsRef = useRef([]);
   const dragStartX = useRef(0);
   const dragStartLeft = useRef(0);
-  const hasMovedRef = useRef(false);
+  const dragDistance = useRef(0);
   const prevSectionRef = useRef('home');
   const scrollCooldownRef = useRef(false);
-  const animationFrameRef = useRef(null);
+  const animationRef = useRef(null);
 
-  // Get actual item positions from DOM
+  // Get item position from DOM
   const getItemRect = useCallback((index) => {
     const item = navItemsRef.current[index];
     const container = navContainerRef.current;
@@ -40,51 +40,84 @@ const Navigation = () => {
     return { left: 0, width: 80, center: 40 };
   }, []);
 
-  // Smoothly animate pill to target position
-  const animatePillTo = useCallback((targetLeft, targetWidth, duration = 300) => {
+  // Find closest item to current pill position
+  const getClosestIndex = useCallback((currentLeft, currentWidth) => {
+    const pillCenter = currentLeft + currentWidth / 2;
+    let closestIndex = 0;
+    let closestDistance = Infinity;
+
+    for (let i = 0; i < sections.length; i++) {
+      const rect = getItemRect(i);
+      const distance = Math.abs(rect.center - pillCenter);
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestIndex = i;
+      }
+    }
+    return closestIndex;
+  }, [getItemRect]);
+
+  // Animate pill to target position with easing
+  const animateTo = useCallback((targetLeft, targetWidth, onComplete) => {
     const startLeft = pillLeft;
     const startWidth = pillWidth;
+    const duration = 200; // Fast snap
     const startTime = performance.now();
 
-    const animate = (currentTime) => {
-      const elapsed = currentTime - startTime;
+    setIsAnimating(true);
+
+    const tick = (now) => {
+      const elapsed = now - startTime;
       const progress = Math.min(elapsed / duration, 1);
 
-      // Smooth easing - ease out cubic for fluid feel
-      const eased = 1 - Math.pow(1 - progress, 3);
+      // Ease out quad for smooth deceleration
+      const eased = 1 - (1 - progress) * (1 - progress);
 
-      const newLeft = startLeft + (targetLeft - startLeft) * eased;
-      const newWidth = startWidth + (targetWidth - startWidth) * eased;
-
-      setPillLeft(newLeft);
-      setPillWidth(newWidth);
+      setPillLeft(startLeft + (targetLeft - startLeft) * eased);
+      setPillWidth(startWidth + (targetWidth - startWidth) * eased);
 
       if (progress < 1) {
-        animationFrameRef.current = requestAnimationFrame(animate);
+        animationRef.current = requestAnimationFrame(tick);
+      } else {
+        setIsAnimating(false);
+        if (onComplete) onComplete();
       }
     };
 
-    if (animationFrameRef.current) {
-      cancelAnimationFrame(animationFrameRef.current);
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
     }
-    animationFrameRef.current = requestAnimationFrame(animate);
+    animationRef.current = requestAnimationFrame(tick);
   }, [pillLeft, pillWidth]);
 
-  // Update pill to specific index
-  const updatePillToIndex = useCallback((index, animate = true) => {
+  // Snap pill to specific index
+  const snapToIndex = useCallback((index, shouldScroll = false) => {
     const rect = getItemRect(index);
-    if (animate) {
-      animatePillTo(rect.left, rect.width, 280);
-    } else {
-      setPillLeft(rect.left);
-      setPillWidth(rect.width);
-    }
-  }, [getItemRect, animatePillTo]);
+
+    scrollCooldownRef.current = true;
+
+    animateTo(rect.left, rect.width, () => {
+      setActiveIndex(index);
+      prevSectionRef.current = sections[index].id;
+
+      if (shouldScroll) {
+        const el = document.getElementById(sections[index].id);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+
+      // Clear cooldown after scroll starts
+      setTimeout(() => {
+        scrollCooldownRef.current = false;
+      }, 300);
+    });
+  }, [getItemRect, animateTo]);
 
   // Initialize pill position
   useLayoutEffect(() => {
     const initPill = () => {
-      if (!isSliding && !scrollCooldownRef.current) {
+      if (!isDragging && !isAnimating) {
         const rect = getItemRect(activeIndex);
         setPillLeft(rect.left);
         setPillWidth(rect.width);
@@ -92,25 +125,24 @@ const Navigation = () => {
     };
 
     initPill();
-    const timer = setTimeout(initPill, 50);
+    const timer = setTimeout(initPill, 100);
     window.addEventListener('resize', initPill);
 
     return () => {
       window.removeEventListener('resize', initPill);
       clearTimeout(timer);
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [activeIndex, isSliding, getItemRect]);
+  }, [activeIndex, isDragging, isAnimating, getItemRect]);
 
-  // Scroll detection with cooldown
+  // Scroll detection
   useEffect(() => {
     let rafId = null;
 
     const handleScroll = () => {
-      // Skip if sliding or in cooldown period
-      if (isSliding || scrollCooldownRef.current) return;
+      if (isDragging || scrollCooldownRef.current || isAnimating) return;
       if (rafId) return;
 
       rafId = requestAnimationFrame(() => {
@@ -142,7 +174,8 @@ const Navigation = () => {
         if (newSection !== prevSectionRef.current) {
           prevSectionRef.current = newSection;
           setActiveIndex(newIndex);
-          updatePillToIndex(newIndex, true);
+          const rect = getItemRect(newIndex);
+          animateTo(rect.left, rect.width);
         }
 
         rafId = null;
@@ -154,143 +187,83 @@ const Navigation = () => {
       window.removeEventListener('scroll', handleScroll);
       if (rafId) cancelAnimationFrame(rafId);
     };
-  }, [isSliding, updatePillToIndex]);
+  }, [isDragging, isAnimating, getItemRect, animateTo]);
 
-  const scrollToSection = (index) => {
-    const section = sections[index];
-    const el = document.getElementById(section.id);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
-  // Find closest item based on pill center
-  const getClosestIndex = useCallback((currentLeft, currentWidth) => {
-    const pillCenter = currentLeft + currentWidth / 2;
-    let closestIndex = 0;
-    let closestDistance = Infinity;
-
-    for (let i = 0; i < sections.length; i++) {
-      const rect = getItemRect(i);
-      const distance = Math.abs(rect.center - pillCenter);
-      if (distance < closestDistance) {
-        closestDistance = distance;
-        closestIndex = i;
-      }
-    }
-
-    return closestIndex;
-  }, [getItemRect]);
-
-  // Handle drag start
+  // DRAG START
   const handleDragStart = useCallback((e) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    // Cancel any ongoing animation
-    if (animationFrameRef.current) {
-      cancelAnimationFrame(animationFrameRef.current);
+    if (isAnimating) {
+      cancelAnimationFrame(animationRef.current);
+      setIsAnimating(false);
     }
 
     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
     dragStartX.current = clientX;
     dragStartLeft.current = pillLeft;
-    hasMovedRef.current = false;
+    dragDistance.current = 0;
 
-    setIsSliding(true);
     setIsDragging(true);
-  }, [pillLeft]);
+  }, [pillLeft, isAnimating]);
 
-  // Handle drag move - ultra fluid
+  // DRAG MOVE
   const handleDragMove = useCallback((e) => {
-    if (!isSliding || !navContainerRef.current) return;
+    if (!isDragging || !navContainerRef.current) return;
 
     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
     const deltaX = clientX - dragStartX.current;
+    dragDistance.current = Math.abs(deltaX);
 
-    if (Math.abs(deltaX) > 3) {
-      hasMovedRef.current = true;
-    }
-
-    const containerPadding = 8;
+    const padding = 6;
     const containerWidth = navContainerRef.current.offsetWidth;
-    const maxLeft = containerWidth - pillWidth - containerPadding;
+    const maxLeft = containerWidth - pillWidth - padding;
 
     let newLeft = dragStartLeft.current + deltaX;
-    newLeft = Math.max(containerPadding, Math.min(maxLeft, newLeft));
+    newLeft = Math.max(padding, Math.min(maxLeft, newLeft));
 
-    // Direct state update for instant response
     setPillLeft(newLeft);
-  }, [isSliding, pillWidth]);
+  }, [isDragging, pillWidth]);
 
-  // Handle drag end
-  const handleDragEnd = useCallback((e) => {
-    if (!isSliding) return;
+  // DRAG END - Always snap to nearest
+  const handleDragEnd = useCallback(() => {
+    if (!isDragging) return;
 
-    e?.preventDefault?.();
-    e?.stopPropagation?.();
-
-    const closestIndex = getClosestIndex(pillLeft, pillWidth);
-    const targetRect = getItemRect(closestIndex);
-
-    // Set cooldown to prevent scroll from interfering
-    scrollCooldownRef.current = true;
-
-    // Animate to final position
-    animatePillTo(targetRect.left, targetRect.width, 250);
-
-    setActiveIndex(closestIndex);
-    prevSectionRef.current = sections[closestIndex].id;
-    setIsSliding(false);
     setIsDragging(false);
 
-    // Scroll only if user actually dragged
-    if (hasMovedRef.current) {
-      setTimeout(() => {
-        scrollToSection(closestIndex);
-      }, 50);
-    }
+    // Always snap to nearest section
+    const closestIndex = getClosestIndex(pillLeft, pillWidth);
 
-    // Clear cooldown after animation completes
-    setTimeout(() => {
-      scrollCooldownRef.current = false;
-    }, 400);
-  }, [isSliding, pillLeft, pillWidth, getClosestIndex, getItemRect, animatePillTo]);
+    // Only scroll if user actually dragged (not just tapped)
+    const shouldScroll = dragDistance.current > 10;
 
-  // Handle click
-  const handleItemClick = useCallback((e, index) => {
-    e.preventDefault();
-    e.stopPropagation();
+    snapToIndex(closestIndex, shouldScroll);
+  }, [isDragging, pillLeft, pillWidth, getClosestIndex, snapToIndex]);
 
-    if (hasMovedRef.current) {
-      hasMovedRef.current = false;
+  // CLICK - Direct navigation (works when not dragging)
+  const handleClick = useCallback((e, index) => {
+    // If user dragged more than 10px, ignore the click (it was a drag)
+    if (dragDistance.current > 10) {
+      dragDistance.current = 0;
       return;
     }
 
-    if (animationFrameRef.current) {
-      cancelAnimationFrame(animationFrameRef.current);
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Cancel any animation
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
     }
 
-    scrollCooldownRef.current = true;
+    snapToIndex(index, true);
+  }, [snapToIndex]);
 
-    setActiveIndex(index);
-    prevSectionRef.current = sections[index].id;
-    updatePillToIndex(index, true);
-    scrollToSection(index);
-
-    setTimeout(() => {
-      scrollCooldownRef.current = false;
-    }, 400);
-  }, [updatePillToIndex]);
-
-  // Global event listeners
+  // Global event listeners for drag
   useEffect(() => {
-    if (isSliding) {
+    if (isDragging) {
       const onMove = (e) => {
         e.preventDefault();
         handleDragMove(e);
       };
-      const onEnd = (e) => handleDragEnd(e);
+      const onEnd = () => handleDragEnd();
 
       window.addEventListener('mousemove', onMove, { passive: false });
       window.addEventListener('mouseup', onEnd);
@@ -306,10 +279,10 @@ const Navigation = () => {
         window.removeEventListener('touchcancel', onEnd);
       };
     }
-  }, [isSliding, handleDragMove, handleDragEnd]);
+  }, [isDragging, handleDragMove, handleDragEnd]);
 
-  // Current hovered index during drag
-  const hoveredIndex = isSliding ? getClosestIndex(pillLeft, pillWidth) : activeIndex;
+  // Determine which item is currently highlighted
+  const hoveredIndex = isDragging ? getClosestIndex(pillLeft, pillWidth) : activeIndex;
 
   const getIcon = (id) => {
     const icons = {
@@ -323,7 +296,7 @@ const Navigation = () => {
   };
 
   return (
-    <nav className={`glass-bottom-nav ${isSliding ? 'sliding' : ''}`}>
+    <nav className={`glass-bottom-nav ${isDragging ? 'sliding' : ''}`}>
       <div className="glass-nav-container" ref={navContainerRef}>
         {/* Sliding Pill */}
         <div
@@ -346,7 +319,7 @@ const Navigation = () => {
               className={`glass-nav-item ${isActive ? 'active' : ''}`}
               onMouseDown={handleDragStart}
               onTouchStart={handleDragStart}
-              onClick={(e) => handleItemClick(e, index)}
+              onClick={(e) => handleClick(e, index)}
             >
               <div className="glass-nav-icon">
                 {getIcon(section.id)}

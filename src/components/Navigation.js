@@ -63,15 +63,21 @@ const Navigation = () => {
     return closest;
   }, [getItemRect]);
 
-  // Scroll to section
+  // Scroll to section - targets the heading so it lands at the top of the viewport
   const scrollToSection = useCallback((index) => {
     const el = document.getElementById(sections[index].id);
     if (el) {
       isScrollingRef.current = true;
-      el.scrollIntoView({ behavior: 'smooth' });
+      // For the hero section scroll to absolute top; for all others find the
+      // section-title heading so the heading itself lands near the top instead
+      // of the section's large top padding swallowing the viewport.
+      const heading = index === 0 ? null : el.querySelector('.section-title');
+      const target = heading || el;
+      const top = target.getBoundingClientRect().top + window.scrollY - 24;
+      window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
       setTimeout(() => {
         isScrollingRef.current = false;
-      }, 800);
+      }, 1000);
     }
   }, []);
 

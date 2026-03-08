@@ -13,7 +13,7 @@ const DualDegree = () => {
     degree: "BTech in Electrical & Electronics Engineering",
     currentSem: 6,
     totalSems: 8,
-    cgpa: "8.01",
+    cgpa: "8.02",
     maxCgpa: "10.0",
     progress: 75, // 6/8 = 75%
     semesters: [

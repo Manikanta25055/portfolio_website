@@ -28,6 +28,7 @@ const Navigation = () => {
   const isScrollingRef = useRef(false);
   const animationRef = useRef(null);
   const tappedIndexRef = useRef(null); // Track which item was tapped
+  const tapHandledRef = useRef(false); // Prevent double-navigation from drag-end + click
 
   // Get item rect from DOM
   const getItemRect = useCallback((index) => {
@@ -117,9 +118,8 @@ const Navigation = () => {
     prevSectionRef.current = sections[index].id;
 
     const rect = getItemRect(index);
-    animatePill(rect.left, rect.width, () => {
-      scrollToSection(index);
-    });
+    animatePill(rect.left, rect.width);
+    scrollToSection(index);
   }, [getItemRect, animatePill, scrollToSection]);
 
   // Initialize pill position
@@ -239,6 +239,7 @@ const Navigation = () => {
 
     if (wasTap && tappedIndex !== null) {
       // It was a tap on a specific nav item - navigate directly
+      tapHandledRef.current = true;
       navigateToSection(tappedIndex);
     } else {
       // It was a slide - snap to closest section
@@ -259,7 +260,13 @@ const Navigation = () => {
 
   // Click handler for mouse clicks (desktop)
   const handleItemClick = useCallback((e, index) => {
-    // Only handle if not from a drag
+    // Skip if drag-end already handled this tap
+    if (tapHandledRef.current) {
+      tapHandledRef.current = false;
+      return;
+    }
+
+    // Only handle if not from a slide
     if (dragDistanceRef.current > TAP_THRESHOLD) {
       dragDistanceRef.current = 0;
       return;

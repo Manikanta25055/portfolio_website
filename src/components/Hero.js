@@ -39,7 +39,7 @@ const Hero = () => {
         </motion.div>
 
         <motion.h1 variants={itemVariants} className="hero-name">
-          <span className="name-line">Manikanta</span>
+          <span className="name-line">Veera Manikanta</span>
           <span className="name-line gradient-text">Gonugondla</span>
         </motion.h1>
 
@@ -70,7 +70,7 @@ const Hero = () => {
             </div>
             <div className="badge-content">
               <span className="badge-value">Dual Degree</span>
-              <span className="badge-label">MIT 8.01 • IIT-M 7.33</span>
+              <span className="badge-label">MIT 8.02 • IIT-M 7.33</span>
             </div>
           </motion.a>
 

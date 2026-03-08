@@ -173,6 +173,31 @@ const projects = [
     timeline: "October 2024"
   },
   {
+    id: "thermal-profiling",
+    title: "4-Channel Thermal Profiling System",
+    subtitle: "Measurement & Instrumentation",
+    achievement: "Industrial MODBUS RTU Protocol",
+    description: "Built an 8-sensor thermal profiling rig with real-time 2D heatmaps. DS18B20 sensors over 1-Wire, ESP32-S3 as MODBUS RTU slave, Python SCADA dashboard - full industrial stack from scratch.",
+    tech: ["ESP32-S3", "DS18B20", "Python", "PyQt5", "MODBUS RTU", "RS485", "Arduino C"],
+    githubLink: "https://github.com/Manikanta25055/Thermal_Profiling",
+    problemStatement: "Single-point temperature sensors fail to capture thermal gradients and hotspot migration in electronics. Multi-point monitoring with industrial-grade communication was needed to enable predictive thermal management in academic and lab settings.",
+    solution: "Designed a complete thermal monitoring system using 8 DS18B20 sensors on a single 1-Wire bus (GPIO + 4.7kΩ pull-up) connected to an ESP32-S3 MODBUS RTU slave. A Python SCADA app on macOS acts as the MODBUS master over RS485, rendering real-time 2D heatmaps, 8 trend plots, and logging timestamped CSV data.",
+    keyFeatures: [
+      "8-channel simultaneous temperature measurement (±0.5°C, 12-bit resolution)",
+      "1-Wire protocol - all sensors on single GPIO with 4.7kΩ pull-up resistor",
+      "MODBUS RTU slave on ESP32-S3 via MAX485 RS485 transceiver (27 holding registers)",
+      "Python SCADA dashboard with real-time 2D thermal heatmap (PyQt5 + matplotlib)",
+      "Hotspot/coldspot detection and thermal gradient analysis",
+      "2 Hz update rate with 60-second scrolling trend plots and CSV data logging"
+    ],
+    achievements: [
+      { value: "8 Channels", label: "Simultaneous Sensors" },
+      { value: "±0.5°C", label: "Measurement Accuracy" },
+      { value: "MODBUS RTU", label: "Industrial Protocol" }
+    ],
+    timeline: "January 2026 - February 2026"
+  },
+  {
     title: "Power Quality Analysis using DTFS",
     subtitle: "Power Systems & Harmonic Analysis",
     achievement: "IEEE 519 Compliance",

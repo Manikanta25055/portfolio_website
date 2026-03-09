@@ -2,6 +2,65 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import ProjectModal from './ProjectModal';
 
+const REPO_CACHE_KEY = 'gh_repo_stats_v1';
+const REPO_CACHE_TTL = 60 * 60 * 1000; // 1 hour
+
+function extractRepo(githubLink) {
+  if (!githubLink) return null;
+  const m = githubLink.match(/github\.com\/([^/]+\/[^/]+)/);
+  return m ? m[1] : null;
+}
+
+function useRepoStats(githubLink) {
+  const repo = extractRepo(githubLink);
+  const [stats, setStats] = useState(null);
+
+  useEffect(() => {
+    if (!repo) return;
+    const key = `${REPO_CACHE_KEY}:${repo}`;
+    try {
+      const cached = sessionStorage.getItem(key);
+      if (cached) {
+        const { data, ts } = JSON.parse(cached);
+        if (Date.now() - ts < REPO_CACHE_TTL) { setStats(data); return; }
+      }
+    } catch (_) {}
+
+    fetch(`https://api.github.com/repos/${repo}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (!data) return;
+        const s = { stars: data.stargazers_count, pushed: data.pushed_at };
+        setStats(s);
+        try { sessionStorage.setItem(key, JSON.stringify({ data: s, ts: Date.now() })); } catch (_) {}
+      })
+      .catch(() => {});
+  }, [repo]);
+
+  return stats;
+}
+
+function RepoStats({ githubLink }) {
+  const stats = useRepoStats(githubLink);
+  if (!stats) return null;
+
+  const daysAgo = Math.floor((Date.now() - new Date(stats.pushed)) / 86400000);
+  const pushed = daysAgo < 1 ? 'today' : daysAgo < 7 ? `${daysAgo}d ago` : daysAgo < 30 ? `${Math.floor(daysAgo / 7)}w ago` : `${Math.floor(daysAgo / 30)}mo ago`;
+
+  return (
+    <div className="repo-stats">
+      <span className="repo-stat">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+        </svg>
+        {stats.stars}
+      </span>
+      <span className="repo-stat-sep" />
+      <span className="repo-stat">{pushed}</span>
+    </div>
+  );
+}
+
 const useMediaQuery = (query) => {
   const getMatches = (query) => {
     if (typeof window !== 'undefined') {
@@ -351,6 +410,7 @@ const Projects = () => {
                   <span key={i}>{tech}</span>
                 ))}
               </div>
+              {project.githubLink && <RepoStats githubLink={project.githubLink} />}
               <div className="view-details">
                 <span>View Details</span>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

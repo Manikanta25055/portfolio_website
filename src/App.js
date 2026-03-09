@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import posthog from 'posthog-js';
 import './App.css';
 import CustomCursor from './components/CustomCursor';
 import DotGrid from './components/DotGrid';
@@ -8,8 +9,42 @@ import Hero from './components/Hero';
 import DualDegree from './components/DualDegree';
 import WorkTimeline from './components/WorkTimeline';
 import Projects from './components/Projects';
+import GitHubActivity from './components/GitHubActivity';
 import Coursework from './components/Coursework';
+import Blog from './components/Blog';
 import Contact from './components/Contact';
+import KeyboardHint from './components/KeyboardHint';
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
+
+if (process.env.REACT_APP_POSTHOG_KEY) {
+  posthog.init(process.env.REACT_APP_POSTHOG_KEY, {
+    api_host: process.env.REACT_APP_POSTHOG_HOST || 'https://app.posthog.com',
+    capture_pageview: true,
+    autocapture: false,
+  });
+}
+
+function AppContent() {
+  const [hintVisible, setHintVisible] = useState(false);
+  useKeyboardShortcuts(() => setHintVisible(v => !v));
+
+  return (
+    <div className="App">
+      <CustomCursor />
+      <DotGrid />
+      <Navigation />
+      <Hero />
+      <DualDegree />
+      <WorkTimeline />
+      <Projects />
+      <GitHubActivity />
+      <Coursework />
+      <Blog />
+      <Contact />
+      <KeyboardHint isVisible={hintVisible} onClose={() => setHintVisible(false)} />
+    </div>
+  );
+}
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -56,7 +91,6 @@ function App() {
     return (
       <div className="loader">
         <div className="loader-content">
-          {/* Orbital rings */}
           <div className="loader-orbit-container">
             <motion.div
               className="loader-orbit loader-orbit-1"
@@ -73,8 +107,6 @@ function App() {
               animate={{ rotate: 360 }}
               transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
             />
-
-            {/* Center core */}
             <motion.div
               className="loader-core"
               animate={{
@@ -89,7 +121,6 @@ function App() {
             />
           </div>
 
-          {/* Terminal text */}
           <div className="loader-terminal">
             <AnimatePresence mode="wait">
               <motion.div
@@ -105,7 +136,6 @@ function App() {
             </AnimatePresence>
           </div>
 
-          {/* Progress dots */}
           <div className="loader-dots">
             {[0, 1, 2, 3, 4].map((i) => (
               <motion.div
@@ -122,19 +152,7 @@ function App() {
     );
   }
 
-  return (
-    <div className="App">
-      <CustomCursor />
-      <DotGrid />
-      <Navigation />
-      <Hero />
-      <DualDegree />
-      <WorkTimeline />
-      <Projects />
-      <Coursework />
-      <Contact />
-    </div>
-  );
+  return <AppContent />;
 }
 
 export default App;

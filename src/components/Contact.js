@@ -1,6 +1,92 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import FloatingParticles from './FloatingParticles';
+
+const ContactForm = () => {
+  const [form, setForm] = useState({ name: '', email: '', message: '' });
+  const [status, setStatus] = useState('idle'); // idle | sending | success | error
+
+  const handleChange = (e) => {
+    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (status === 'sending') return;
+    setStatus('sending');
+
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+      if (res.ok) {
+        setStatus('success');
+        setForm({ name: '', email: '', message: '' });
+      } else {
+        setStatus('error');
+      }
+    } catch {
+      setStatus('error');
+    }
+  };
+
+  return (
+    <form className="contact-form" onSubmit={handleSubmit} noValidate>
+      <div className="contact-form-row">
+        <div className="contact-form-group">
+          <input
+            className="contact-form-input"
+            type="text"
+            name="name"
+            placeholder="Name"
+            value={form.name}
+            onChange={handleChange}
+            required
+            autoComplete="name"
+          />
+        </div>
+        <div className="contact-form-group">
+          <input
+            className="contact-form-input"
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={form.email}
+            onChange={handleChange}
+            required
+            autoComplete="email"
+          />
+        </div>
+      </div>
+      <div className="contact-form-group">
+        <textarea
+          className="contact-form-textarea"
+          name="message"
+          placeholder="Message"
+          value={form.message}
+          onChange={handleChange}
+          required
+          rows={4}
+        />
+      </div>
+      <button
+        type="submit"
+        className={`contact-form-submit ${status === 'sending' ? 'sending' : ''}`}
+        disabled={status === 'sending'}
+      >
+        {status === 'sending' ? 'Sending...' : 'Send Message'}
+      </button>
+      {status === 'success' && (
+        <p className="contact-form-status success">Message sent. I'll get back to you soon.</p>
+      )}
+      {status === 'error' && (
+        <p className="contact-form-status error">Something went wrong. Try emailing directly.</p>
+      )}
+    </form>
+  );
+};
 
 const Contact = () => {
   const contactMethods = [
@@ -86,6 +172,15 @@ const Contact = () => {
           >
             Got a wild idea? Wanna collab on something cool? Or just wanna say hi? Hit me up - I'm always down for a chat
           </motion.p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+        >
+          <ContactForm />
         </motion.div>
 
         <motion.div

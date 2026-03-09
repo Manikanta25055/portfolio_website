@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import ProjectModal from './ProjectModal';
 
 const REPO_CACHE_KEY = 'gh_repo_stats_v1';
@@ -286,7 +286,6 @@ const Projects = () => {
   const [selectedProject, setSelectedProject] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [mobileIdx, setMobileIdx] = useState(0);
-  const [swipeDir, setSwipeDir] = useState(1);
   const touchStartRef = useRef({ x: 0, y: 0 });
   const mobileDeckRef = useRef(null);
   const mobileFrontRef = useRef(null);
@@ -370,8 +369,6 @@ const Projects = () => {
         }
         setTimeout(() => {
           if (front) { front.style.transition = 'none'; front.style.transform = ''; }
-          const nextDir = dir < 0 ? 1 : -1;
-          setSwipeDir(nextDir);
           setMobileIdx(prev => {
             if (dir < 0) return Math.min(prev + 1, projects.length - 1); // swipe left = next
             return Math.max(prev - 1, 0); // swipe right = previous

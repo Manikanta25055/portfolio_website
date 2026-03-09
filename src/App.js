@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import posthog from 'posthog-js';
 import './App.css';
 import CustomCursor from './components/CustomCursor';
-import DotGrid from './components/DotGrid';
 import Navigation from './components/Navigation';
 import Hero from './components/Hero';
 import DualDegree from './components/DualDegree';
@@ -31,7 +30,6 @@ function AppContent() {
   return (
     <div className="App">
       <CustomCursor />
-      <DotGrid />
       <Navigation />
       <Hero />
       <DualDegree />

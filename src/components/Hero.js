@@ -99,8 +99,6 @@ const Hero = () => {
               key={i}
               href={b.href}
               className="achievement-badge achievement-badge-link"
-              animate={{ y: [0, -8, 0] }}
-              transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay: i * 0.5 }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -161,8 +159,6 @@ const Hero = () => {
         <motion.div
           variants={itemVariants}
           className="scroll-indicator"
-          animate={{ y: [0, 10, 0] }}
-          transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
         >
           <span>Scroll</span>
           <div className="scroll-line" />

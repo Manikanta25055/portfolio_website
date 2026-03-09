@@ -288,8 +288,14 @@ const Projects = () => {
   const [mobileIdx, setMobileIdx] = useState(0);
   const [swipeDir, setSwipeDir] = useState(1);
   const touchStartRef = useRef({ x: 0, y: 0 });
-  const swipeStartY = useRef(0);
-  const swipeEndY = useRef(0);
+  const mobileDeckRef = useRef(null);
+  const mobileFrontRef = useRef(null);
+  const mobileIdxRef = useRef(0);
+  const mobileAnimRef = useRef(false);
+  const mobileDragState = useRef({ startX: 0, startY: 0, active: false });
+
+  // Keep mobileIdxRef in sync
+  useEffect(() => { mobileIdxRef.current = mobileIdx; }, [mobileIdx]);
 
   const isMobile = useMediaQuery('(max-width: 768px)');
   const prefersReducedMotion = useReducedMotion();
@@ -323,20 +329,72 @@ const Projects = () => {
     }
   };
 
-  const handleCarouselSwipeEnd = () => {
-    const delta = swipeStartY.current - swipeEndY.current;
-    if (Math.abs(delta) > 40) {
-      if (delta > 0) {
-        // swipe up → next
-        setSwipeDir(1);
-        setMobileIdx(prev => Math.min(prev + 1, projects.length - 1));
-      } else {
-        // swipe down → previous
-        setSwipeDir(-1);
-        setMobileIdx(prev => Math.max(prev - 1, 0));
+  // Non-passive touch handler for project deck — prevents page scroll on horizontal swipe
+  useEffect(() => {
+    if (!isMobile) return;
+    const container = mobileDeckRef.current;
+    if (!container) return;
+
+    const THRESHOLD = 70;
+
+    const onStart = (e) => {
+      if (mobileAnimRef.current) return;
+      const t = e.touches[0];
+      mobileDragState.current = { startX: t.clientX, startY: t.clientY, active: true };
+      if (mobileFrontRef.current) mobileFrontRef.current.style.transition = 'none';
+    };
+
+    const onMove = (e) => {
+      if (!mobileDragState.current.active || mobileAnimRef.current) return;
+      const dx = e.touches[0].clientX - mobileDragState.current.startX;
+      const dy = e.touches[0].clientY - mobileDragState.current.startY;
+      if (Math.abs(dx) > Math.abs(dy)) {
+        e.preventDefault();
+        if (mobileFrontRef.current)
+          mobileFrontRef.current.style.transform = `translateX(${dx}px) rotate(${dx * 0.05}deg)`;
       }
-    }
-  };
+    };
+
+    const onEnd = (e) => {
+      if (!mobileDragState.current.active || mobileAnimRef.current) return;
+      mobileDragState.current.active = false;
+      const dx = e.changedTouches[0].clientX - mobileDragState.current.startX;
+      const front = mobileFrontRef.current;
+
+      if (Math.abs(dx) > THRESHOLD) {
+        mobileAnimRef.current = true;
+        const dir = dx > 0 ? 1 : -1; // positive dx = swipe right = previous
+        if (front) {
+          front.style.transition = 'transform 0.28s cubic-bezier(0.4,0,0.2,1)';
+          front.style.transform = `translateX(${dir * 600}px) rotate(${dir * 22}deg)`;
+        }
+        setTimeout(() => {
+          if (front) { front.style.transition = 'none'; front.style.transform = ''; }
+          const nextDir = dir < 0 ? 1 : -1;
+          setSwipeDir(nextDir);
+          setMobileIdx(prev => {
+            if (dir < 0) return Math.min(prev + 1, projects.length - 1); // swipe left = next
+            return Math.max(prev - 1, 0); // swipe right = previous
+          });
+          mobileAnimRef.current = false;
+        }, 290);
+      } else {
+        if (front) {
+          front.style.transition = 'transform 0.35s cubic-bezier(0.4,0,0.2,1)';
+          front.style.transform = '';
+        }
+      }
+    };
+
+    container.addEventListener('touchstart', onStart, { passive: true });
+    container.addEventListener('touchmove', onMove, { passive: false });
+    container.addEventListener('touchend', onEnd, { passive: true });
+    return () => {
+      container.removeEventListener('touchstart', onStart);
+      container.removeEventListener('touchmove', onMove);
+      container.removeEventListener('touchend', onEnd);
+    };
+  }, [isMobile]);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -394,30 +452,22 @@ const Projects = () => {
           Featured Projects
         </TitleContainer>
 
-        {/* Mobile: vertical swipe deck */}
-        <div className="projects-mobile-deck">
-          {/* Back card peek */}
+        {/* Mobile: horizontal CRED-style swipe deck */}
+        <div className="projects-mobile-deck" ref={mobileDeckRef}>
+          {/* Back card peek (CRED style) */}
           {mobileIdx < projects.length - 1 && (
             <div className="projects-deck-back">
               <div className="project-badge">{projects[mobileIdx + 1].achievement}</div>
               <h3>{projects[mobileIdx + 1].title}</h3>
             </div>
           )}
-          {/* Front card */}
-          <AnimatePresence mode="wait" custom={swipeDir}>
-            <motion.div
-              key={mobileIdx}
-              className="project-card projects-mobile-card"
-              custom={swipeDir}
-              initial={{ opacity: 0, y: swipeDir * 60 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: swipeDir * -60 }}
-              transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
-              onTouchStart={(e) => { swipeStartY.current = e.touches[0].clientY; swipeEndY.current = e.touches[0].clientY; }}
-              onTouchMove={(e) => { swipeEndY.current = e.touches[0].clientY; }}
-              onTouchEnd={handleCarouselSwipeEnd}
-              onClick={() => handleProjectClick(projects[mobileIdx])}
-            >
+          {/* Front card — ref-driven drag animation */}
+          <div
+            ref={mobileFrontRef}
+            key={mobileIdx}
+            className="project-card projects-mobile-card deck-front"
+            onClick={() => handleProjectClick(projects[mobileIdx])}
+          >
               <div className="project-badge">{projects[mobileIdx].achievement}</div>
               <h3>{projects[mobileIdx].title}</h3>
               <h4>{projects[mobileIdx].subtitle}</h4>
@@ -434,8 +484,7 @@ const Projects = () => {
                   <path d="M5 12h14M12 5l7 7-7 7"/>
                 </svg>
               </div>
-            </motion.div>
-          </AnimatePresence>
+          </div>
 
           <p className="proj-swipe-hint">{mobileIdx + 1} / {projects.length} &nbsp;·&nbsp; swipe to browse</p>
         </div>

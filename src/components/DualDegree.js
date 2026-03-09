@@ -18,29 +18,82 @@ const DualDegree = () => {
   const [expandedMIT, setExpandedMIT] = useState(false);
   const [expandedIIT, setExpandedIIT] = useState(false);
   const [activeCard, setActiveCard] = useState(0);
-  const touchStartX = useRef(0);
-  const touchEndX = useRef(0);
   const prefersReducedMotion = useReducedMotion();
   const isMobile = useMediaQuery('(max-width: 768px)');
   const shouldAnimate = !isMobile && !prefersReducedMotion;
 
-  const handleSwipeStart = (e) => {
-    touchStartX.current = e.touches[0].clientX;
-    touchEndX.current = e.touches[0].clientX;
-  };
-  const handleSwipeMove = (e) => {
-    touchEndX.current = e.touches[0].clientX;
-  };
-  const handleSwipeEnd = () => {
-    const delta = touchStartX.current - touchEndX.current;
-    if (Math.abs(delta) > 40) {
-      if (delta > 0) setActiveCard(1);
-      else setActiveCard(0);
-    }
-  };
-  const handleCardTap = (idx) => {
-    if (idx !== activeCard) setActiveCard(idx);
-  };
+  // CRED-style card drag refs
+  const deckRef = useRef(null);
+  const card0Ref = useRef(null);
+  const card1Ref = useRef(null);
+  const activeCardRef = useRef(0);
+  const animatingRef = useRef(false);
+  const dragState = useRef({ startX: 0, startY: 0, active: false });
+
+  // Keep activeCardRef in sync with state
+  useEffect(() => { activeCardRef.current = activeCard; }, [activeCard]);
+
+  useEffect(() => {
+    if (!isMobile) return;
+    const container = deckRef.current;
+    if (!container) return;
+
+    const THRESHOLD = 80;
+
+    const onStart = (e) => {
+      if (animatingRef.current) return;
+      const t = e.touches[0];
+      dragState.current = { startX: t.clientX, startY: t.clientY, active: true };
+      const front = activeCardRef.current === 0 ? card0Ref.current : card1Ref.current;
+      if (front) front.style.transition = 'none';
+    };
+
+    const onMove = (e) => {
+      if (!dragState.current.active || animatingRef.current) return;
+      const dx = e.touches[0].clientX - dragState.current.startX;
+      const dy = e.touches[0].clientY - dragState.current.startY;
+      if (Math.abs(dx) > Math.abs(dy)) {
+        e.preventDefault();
+        const front = activeCardRef.current === 0 ? card0Ref.current : card1Ref.current;
+        if (front) front.style.transform = `translateX(${dx}px) rotate(${dx * 0.07}deg)`;
+      }
+    };
+
+    const onEnd = (e) => {
+      if (!dragState.current.active || animatingRef.current) return;
+      dragState.current.active = false;
+      const dx = e.changedTouches[0].clientX - dragState.current.startX;
+      const front = activeCardRef.current === 0 ? card0Ref.current : card1Ref.current;
+
+      if (Math.abs(dx) > THRESHOLD) {
+        animatingRef.current = true;
+        const dir = dx > 0 ? 1 : -1;
+        if (front) {
+          front.style.transition = 'transform 0.3s cubic-bezier(0.4,0,0.2,1)';
+          front.style.transform = `translateX(${dir * 650}px) rotate(${dir * 28}deg)`;
+        }
+        setTimeout(() => {
+          if (front) { front.style.transition = 'none'; front.style.transform = ''; }
+          setActiveCard(prev => 1 - prev);
+          animatingRef.current = false;
+        }, 310);
+      } else {
+        if (front) {
+          front.style.transition = 'transform 0.35s cubic-bezier(0.4,0,0.2,1)';
+          front.style.transform = '';
+        }
+      }
+    };
+
+    container.addEventListener('touchstart', onStart, { passive: true });
+    container.addEventListener('touchmove', onMove, { passive: false });
+    container.addEventListener('touchend', onEnd, { passive: true });
+    return () => {
+      container.removeEventListener('touchstart', onStart);
+      container.removeEventListener('touchmove', onMove);
+      container.removeEventListener('touchend', onEnd);
+    };
+  }, [isMobile]);
 
   const mitData = {
     institution: "Manipal Institute of Technology",
@@ -188,21 +241,14 @@ const DualDegree = () => {
         </TitleContainer>
 
         <div className={isMobile ? 'degree-deck-outer' : undefined}>
-        <div className={`degrees-grid${isMobile ? ' degrees-grid-deck' : ''}`}>
+        <div
+          ref={isMobile ? deckRef : undefined}
+          className={`degrees-grid${isMobile ? ' degrees-grid-deck' : ''}`}
+        >
           {/* MIT Card */}
           <div
-            className="degree-card mit-card"
-            onTouchStart={isMobile ? handleSwipeStart : undefined}
-            onTouchMove={isMobile ? handleSwipeMove : undefined}
-            onTouchEnd={isMobile ? handleSwipeEnd : undefined}
-            onClick={isMobile ? () => handleCardTap(0) : undefined}
-            style={isMobile ? {
-              zIndex: activeCard === 0 ? 2 : 1,
-              transform: activeCard === 0 ? 'translateY(0) scale(1)' : 'translateY(16px) scale(0.95)',
-              transition: 'transform 0.32s cubic-bezier(0.4,0,0.2,1)',
-              pointerEvents: activeCard === 0 ? 'auto' : 'none',
-              opacity: activeCard === 0 ? 1 : 0.6,
-            } : undefined}
+            ref={isMobile ? card0Ref : undefined}
+            className={`degree-card mit-card${isMobile ? (activeCard === 0 ? ' deck-front' : ' deck-back') : ''}`}
           >
             <div className="degree-header">
               <div className="institution-badge">MIT</div>
@@ -334,18 +380,8 @@ const DualDegree = () => {
 
           {/* IIT Madras Card */}
           <div
-            className="degree-card iit-card"
-            onTouchStart={isMobile ? handleSwipeStart : undefined}
-            onTouchMove={isMobile ? handleSwipeMove : undefined}
-            onTouchEnd={isMobile ? handleSwipeEnd : undefined}
-            onClick={isMobile ? () => handleCardTap(1) : undefined}
-            style={isMobile ? {
-              zIndex: activeCard === 1 ? 2 : 1,
-              transform: activeCard === 1 ? 'translateY(0) scale(1)' : 'translateY(16px) scale(0.95)',
-              transition: 'transform 0.32s cubic-bezier(0.4,0,0.2,1)',
-              pointerEvents: activeCard === 1 ? 'auto' : 'none',
-              opacity: activeCard === 1 ? 1 : 0.6,
-            } : undefined}
+            ref={isMobile ? card1Ref : undefined}
+            className={`degree-card iit-card${isMobile ? (activeCard === 1 ? ' deck-front' : ' deck-back') : ''}`}
           >
             <div className="degree-header">
               <div className="institution-badge iit-badge">IITM</div>

@@ -43,3 +43,8 @@ Deployed on Vercel. `vercel.json` is present in the root.
 ## Color Scheme
 
 Primary accent: `#E27F5A` (orange). Used consistently for highlights, active states, and CTA elements.
+
+## Design theme
+
+i want you to design each and every button, page, box,  and everything to modern, apple ui style, minimalistic, theme. (glass theme, faded) so that    
+with the same color theme everything looks modern.

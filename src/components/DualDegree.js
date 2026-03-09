@@ -33,10 +33,13 @@ const DualDegree = () => {
   };
   const handleSwipeEnd = () => {
     const delta = touchStartX.current - touchEndX.current;
-    if (Math.abs(delta) > 45) {
+    if (Math.abs(delta) > 40) {
       if (delta > 0) setActiveCard(1);
       else setActiveCard(0);
     }
+  };
+  const handleCardTap = (idx) => {
+    if (idx !== activeCard) setActiveCard(idx);
   };
 
   const mitData = {
@@ -184,18 +187,22 @@ const DualDegree = () => {
           Dual Degree Journey
         </TitleContainer>
 
-        <div className={isMobile ? 'degree-carousel-outer' : undefined}>
-        <div
-          className={`degrees-grid${isMobile ? ' degrees-grid-carousel' : ''}`}
-          onTouchStart={isMobile ? handleSwipeStart : undefined}
-          onTouchMove={isMobile ? handleSwipeMove : undefined}
-          onTouchEnd={isMobile ? handleSwipeEnd : undefined}
-          style={isMobile ? { transform: `translateX(-${activeCard * 50}%)`, transition: 'transform 0.42s cubic-bezier(0.4,0,0.2,1)' } : undefined}
-        >
+        <div className={isMobile ? 'degree-deck-outer' : undefined}>
+        <div className={`degrees-grid${isMobile ? ' degrees-grid-deck' : ''}`}>
           {/* MIT Card */}
           <div
             className="degree-card mit-card"
-            style={{ opacity: 1 }}
+            onTouchStart={isMobile ? handleSwipeStart : undefined}
+            onTouchMove={isMobile ? handleSwipeMove : undefined}
+            onTouchEnd={isMobile ? handleSwipeEnd : undefined}
+            onClick={isMobile ? () => handleCardTap(0) : undefined}
+            style={isMobile ? {
+              zIndex: activeCard === 0 ? 2 : 1,
+              transform: activeCard === 0 ? 'translateY(0) scale(1)' : 'translateY(16px) scale(0.95)',
+              transition: 'transform 0.32s cubic-bezier(0.4,0,0.2,1)',
+              pointerEvents: activeCard === 0 ? 'auto' : 'none',
+              opacity: activeCard === 0 ? 1 : 0.6,
+            } : undefined}
           >
             <div className="degree-header">
               <div className="institution-badge">MIT</div>
@@ -328,7 +335,17 @@ const DualDegree = () => {
           {/* IIT Madras Card */}
           <div
             className="degree-card iit-card"
-            style={{ opacity: 1 }}
+            onTouchStart={isMobile ? handleSwipeStart : undefined}
+            onTouchMove={isMobile ? handleSwipeMove : undefined}
+            onTouchEnd={isMobile ? handleSwipeEnd : undefined}
+            onClick={isMobile ? () => handleCardTap(1) : undefined}
+            style={isMobile ? {
+              zIndex: activeCard === 1 ? 2 : 1,
+              transform: activeCard === 1 ? 'translateY(0) scale(1)' : 'translateY(16px) scale(0.95)',
+              transition: 'transform 0.32s cubic-bezier(0.4,0,0.2,1)',
+              pointerEvents: activeCard === 1 ? 'auto' : 'none',
+              opacity: activeCard === 1 ? 1 : 0.6,
+            } : undefined}
           >
             <div className="degree-header">
               <div className="institution-badge iit-badge">IITM</div>
@@ -440,11 +457,11 @@ const DualDegree = () => {
           </div>
         </div>
         {isMobile && (
-          <div className="carousel-dots">
+          <div className="deck-dots">
             {[0, 1].map(i => (
               <button
                 key={i}
-                className={`carousel-dot ${i === activeCard ? 'active' : ''}`}
+                className={`deck-dot ${i === activeCard ? 'active' : ''}`}
                 onClick={() => setActiveCard(i)}
                 aria-label={i === 0 ? 'MIT card' : 'IITM card'}
               />

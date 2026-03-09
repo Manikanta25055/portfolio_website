@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 
 const useMediaQuery = (query) => {
   const getMatches = (query) => {
@@ -83,8 +83,6 @@ const WorkTimeline = () => {
     }
   });
 
-  const [expandedIdx, setExpandedIdx] = useState(null);
-
   const SectionContainer = shouldAnimate ? motion.div : 'div';
   const TitleContainer = shouldAnimate ? motion.h2 : 'h2';
   const TimelineItem = shouldAnimate ? motion.div : 'div';
@@ -155,65 +153,27 @@ const WorkTimeline = () => {
           ))}
         </div>
 
-        {/* Mobile: expandable mission cards */}
+        {/* Mobile: simple always-visible cards */}
         <div className="timeline-mobile">
-          {experiences.map((exp, index) => {
-            const isOpen = expandedIdx === index;
-            return (
-              <motion.div
-                key={index}
-                className="tl-card"
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-              >
-                <button
-                  className={`tl-card-header ${isOpen ? 'open' : ''}`}
-                  onClick={() => setExpandedIdx(isOpen ? null : index)}
-                  aria-expanded={isOpen}
-                >
-                  <span className="tl-num">0{index + 1}</span>
-                  <div className="tl-header-main">
-                    <span className="tl-company">{exp.company}</span>
-                    <span className="tl-role">{exp.role}</span>
-                    <span className="tl-period">{exp.period.split(' - ')[0]}</span>
-                  </div>
-                  <motion.span
-                    className="tl-chevron"
-                    animate={{ rotate: isOpen ? 180 : 0 }}
-                    transition={{ duration: 0.25 }}
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                      <path d="M6 9l6 6 6-6"/>
-                    </svg>
-                  </motion.span>
-                </button>
-
-                <AnimatePresence>
-                  {isOpen && (
-                    <motion.div
-                      className="tl-card-body"
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-                    >
-                      <div className="tl-body-inner">
-                        <p className="tl-location">{exp.location}</p>
-                        <p className="tl-desc">{exp.description}</p>
-                        <div className="tl-skills">
-                          {exp.skills.map((skill, idx) => (
-                            <span key={idx} className="timeline-skill">{skill}</span>
-                          ))}
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
-            );
-          })}
+          {experiences.map((exp, index) => (
+            <div key={index} className="tl-simple-card">
+              <div className="tl-sc-top">
+                <span className="tl-sc-num">0{index + 1}</span>
+                <div className="tl-sc-header">
+                  <span className="tl-sc-company">{exp.company}</span>
+                  <span className="tl-sc-role">{exp.role}</span>
+                </div>
+              </div>
+              <p className="tl-sc-period">{exp.period}</p>
+              <p className="tl-sc-location">{exp.location}</p>
+              <p className="tl-sc-desc">{exp.description}</p>
+              <div className="tl-sc-skills">
+                {exp.skills.map((skill, idx) => (
+                  <span key={idx} className="timeline-skill">{skill}</span>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
 
       </SectionContainer>

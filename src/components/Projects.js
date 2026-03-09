@@ -286,9 +286,10 @@ const Projects = () => {
   const [selectedProject, setSelectedProject] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [mobileIdx, setMobileIdx] = useState(0);
+  const [swipeDir, setSwipeDir] = useState(1);
   const touchStartRef = useRef({ x: 0, y: 0 });
-  const swipeStartX = useRef(0);
-  const swipeEndX = useRef(0);
+  const swipeStartY = useRef(0);
+  const swipeEndY = useRef(0);
 
   const isMobile = useMediaQuery('(max-width: 768px)');
   const prefersReducedMotion = useReducedMotion();
@@ -310,8 +311,6 @@ const Projects = () => {
   const handleTouchStart = (e) => {
     const touch = e.touches[0];
     touchStartRef.current = { x: touch.clientX, y: touch.clientY };
-    swipeStartX.current = touch.clientX;
-    swipeEndX.current = touch.clientX;
   };
 
   const handleTouchEnd = (e, project) => {
@@ -325,10 +324,17 @@ const Projects = () => {
   };
 
   const handleCarouselSwipeEnd = () => {
-    const delta = swipeStartX.current - swipeEndX.current;
-    if (Math.abs(delta) > 45) {
-      if (delta > 0) setMobileIdx(prev => Math.min(prev + 1, projects.length - 1));
-      else setMobileIdx(prev => Math.max(prev - 1, 0));
+    const delta = swipeStartY.current - swipeEndY.current;
+    if (Math.abs(delta) > 40) {
+      if (delta > 0) {
+        // swipe up → next
+        setSwipeDir(1);
+        setMobileIdx(prev => Math.min(prev + 1, projects.length - 1));
+      } else {
+        // swipe down → previous
+        setSwipeDir(-1);
+        setMobileIdx(prev => Math.max(prev - 1, 0));
+      }
     }
   };
 
@@ -388,21 +394,28 @@ const Projects = () => {
           Featured Projects
         </TitleContainer>
 
-        {/* Mobile: swipe deck - one card at a time */}
-        <div
-          className="projects-mobile-carousel"
-          onTouchStart={(e) => { swipeStartX.current = e.touches[0].clientX; swipeEndX.current = e.touches[0].clientX; }}
-          onTouchMove={(e) => { swipeEndX.current = e.touches[0].clientX; }}
-          onTouchEnd={handleCarouselSwipeEnd}
-        >
-          <AnimatePresence mode="wait">
+        {/* Mobile: vertical swipe deck */}
+        <div className="projects-mobile-deck">
+          {/* Back card peek */}
+          {mobileIdx < projects.length - 1 && (
+            <div className="projects-deck-back">
+              <div className="project-badge">{projects[mobileIdx + 1].achievement}</div>
+              <h3>{projects[mobileIdx + 1].title}</h3>
+            </div>
+          )}
+          {/* Front card */}
+          <AnimatePresence mode="wait" custom={swipeDir}>
             <motion.div
               key={mobileIdx}
               className="project-card projects-mobile-card"
-              initial={{ opacity: 0, x: 60 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -60 }}
-              transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+              custom={swipeDir}
+              initial={{ opacity: 0, y: swipeDir * 60 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: swipeDir * -60 }}
+              transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
+              onTouchStart={(e) => { swipeStartY.current = e.touches[0].clientY; swipeEndY.current = e.touches[0].clientY; }}
+              onTouchMove={(e) => { swipeEndY.current = e.touches[0].clientY; }}
+              onTouchEnd={handleCarouselSwipeEnd}
               onClick={() => handleProjectClick(projects[mobileIdx])}
             >
               <div className="project-badge">{projects[mobileIdx].achievement}</div>
@@ -427,23 +440,23 @@ const Projects = () => {
           <div className="projects-mobile-nav">
             <button
               className="proj-nav-btn"
-              onClick={() => setMobileIdx(prev => Math.max(prev - 1, 0))}
+              onClick={() => { setSwipeDir(-1); setMobileIdx(prev => Math.max(prev - 1, 0)); }}
               disabled={mobileIdx === 0}
               aria-label="Previous project"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M19 12H5M12 5l-7 7 7 7"/>
+                <path d="M18 15l-6-6-6 6"/>
               </svg>
             </button>
             <span className="proj-nav-indicator">{mobileIdx + 1} / {projects.length}</span>
             <button
               className="proj-nav-btn"
-              onClick={() => setMobileIdx(prev => Math.min(prev + 1, projects.length - 1))}
+              onClick={() => { setSwipeDir(1); setMobileIdx(prev => Math.min(prev + 1, projects.length - 1)); }}
               disabled={mobileIdx === projects.length - 1}
               aria-label="Next project"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
+                <path d="M6 9l6 6 6-6"/>
               </svg>
             </button>
           </div>

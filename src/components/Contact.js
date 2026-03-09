@@ -16,12 +16,22 @@ const ContactForm = () => {
     setStatus('sending');
 
     try {
-      const res = await fetch('/api/contact', {
+      const res = await fetch('https://formsubmit.co/ajax/mgonugondlamanikanta@gmail.com', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          message: form.message,
+          _subject: `Portfolio message from ${form.name}`,
+          _captcha: 'false',
+        }),
       });
-      if (res.ok) {
+      const data = await res.json();
+      if (res.ok && data.success) {
         setStatus('success');
         setForm({ name: '', email: '', message: '' });
       } else {

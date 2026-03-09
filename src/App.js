@@ -42,6 +42,15 @@ function AppContent() {
       <Blog />
       <Contact />
       <KeyboardHint isVisible={hintVisible} onClose={() => setHintVisible(false)} />
+      <button
+        className="shortcuts-trigger"
+        onClick={() => setHintVisible(v => !v)}
+        aria-label="Toggle keyboard shortcuts"
+        title="Keyboard shortcuts"
+      >
+        <kbd>?</kbd>
+        <span>shortcuts</span>
+      </button>
     </div>
   );
 }

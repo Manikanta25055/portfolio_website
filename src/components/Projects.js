@@ -285,16 +285,7 @@ const projects = [
 const Projects = () => {
   const [selectedProject, setSelectedProject] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [mobileIdx, setMobileIdx] = useState(0);
   const touchStartRef = useRef({ x: 0, y: 0 });
-  const mobileDeckRef = useRef(null);
-  const mobileFrontRef = useRef(null);
-  const mobileIdxRef = useRef(0);
-  const mobileAnimRef = useRef(false);
-  const mobileDragState = useRef({ startX: 0, startY: 0, active: false });
-
-  // Keep mobileIdxRef in sync
-  useEffect(() => { mobileIdxRef.current = mobileIdx; }, [mobileIdx]);
 
   const isMobile = useMediaQuery('(max-width: 768px)');
   const prefersReducedMotion = useReducedMotion();
@@ -328,70 +319,6 @@ const Projects = () => {
     }
   };
 
-  // Non-passive touch handler for project deck — prevents page scroll on horizontal swipe
-  useEffect(() => {
-    if (!isMobile) return;
-    const container = mobileDeckRef.current;
-    if (!container) return;
-
-    const THRESHOLD = 70;
-
-    const onStart = (e) => {
-      if (mobileAnimRef.current) return;
-      const t = e.touches[0];
-      mobileDragState.current = { startX: t.clientX, startY: t.clientY, active: true };
-      if (mobileFrontRef.current) mobileFrontRef.current.style.transition = 'none';
-    };
-
-    const onMove = (e) => {
-      if (!mobileDragState.current.active || mobileAnimRef.current) return;
-      const dx = e.touches[0].clientX - mobileDragState.current.startX;
-      const dy = e.touches[0].clientY - mobileDragState.current.startY;
-      if (Math.abs(dx) > Math.abs(dy)) {
-        e.preventDefault();
-        if (mobileFrontRef.current)
-          mobileFrontRef.current.style.transform = `translateX(${dx}px) rotate(${dx * 0.05}deg)`;
-      }
-    };
-
-    const onEnd = (e) => {
-      if (!mobileDragState.current.active || mobileAnimRef.current) return;
-      mobileDragState.current.active = false;
-      const dx = e.changedTouches[0].clientX - mobileDragState.current.startX;
-      const front = mobileFrontRef.current;
-
-      if (Math.abs(dx) > THRESHOLD) {
-        mobileAnimRef.current = true;
-        const dir = dx > 0 ? 1 : -1; // positive dx = swipe right = previous
-        if (front) {
-          front.style.transition = 'transform 0.28s cubic-bezier(0.4,0,0.2,1)';
-          front.style.transform = `translateX(${dir * 600}px) rotate(${dir * 22}deg)`;
-        }
-        setTimeout(() => {
-          if (front) { front.style.transition = 'none'; front.style.transform = ''; }
-          setMobileIdx(prev => {
-            if (dir < 0) return Math.min(prev + 1, projects.length - 1); // swipe left = next
-            return Math.max(prev - 1, 0); // swipe right = previous
-          });
-          mobileAnimRef.current = false;
-        }, 290);
-      } else {
-        if (front) {
-          front.style.transition = 'transform 0.35s cubic-bezier(0.4,0,0.2,1)';
-          front.style.transform = '';
-        }
-      }
-    };
-
-    container.addEventListener('touchstart', onStart, { passive: true });
-    container.addEventListener('touchmove', onMove, { passive: false });
-    container.addEventListener('touchend', onEnd, { passive: true });
-    return () => {
-      container.removeEventListener('touchstart', onStart);
-      container.removeEventListener('touchmove', onMove);
-      container.removeEventListener('touchend', onEnd);
-    };
-  }, [isMobile]);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -449,45 +376,7 @@ const Projects = () => {
           Featured Projects
         </TitleContainer>
 
-        {/* Mobile: horizontal CRED-style swipe deck */}
-        <div className="projects-mobile-deck" ref={mobileDeckRef}>
-          {/* Back card peek (CRED style) */}
-          {mobileIdx < projects.length - 1 && (
-            <div className="projects-deck-back">
-              <div className="project-badge">{projects[mobileIdx + 1].achievement}</div>
-              <h3>{projects[mobileIdx + 1].title}</h3>
-            </div>
-          )}
-          {/* Front card — ref-driven drag animation */}
-          <div
-            ref={mobileFrontRef}
-            key={mobileIdx}
-            className="project-card projects-mobile-card deck-front"
-            onClick={() => handleProjectClick(projects[mobileIdx])}
-          >
-              <div className="project-badge">{projects[mobileIdx].achievement}</div>
-              <h3>{projects[mobileIdx].title}</h3>
-              <h4>{projects[mobileIdx].subtitle}</h4>
-              <p>{projects[mobileIdx].description}</p>
-              <div className="project-tech">
-                {projects[mobileIdx].tech.slice(0, 4).map((tech, i) => (
-                  <span key={i}>{tech}</span>
-                ))}
-              </div>
-              {projects[mobileIdx].githubLink && <RepoStats githubLink={projects[mobileIdx].githubLink} />}
-              <div className="view-details">
-                <span>View Details</span>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M5 12h14M12 5l7 7-7 7"/>
-                </svg>
-              </div>
-          </div>
-
-          <p className="proj-swipe-hint">{mobileIdx + 1} / {projects.length} &nbsp;·&nbsp; swipe to browse</p>
-        </div>
-
-        {/* Desktop: grid */}
-        <div className="projects-grid projects-desktop-grid">
+        <div className="projects-grid">
           {projects.map((project, index) => (
             <CardContainer
               key={index}

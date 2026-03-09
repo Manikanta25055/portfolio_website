@@ -437,29 +437,7 @@ const Projects = () => {
             </motion.div>
           </AnimatePresence>
 
-          <div className="projects-mobile-nav">
-            <button
-              className="proj-nav-btn"
-              onClick={() => { setSwipeDir(-1); setMobileIdx(prev => Math.max(prev - 1, 0)); }}
-              disabled={mobileIdx === 0}
-              aria-label="Previous project"
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M18 15l-6-6-6 6"/>
-              </svg>
-            </button>
-            <span className="proj-nav-indicator">{mobileIdx + 1} / {projects.length}</span>
-            <button
-              className="proj-nav-btn"
-              onClick={() => { setSwipeDir(1); setMobileIdx(prev => Math.min(prev + 1, projects.length - 1)); }}
-              disabled={mobileIdx === projects.length - 1}
-              aria-label="Next project"
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M6 9l6 6 6-6"/>
-              </svg>
-            </button>
-          </div>
+          <p className="proj-swipe-hint">{mobileIdx + 1} / {projects.length} &nbsp;·&nbsp; swipe to browse</p>
         </div>
 
         {/* Desktop: grid */}

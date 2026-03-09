@@ -457,16 +457,7 @@ const DualDegree = () => {
           </div>
         </div>
         {isMobile && (
-          <div className="deck-dots">
-            {[0, 1].map(i => (
-              <button
-                key={i}
-                className={`deck-dot ${i === activeCard ? 'active' : ''}`}
-                onClick={() => setActiveCard(i)}
-                aria-label={i === 0 ? 'MIT card' : 'IITM card'}
-              />
-            ))}
-          </div>
+          <p className="deck-swipe-hint">Swipe to switch</p>
         )}
         </div>
       </SectionContainer>

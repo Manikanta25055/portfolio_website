@@ -294,7 +294,10 @@ h1, h2, h3, h4, h5, h6,
 }
 
 /* ==================== DOT GRID ==================== */
-/* Canvas-based dot grid - styling handled inline */
+/* Canvas-based dot grid - desktop only */
+@media (max-width: 768px) {
+  .dot-grid { display: none !important; }
+}
 
 /* ==================== NAVIGATION ==================== */
 .navigation {
@@ -3618,6 +3621,10 @@ section {
   /* Stack both cards in the same grid cell */
   grid-area: 1 / 1;
   width: 100%;
+  /* Opaque background so back card doesn't bleed through */
+  background: #111111 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
 .deck-dots {
@@ -3804,12 +3811,13 @@ section {
   cursor: not-allowed;
 }
 
-.proj-nav-indicator {
-  font-size: 0.78rem;
-  color: rgba(255,255,255,0.4);
-  font-variant-numeric: tabular-nums;
-  min-width: 3rem;
+.proj-swipe-hint,
+.deck-swipe-hint {
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.3);
   text-align: center;
+  margin: 0.5rem 0 0;
+  letter-spacing: 0.04em;
 }
 
 /* ═══════════════════════════════════════════════

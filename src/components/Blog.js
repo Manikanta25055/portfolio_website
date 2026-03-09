@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const posts = [
@@ -48,12 +49,12 @@ The visual result — a real-time 2D heatmap tracking a soldering iron across th
   },
   {
     id: 'active-balancing',
-    title: 'Active Cell Balancing: Why Passive Isn\'t Good Enough for EVs',
+    title: "Active Cell Balancing: Why Passive Isn't Good Enough for EVs",
     date: 'November 2024',
     readTime: '4 min read',
     tags: ['Power Electronics', 'BMS', 'LTSpice', 'EV'],
     excerpt:
-      'Passive balancing just burns excess charge as heat. Here\'s how a flyback converter topology recycles that energy between cells — and why it gives you a 20-30% battery life increase.',
+      "Passive balancing just burns excess charge as heat. Here's how a flyback converter topology recycles that energy between cells — and why it gives you a 20-30% battery life increase.",
     content: `A lithium-ion battery pack is only as good as its weakest cell. In passive balancing, a resistor dissipates the charge from stronger cells until they match the weakest one. Simple, cheap, and wasteful — you're throwing away energy as heat.
 
 Active balancing uses a converter to move energy from high-SoC cells to low-SoC cells. The flyback topology is the most cost-effective choice for this: one transformer, one switch (MOSFET), one diode, and you can transfer energy bidirectionally between any two cells with minimal additional circuitry per cell.
@@ -68,53 +69,84 @@ Transfer efficiency in simulation: 85-92% depending on the duty cycle and switch
   },
 ];
 
-const BlogModal = ({ post, onClose }) => (
-  <AnimatePresence>
-    {post && (
-      <motion.div
-        className="modal-overlay"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        onClick={onClose}
-      >
+const BlogPostModal = ({ post, isOpen, onClose }) => {
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.paddingRight = '15px';
+      document.documentElement.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+      document.documentElement.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+      document.documentElement.style.overflow = '';
+    };
+  }, [isOpen]);
+
+  if (!post) return null;
+
+  const modalContent = (
+    <AnimatePresence>
+      {isOpen && (
         <motion.div
-          className="modal-container blog-modal"
-          initial={{ opacity: 0, scale: 0.97, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.97, y: 20 }}
-          transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
-          onClick={e => e.stopPropagation()}
+          className="modal-overlay"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={onClose}
         >
-          <button className="modal-close" onClick={onClose} aria-label="Close">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M18 6L6 18M6 6l12 12"/>
-            </svg>
-          </button>
-          <div className="modal-content">
-            <div className="blog-modal-meta">
-              <span className="blog-date">{post.date}</span>
-              <span className="blog-dot" />
-              <span className="blog-read-time">{post.readTime}</span>
-            </div>
-            <h2 className="blog-modal-title">{post.title}</h2>
-            <div className="blog-modal-tags">
-              {post.tags.map(t => <span key={t} className="modal-tech-pill">{t}</span>)}
-            </div>
-            <div className="blog-body">
-              {post.content.trim().split('\n\n').map((para, i) => (
-                <p key={i}>{para}</p>
-              ))}
+          <div
+            className="modal-container blog-modal"
+            onClick={e => e.stopPropagation()}
+          >
+            <button className="modal-close" onClick={onClose} aria-label="Close">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M18 6L6 18M6 6l12 12"/>
+              </svg>
+            </button>
+
+            <div className="modal-content">
+              <div className="blog-modal-meta">
+                <span className="blog-date">{post.date}</span>
+                <span className="blog-dot" />
+                <span className="blog-read-time">{post.readTime}</span>
+              </div>
+              <h2 className="blog-modal-title">{post.title}</h2>
+              <div className="blog-modal-tags">
+                {post.tags.map(t => <span key={t} className="modal-tech-pill">{t}</span>)}
+              </div>
+              <div className="blog-body">
+                {post.content.trim().split('\n\n').map((para, i) => (
+                  <p key={i}>{para}</p>
+                ))}
+              </div>
             </div>
           </div>
         </motion.div>
-      </motion.div>
-    )}
-  </AnimatePresence>
-);
+      )}
+    </AnimatePresence>
+  );
+
+  return ReactDOM.createPortal(modalContent, document.body);
+};
 
 const Blog = () => {
   const [activePost, setActivePost] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleOpen = (post) => {
+    setActivePost(post);
+    setIsOpen(true);
+  };
+
+  const handleClose = () => {
+    setIsOpen(false);
+    setTimeout(() => setActivePost(null), 300);
+  };
 
   return (
     <section className="blog-section" id="blog">
@@ -136,10 +168,10 @@ const Blog = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.1 }}
               transition={{ delay: i * 0.1, duration: 0.5 }}
-              onClick={() => setActivePost(post)}
+              onClick={() => handleOpen(post)}
               role="button"
               tabIndex={0}
-              onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && setActivePost(post)}
+              onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && handleOpen(post)}
             >
               <div className="blog-card-meta">
                 <span className="blog-date">{post.date}</span>
@@ -164,7 +196,7 @@ const Blog = () => {
         </div>
       </motion.div>
 
-      <BlogModal post={activePost} onClose={() => setActivePost(null)} />
+      <BlogPostModal post={activePost} isOpen={isOpen} onClose={handleClose} />
     </section>
   );
 };

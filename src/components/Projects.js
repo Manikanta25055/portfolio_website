@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import ProjectModal from './ProjectModal';
 
 const REPO_CACHE_KEY = 'gh_repo_stats_v1';
@@ -285,7 +285,10 @@ const projects = [
 const Projects = () => {
   const [selectedProject, setSelectedProject] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [mobileIdx, setMobileIdx] = useState(0);
   const touchStartRef = useRef({ x: 0, y: 0 });
+  const swipeStartX = useRef(0);
+  const swipeEndX = useRef(0);
 
   const isMobile = useMediaQuery('(max-width: 768px)');
   const prefersReducedMotion = useReducedMotion();
@@ -307,6 +310,8 @@ const Projects = () => {
   const handleTouchStart = (e) => {
     const touch = e.touches[0];
     touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+    swipeStartX.current = touch.clientX;
+    swipeEndX.current = touch.clientX;
   };
 
   const handleTouchEnd = (e, project) => {
@@ -314,9 +319,16 @@ const Projects = () => {
     const deltaX = Math.abs(touch.clientX - touchStartRef.current.x);
     const deltaY = Math.abs(touch.clientY - touchStartRef.current.y);
 
-    // Only trigger click if movement was less than 10px (a tap, not a scroll)
     if (deltaX < 10 && deltaY < 10) {
       handleProjectClick(project);
+    }
+  };
+
+  const handleCarouselSwipeEnd = () => {
+    const delta = swipeStartX.current - swipeEndX.current;
+    if (Math.abs(delta) > 45) {
+      if (delta > 0) setMobileIdx(prev => Math.min(prev + 1, projects.length - 1));
+      else setMobileIdx(prev => Math.max(prev - 1, 0));
     }
   };
 
@@ -376,7 +388,69 @@ const Projects = () => {
           Featured Projects
         </TitleContainer>
 
-        <div className="projects-grid">
+        {/* Mobile: swipe deck - one card at a time */}
+        <div
+          className="projects-mobile-carousel"
+          onTouchStart={(e) => { swipeStartX.current = e.touches[0].clientX; swipeEndX.current = e.touches[0].clientX; }}
+          onTouchMove={(e) => { swipeEndX.current = e.touches[0].clientX; }}
+          onTouchEnd={handleCarouselSwipeEnd}
+        >
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={mobileIdx}
+              className="project-card projects-mobile-card"
+              initial={{ opacity: 0, x: 60 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -60 }}
+              transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+              onClick={() => handleProjectClick(projects[mobileIdx])}
+            >
+              <div className="project-badge">{projects[mobileIdx].achievement}</div>
+              <h3>{projects[mobileIdx].title}</h3>
+              <h4>{projects[mobileIdx].subtitle}</h4>
+              <p>{projects[mobileIdx].description}</p>
+              <div className="project-tech">
+                {projects[mobileIdx].tech.slice(0, 4).map((tech, i) => (
+                  <span key={i}>{tech}</span>
+                ))}
+              </div>
+              {projects[mobileIdx].githubLink && <RepoStats githubLink={projects[mobileIdx].githubLink} />}
+              <div className="view-details">
+                <span>View Details</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+
+          <div className="projects-mobile-nav">
+            <button
+              className="proj-nav-btn"
+              onClick={() => setMobileIdx(prev => Math.max(prev - 1, 0))}
+              disabled={mobileIdx === 0}
+              aria-label="Previous project"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M19 12H5M12 5l-7 7 7 7"/>
+              </svg>
+            </button>
+            <span className="proj-nav-indicator">{mobileIdx + 1} / {projects.length}</span>
+            <button
+              className="proj-nav-btn"
+              onClick={() => setMobileIdx(prev => Math.min(prev + 1, projects.length - 1))}
+              disabled={mobileIdx === projects.length - 1}
+              aria-label="Next project"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        {/* Desktop: grid */}
+        <div className="projects-grid projects-desktop-grid">
           {projects.map((project, index) => (
             <CardContainer
               key={index}

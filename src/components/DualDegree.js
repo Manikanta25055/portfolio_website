@@ -1,12 +1,43 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+
+function useMediaQuery(query) {
+  const [matches, setMatches] = useState(() =>
+    typeof window !== 'undefined' ? window.matchMedia(query).matches : false
+  );
+  useEffect(() => {
+    const media = window.matchMedia(query);
+    const update = () => setMatches(media.matches);
+    media.addEventListener('change', update);
+    return () => media.removeEventListener('change', update);
+  }, [query]);
+  return matches;
+}
 
 const DualDegree = () => {
   const [expandedMIT, setExpandedMIT] = useState(false);
   const [expandedIIT, setExpandedIIT] = useState(false);
+  const [activeCard, setActiveCard] = useState(0);
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
   const prefersReducedMotion = useReducedMotion();
-  const isMobile = useMemo(() => window.innerWidth <= 768, []);
+  const isMobile = useMediaQuery('(max-width: 768px)');
   const shouldAnimate = !isMobile && !prefersReducedMotion;
+
+  const handleSwipeStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchEndX.current = e.touches[0].clientX;
+  };
+  const handleSwipeMove = (e) => {
+    touchEndX.current = e.touches[0].clientX;
+  };
+  const handleSwipeEnd = () => {
+    const delta = touchStartX.current - touchEndX.current;
+    if (Math.abs(delta) > 45) {
+      if (delta > 0) setActiveCard(1);
+      else setActiveCard(0);
+    }
+  };
 
   const mitData = {
     institution: "Manipal Institute of Technology",
@@ -153,7 +184,14 @@ const DualDegree = () => {
           Dual Degree Journey
         </TitleContainer>
 
-        <div className="degrees-grid">
+        <div className={isMobile ? 'degree-carousel-outer' : undefined}>
+        <div
+          className={`degrees-grid${isMobile ? ' degrees-grid-carousel' : ''}`}
+          onTouchStart={isMobile ? handleSwipeStart : undefined}
+          onTouchMove={isMobile ? handleSwipeMove : undefined}
+          onTouchEnd={isMobile ? handleSwipeEnd : undefined}
+          style={isMobile ? { transform: `translateX(-${activeCard * 50}%)`, transition: 'transform 0.42s cubic-bezier(0.4,0,0.2,1)' } : undefined}
+        >
           {/* MIT Card */}
           <div
             className="degree-card mit-card"
@@ -400,6 +438,19 @@ const DualDegree = () => {
               )}
             </AnimatePresence>
           </div>
+        </div>
+        {isMobile && (
+          <div className="carousel-dots">
+            {[0, 1].map(i => (
+              <button
+                key={i}
+                className={`carousel-dot ${i === activeCard ? 'active' : ''}`}
+                onClick={() => setActiveCard(i)}
+                aria-label={i === 0 ? 'MIT card' : 'IITM card'}
+              />
+            ))}
+          </div>
+        )}
         </div>
       </SectionContainer>
     </section>

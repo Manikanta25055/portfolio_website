@@ -4,7 +4,6 @@ import * as THREE from 'three';
 
 function Chip() {
   const groupRef = useRef();
-  const pinRefs = useRef([]);
 
   useFrame((_, delta) => {
     if (groupRef.current) {

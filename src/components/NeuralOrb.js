@@ -4,7 +4,6 @@ import * as THREE from 'three';
 
 function Nodes() {
   const groupRef = useRef();
-  const lineRef = useRef();
 
   const { nodePositions, linePositions } = useMemo(() => {
     const nodes = [];
@@ -49,8 +48,6 @@ function Nodes() {
   const nodeMat = new THREE.MeshStandardMaterial({ color: '#E27F5A', emissive: '#C8553A', emissiveIntensity: 0.8 });
   const inputMat = new THREE.MeshStandardMaterial({ color: '#4488ff', emissive: '#2255cc', emissiveIntensity: 0.8 });
   const outputMat = new THREE.MeshStandardMaterial({ color: '#50fa7b', emissive: '#22cc55', emissiveIntensity: 0.8 });
-
-  const layerOffsets = [0, 1, 5, 10, 14];
 
   return (
     <group ref={groupRef}>

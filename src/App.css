@@ -44,14 +44,17 @@ section {
 body {
   font-family: 'JetBrains Mono', 'Courier New', monospace;
   background-color: var(--black);
+  /* More subtle grid — Apple uses very restrained background textures */
   background-image:
-    linear-gradient(rgba(255,255,255,0.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.045) 1px, transparent 1px);
+    linear-gradient(rgba(255,255,255,0.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.028) 1px, transparent 1px);
   background-size: 44px 44px;
   color: var(--white);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeSpeed;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  line-height: 1.65;
 }
 
 /* GPU acceleration for animations */
@@ -192,110 +195,99 @@ h1, h2, h3, h4, h5, h6,
   }
 }
 
-/* ==================== LOADER ==================== */
+/* ==================== LOADER — CINEMATIC ==================== */
+
 .loader {
   position: fixed;
   inset: 0;
   background: var(--black);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   z-index: 9999;
+  gap: 0;
 }
 
-.loader-content {
+/* Orange anchor dot — first element to appear */
+.loader-dot-anchor {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--orange);
+  box-shadow: 0 0 18px rgba(200,85,58,0.9), 0 0 40px rgba(200,85,58,0.35);
+  margin-bottom: 2.8rem;
+  flex-shrink: 0;
+}
+
+/* Horizontal scan line that extends then vanishes */
+.loader-scanline {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-1px);
+  width: 260px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--orange), transparent);
+  transform-origin: center;
+}
+
+/* Name block */
+.loader-name-block {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3rem;
+  gap: 0.55rem;
 }
 
-.loader-orbit-container {
-  position: relative;
-  width: 150px;
-  height: 150px;
+.loader-first {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(0.85rem, 2vw, 1rem);
+  font-weight: 300;
+  letter-spacing: 0.22em;
+  color: rgba(240,240,240,0.5);
+  text-transform: uppercase;
+  margin: 0;
 }
 
-.loader-orbit {
-  position: absolute;
-  border: 2px solid transparent;
-  border-radius: 50%;
+.loader-last {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(2.6rem, 7vw, 4.2rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--white);
+  line-height: 1;
+  margin: 0;
 }
 
-.loader-orbit-1 {
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  border-top-color: var(--orange);
-  border-right-color: rgba(200, 85, 58, 0.3);
-}
-
-.loader-orbit-2 {
-  width: 75%;
-  height: 75%;
-  top: 12.5%;
-  left: 12.5%;
-  border-bottom-color: var(--orange-light);
-  border-left-color: rgba(217, 104, 72, 0.3);
-}
-
-.loader-orbit-3 {
-  width: 50%;
-  height: 50%;
-  top: 25%;
-  left: 25%;
-  border-top-color: var(--orange-dark);
-  border-right-color: rgba(168, 66, 44, 0.3);
-}
-
-.loader-core {
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: var(--orange);
-  border-radius: 50%;
-  box-shadow: 0 0 20px rgba(200, 85, 58, 0.5);
-}
-
-.loader-terminal {
+.loader-role {
   font-family: 'JetBrains Mono', monospace;
-  min-height: 30px;
-}
-
-.loader-text {
-  font-size: 1rem;
+  font-size: clamp(0.7rem, 1.5vw, 0.8rem);
   color: var(--orange);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin: 0.6rem 0 0;
 }
 
-.loader-cursor {
-  animation: blink 0.8s infinite;
+/* Thin progress line at bottom */
+.loader-progress-track {
+  position: absolute;
+  bottom: 2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(200px, 40vw);
+  height: 1px;
+  background: rgba(255,255,255,0.07);
+  overflow: hidden;
+  border-radius: 1px;
 }
 
-@keyframes blink {
-  0%, 50% { opacity: 1; }
-  51%, 100% { opacity: 0; }
-}
-
-.loader-dots {
-  display: flex;
-  gap: 0.75rem;
-}
-
-.loader-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: rgba(200, 85, 58, 0.3);
-  transition: all 0.3s ease;
-}
-
-.loader-dot.active {
+.loader-progress-fill {
+  height: 100%;
+  width: 100%;
   background: var(--orange);
+  transform-origin: left;
+  border-radius: 1px;
 }
 
 /* ==================== DOT GRID ==================== */
@@ -1161,10 +1153,12 @@ section {
 }
 
 .section-title {
-  font-size: clamp(2.5rem, 6vw, 4rem);
-  font-weight: 800;
-  margin-bottom: 4rem;
-  letter-spacing: -0.02em;
+  font-size: clamp(2.6rem, 5.5vw, 4.2rem);
+  font-weight: 700;
+  margin-bottom: 4.5rem;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  /* Apple-style: tight tracking on large display text */
 }
 
 /* ==================== DUAL DEGREE ==================== */
@@ -1923,21 +1917,21 @@ section {
   transform: translateX(4px);
 }
 
-/* ==================== HERO 3D CHIP MODEL ==================== */
+/* ==================== HERO 3D SILICON ORB ==================== */
 
-.hero-chip-model {
+.hero-orb-model {
   position: absolute;
-  right: 5%;
+  right: 6%;
   top: 50%;
   transform: translateY(-50%);
-  width: 260px;
-  height: 200px;
+  width: 300px;
+  height: 300px;
   pointer-events: none;
-  opacity: 0.85;
+  opacity: 0.75;
 }
 
-@media (max-width: 900px) {
-  .hero-chip-model {
+@media (max-width: 1000px) {
+  .hero-orb-model {
     display: none;
   }
 }

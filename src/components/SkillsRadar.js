@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect, Suspense, lazy } from 'react';
 import { motion } from 'framer-motion';
 
-const NeuralOrb = lazy(() => import('./NeuralOrb'));
+const OscilloscopeWave = lazy(() => import('./OscilloscopeWave'));
 
 const skills = [
   { label: 'Embedded Systems', value: 92 },
@@ -70,12 +70,12 @@ const SkillsRadar = () => {
         </motion.h2>
 
         <div className="radar-wrapper">
-          {/* Neural network 3D model - represents AI/ML work */}
+          {/* Oscilloscope wave 3D - represents signal processing / EE work */}
           <div className="radar-neural-panel" aria-hidden="true">
             <Suspense fallback={null}>
-              <NeuralOrb />
+              <OscilloscopeWave />
             </Suspense>
-            <p className="radar-neural-label">Neural Architecture</p>
+            <p className="radar-neural-label">Signal Analysis</p>
           </div>
 
           {/* SVG radar chart */}

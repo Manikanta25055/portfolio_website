@@ -59,107 +59,75 @@ function AppContent() {
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
-  const [loadPhase, setLoadPhase] = useState(0);
-  const [typedText, setTypedText] = useState('');
-
-  const codeLines = [
-    '> initializing_portfolio.exe',
-    '> loading neural_networks...',
-    '> compiling dreams...',
-    '> deploying ambition...',
-    '> ready.'
-  ];
 
   useEffect(() => {
-    const phases = [0, 600, 1200, 1800, 2200];
-    phases.forEach((delay, index) => {
-      setTimeout(() => setLoadPhase(index), delay);
-    });
-    setTimeout(() => setIsLoading(false), 2800);
+    const t = setTimeout(() => setIsLoading(false), 3000);
+    return () => clearTimeout(t);
   }, []);
-
-  useEffect(() => {
-    if (loadPhase < codeLines.length) {
-      const line = codeLines[loadPhase];
-      let charIndex = 0;
-      setTypedText('');
-
-      const typeInterval = setInterval(() => {
-        if (charIndex <= line.length) {
-          setTypedText(line.substring(0, charIndex));
-          charIndex++;
-        } else {
-          clearInterval(typeInterval);
-        }
-      }, 30);
-
-      return () => clearInterval(typeInterval);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loadPhase]);
 
   if (isLoading) {
     return (
-      <div className="loader">
-        <div className="loader-content">
-          <div className="loader-orbit-container">
-            <motion.div
-              className="loader-orbit loader-orbit-1"
-              animate={{ rotate: 360 }}
-              transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-            />
-            <motion.div
-              className="loader-orbit loader-orbit-2"
-              animate={{ rotate: -360 }}
-              transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-            />
-            <motion.div
-              className="loader-orbit loader-orbit-3"
-              animate={{ rotate: 360 }}
-              transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
-            />
-            <motion.div
-              className="loader-core"
-              animate={{
-                scale: [1, 1.2, 1],
-                boxShadow: [
-                  "0 0 20px rgba(255, 107, 53, 0.5)",
-                  "0 0 40px rgba(255, 107, 53, 0.8)",
-                  "0 0 20px rgba(255, 107, 53, 0.5)"
-                ]
-              }}
-              transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-            />
+      <AnimatePresence>
+        <motion.div
+          className="loader"
+          key="loader"
+          exit={{ opacity: 0, transition: { duration: 0.7, ease: [0.4, 0, 0.2, 1] } }}
+        >
+          {/* Anchor glow — first thing visible */}
+          <motion.div
+            className="loader-dot-anchor"
+            initial={{ opacity: 0, scale: 0.4 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, ease: [0.34, 1.2, 0.64, 1] }}
+          />
+
+          {/* Horizontal scan line extending from center */}
+          <motion.div
+            className="loader-scanline"
+            initial={{ scaleX: 0, opacity: 0.8 }}
+            animate={{ scaleX: 1, opacity: 0 }}
+            transition={{ delay: 0.35, duration: 0.75, ease: [0.4, 0, 0.2, 1] }}
+          />
+
+          {/* Name block */}
+          <div className="loader-name-block">
+            <motion.p
+              className="loader-first"
+              initial={{ opacity: 0, letterSpacing: '0.5em' }}
+              animate={{ opacity: 1, letterSpacing: '-0.01em' }}
+              transition={{ delay: 0.8, duration: 0.9, ease: [0.4, 0, 0.2, 1] }}
+            >
+              Veera Manikanta
+            </motion.p>
+            <motion.h1
+              className="loader-last"
+              initial={{ opacity: 0, letterSpacing: '0.6em' }}
+              animate={{ opacity: 1, letterSpacing: '-0.02em' }}
+              transition={{ delay: 1.05, duration: 0.9, ease: [0.4, 0, 0.2, 1] }}
+            >
+              Gonugondla
+            </motion.h1>
+            <motion.p
+              className="loader-role"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.7, duration: 0.7, ease: [0.4, 0, 0.2, 1] }}
+            >
+              Electrical &amp; Electronics Engineer
+            </motion.p>
           </div>
 
-          <div className="loader-terminal">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={loadPhase}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                className="loader-text"
-              >
-                {typedText}
-                <span className="loader-cursor">_</span>
-              </motion.div>
-            </AnimatePresence>
-          </div>
-
-          <div className="loader-dots">
-            {[0, 1, 2, 3, 4].map((i) => (
-              <motion.div
-                key={i}
-                className={`loader-dot ${i <= loadPhase ? 'active' : ''}`}
-                initial={{ scale: 0 }}
-                animate={{ scale: i <= loadPhase ? 1 : 0.5 }}
-                transition={{ delay: i * 0.1, duration: 0.3 }}
-              />
-            ))}
-          </div>
-        </div>
-      </div>
+          {/* Progress line */}
+          <motion.div className="loader-progress-track">
+            <motion.div
+              className="loader-progress-fill"
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ delay: 0.3, duration: 2.4, ease: [0.4, 0, 0.2, 1] }}
+            />
+          </motion.div>
+        </motion.div>
+      </AnimatePresence>
     );
   }
 

@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+
+const ChipModel = lazy(() => import('./ChipModel'));
 
 const badges = [
   {
@@ -66,6 +68,11 @@ const Hero = () => {
 
   return (
     <section className="hero" id="home">
+      <div className="hero-chip-model" aria-hidden="true">
+        <Suspense fallback={null}>
+          <ChipModel />
+        </Suspense>
+      </div>
       <motion.div
         className="hero-container"
         variants={containerVariants}

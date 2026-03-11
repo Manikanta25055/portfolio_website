@@ -35,20 +35,27 @@ const GitHubActivity = () => {
 
     Promise.all([
       fetch(`https://api.github.com/users/${GH_USER}`).then(r => r.json()),
-      fetch(`https://api.github.com/users/${GH_USER}/events?per_page=20`).then(r => r.json()),
+      fetch(`https://api.github.com/users/${GH_USER}/events?per_page=30`).then(r => r.json()),
     ])
       .then(([prof, raw]) => {
-        const pushes = Array.isArray(raw)
-          ? raw
-              .filter(e => e.type === 'PushEvent')
-              .slice(0, 6)
-              .map(e => ({
-                repo: e.repo.name.split('/')[1],
-                message: (e.payload.commits?.[0]?.message || 'Pushed changes').split('\n')[0].slice(0, 72),
+        // Group pushes by repo - show each repo once with commits underneath
+        const grouped = new Map();
+        if (Array.isArray(raw)) {
+          raw.filter(e => e.type === 'PushEvent').forEach(e => {
+            const repo = e.repo.name.split('/')[1];
+            if (!grouped.has(repo)) {
+              grouped.set(repo, { repo, commits: [], latestDate: e.created_at });
+            }
+            const g = grouped.get(repo);
+            (e.payload.commits || []).forEach(c => {
+              g.commits.push({
+                message: (c.message || 'Pushed changes').split('\n')[0].slice(0, 60),
                 date: e.created_at,
-                size: e.payload.size,
-              }))
-          : [];
+              });
+            });
+          });
+        }
+        const pushes = Array.from(grouped.values()).slice(0, 5);
 
         const result = { profile: prof, events: pushes };
         setProfile(prof);
@@ -119,28 +126,37 @@ const GitHubActivity = () => {
           <div className="gh-feed">
             <p className="gh-feed-title">Recent commits</p>
             {status === 'loading' ? (
-              [1, 2, 3, 4].map(i => (
-                <div key={i} className="gh-event gh-skeleton" style={{ height: '52px', marginBottom: '0.5rem' }} />
+              [1, 2, 3].map(i => (
+                <div key={i} className="gh-event gh-skeleton" style={{ height: '62px', marginBottom: '0.75rem' }} />
               ))
             ) : events.length > 0 ? (
-              events.map((ev, i) => (
+              events.map((group, i) => (
                 <motion.div
-                  key={i}
-                  className="gh-event"
+                  key={group.repo}
+                  className="gh-repo-group"
                   initial={{ opacity: 0, x: -12 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: i * 0.07 }}
+                  transition={{ delay: i * 0.08 }}
                 >
-                  <div className="gh-event-dot" />
-                  <div className="gh-event-content">
-                    <div className="gh-event-top">
-                      <span className="gh-event-repo">{ev.repo}</span>
-                      {ev.size > 1 && <span className="gh-event-count">+{ev.size}</span>}
-                    </div>
-                    <p className="gh-event-msg">{ev.message}</p>
+                  <div className="gh-repo-header">
+                    <svg className="gh-repo-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M3 3h18v18H3z M9 9h6M9 13h6"/>
+                    </svg>
+                    <span className="gh-event-repo">{group.repo}</span>
+                    <span className="gh-event-time">{relativeTime(group.latestDate)}</span>
                   </div>
-                  <span className="gh-event-time">{relativeTime(ev.date)}</span>
+                  <div className="gh-commits-list">
+                    {group.commits.slice(0, 3).map((c, j) => (
+                      <div key={j} className="gh-commit-row">
+                        <div className="gh-event-dot" />
+                        <p className="gh-event-msg">{c.message}</p>
+                      </div>
+                    ))}
+                    {group.commits.length > 3 && (
+                      <p className="gh-more-commits">+{group.commits.length - 3} more commits</p>
+                    )}
+                  </div>
                 </motion.div>
               ))
             ) : (

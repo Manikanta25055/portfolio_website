@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import React, { useState, useMemo, useRef, useCallback } from 'react';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import ProjectModal from './ProjectModal';
 
 const REPO_CACHE_KEY = 'gh_repo_stats_v1';
-const REPO_CACHE_TTL = 60 * 60 * 1000; // 1 hour
+const REPO_CACHE_TTL = 60 * 60 * 1000;
 
 function extractRepo(githubLink) {
   if (!githubLink) return null;
@@ -15,7 +15,7 @@ function useRepoStats(githubLink) {
   const repo = extractRepo(githubLink);
   const [stats, setStats] = useState(null);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (!repo) return;
     const key = `${REPO_CACHE_KEY}:${repo}`;
     try {
@@ -51,7 +51,7 @@ function RepoStats({ githubLink }) {
     <div className="repo-stats">
       <span className="repo-stat">
         <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+          <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
         </svg>
         {stats.stars}
       </span>
@@ -62,237 +62,259 @@ function RepoStats({ githubLink }) {
 }
 
 const useMediaQuery = (query) => {
-  const getMatches = (query) => {
-    if (typeof window !== 'undefined') {
-      return window.matchMedia(query).matches;
-    }
-    return false;
-  };
+  const [matches, setMatches] = useState(() =>
+    typeof window !== 'undefined' ? window.matchMedia(query).matches : false
+  );
 
-  const [matches, setMatches] = useState(() => getMatches(query));
-
-  useEffect(() => {
+  React.useEffect(() => {
     const media = window.matchMedia(query);
-
-    const updateMatch = () => {
-      setMatches(media.matches);
-    };
-
-    updateMatch();
-    media.addEventListener('change', updateMatch);
-
-    return () => media.removeEventListener('change', updateMatch);
+    const update = () => setMatches(media.matches);
+    update();
+    media.addEventListener('change', update);
+    return () => media.removeEventListener('change', update);
   }, [query]);
 
   return matches;
 };
 
+const FILTER_CATEGORIES = [
+  'All', 'AI/ML', 'Embedded', 'Signal Processing', 'Power Electronics', 'Control Systems', 'IoT'
+];
+
 const projects = [
   {
-    id: "project-garuda",
-    title: "Project GARUDA",
-    subtitle: "AI-Powered Real-Time Security System",
-    achievement: "1st Place - Gadget Expo 2025",
+    id: 'project-garuda',
+    featured: true,
+    categories: ['AI/ML', 'Embedded'],
+    title: 'Project GARUDA',
+    subtitle: 'AI-Powered Real-Time Security System',
+    achievement: '1st Place - Gadget Expo 2025',
     description: "Built an insanely smart home security setup that actually sees and thinks. YOLOv8 running on a Pi 5 with Hailo AI - real-time detection that doesn't miss a beat.",
-    tech: ["Python", "YOLOv8", "Hailo AI", "Raspberry Pi 5", "GStreamer", "OpenCV", "PyQt5"],
-    githubLink: "https://github.com/Manikanta25055/Garuda",
-    problemStatement: "Traditional security systems lack intelligent real-time threat detection and often generate false alarms. There was a need for an affordable, AI-powered security solution that could accurately detect persons in real-time with minimal latency.",
-    solution: "Developed GARUDA, an AI-powered security system using Raspberry Pi 5 with Hailo 8L AI accelerator. Implemented YOLOv8 for person detection with GStreamer pipeline optimization, achieving real-time performance. Added voice-controlled interface using speech recognition and multi-user authentication with OTP verification.",
+    tech: ['Python', 'YOLOv8', 'Hailo AI', 'Raspberry Pi 5', 'GStreamer', 'OpenCV', 'PyQt5'],
+    githubLink: 'https://github.com/Manikanta25055/Garuda',
+    problemStatement: 'Traditional security systems lack intelligent real-time threat detection and often generate false alarms. There was a need for an affordable, AI-powered security solution that could accurately detect persons in real-time with minimal latency.',
+    solution: 'Developed GARUDA, an AI-powered security system using Raspberry Pi 5 with Hailo 8L AI accelerator. Implemented YOLOv8 for person detection with GStreamer pipeline optimization, achieving real-time performance. Added voice-controlled interface using speech recognition and multi-user authentication with OTP verification.',
     keyFeatures: [
-      "Real-time person detection using YOLOv8 with Hailo AI acceleration",
-      "Multi-threaded processing for camera feed and AI inference",
-      "Voice-controlled interface (Narada voice assistant)",
-      "Multi-user GUI with OTP-based authentication",
-      "Alert system with configurable notifications",
-      "Hardware integration with HC-SR04 ultrasonic sensor backup"
+      'Real-time person detection using YOLOv8 with Hailo AI acceleration',
+      'Multi-threaded processing for camera feed and AI inference',
+      'Voice-controlled interface (Narada voice assistant)',
+      'Multi-user GUI with OTP-based authentication',
+      'Alert system with configurable notifications',
+      'Hardware integration with HC-SR04 ultrasonic sensor backup',
     ],
     achievements: [
-      { value: "1st Place", label: "IIT Madras Gadget Expo 2025" },
-      { value: "<100ms", label: "Detection Latency" },
-      { value: "30 FPS", label: "Real-time Processing" }
+      { value: '1st Place', label: 'IIT Madras Gadget Expo 2025' },
+      { value: '<100ms', label: 'Detection Latency' },
+      { value: '30 FPS', label: 'Real-time Processing' },
     ],
-    timeline: "January 2025 - April 2025"
+    timeline: 'January 2025 - April 2025',
   },
   {
-    id: "patient-collapse-detection",
-    title: "Patient Collapse Detection System",
-    subtitle: "Healthcare Innovation",
-    achievement: "Patent Filed",
+    id: 'patient-collapse-detection',
+    categories: ['AI/ML', 'IoT'],
+    title: 'Patient Collapse Detection System',
+    subtitle: 'Healthcare Innovation',
+    achievement: 'Patent Filed',
     description: "Cooked up a wearable that keeps tabs on your vitals 24/7 - non-invasive tech that spots trouble before it happens. Patent-worthy stuff right here.",
-    tech: ["Biomedical Sensors", "Wearable Tech", "AI/ML", "Signal Processing", "IoT"],
-    problemStatement: "Patient falls and collapses in healthcare facilities often go undetected for critical minutes, leading to delayed emergency response. Existing monitoring systems are either invasive, expensive, or generate high false alarm rates.",
-    solution: "Designed a non-invasive patient monitoring system combining multiple vital sign sensors with machine learning algorithms. The system continuously monitors heart rate, respiratory rate, and motion patterns to detect anomalies indicative of patient collapse or distress.",
+    tech: ['Biomedical Sensors', 'Wearable Tech', 'AI/ML', 'Signal Processing', 'IoT'],
+    problemStatement: 'Patient falls and collapses in healthcare facilities often go undetected for critical minutes, leading to delayed emergency response. Existing monitoring systems are either invasive, expensive, or generate high false alarm rates.',
+    solution: 'Designed a non-invasive patient monitoring system combining multiple vital sign sensors with machine learning algorithms. The system continuously monitors heart rate, respiratory rate, and motion patterns to detect anomalies indicative of patient collapse or distress.',
     keyFeatures: [
-      "Multi-modal vital sign monitoring (heart rate, respiration, motion)",
-      "Machine learning-based anomaly detection",
-      "Non-invasive wearable sensor integration",
-      "Real-time alert system to healthcare staff",
-      "Low-power design for extended battery life",
-      "Privacy-preserving data processing"
+      'Multi-modal vital sign monitoring (heart rate, respiration, motion)',
+      'Machine learning-based anomaly detection',
+      'Non-invasive wearable sensor integration',
+      'Real-time alert system to healthcare staff',
+      'Low-power design for extended battery life',
+      'Privacy-preserving data processing',
     ],
     achievements: [
-      { value: "Patent Filed", label: "February 2025" },
-      { value: "95%+", label: "Detection Accuracy" },
-      { value: "<2s", label: "Alert Response Time" }
+      { value: 'Patent Filed', label: 'February 2025' },
+      { value: '95%+', label: 'Detection Accuracy' },
+      { value: '<2s', label: 'Alert Response Time' },
     ],
-    timeline: "November 2024 - February 2025"
+    timeline: 'November 2024 - February 2025',
   },
   {
-    title: "Active Battery Cell Equalization",
-    subtitle: "Electric Vehicle Technology",
-    achievement: "20-30% Lifespan Increase",
+    categories: ['Power Electronics'],
+    title: 'Active Battery Cell Equalization',
+    subtitle: 'Electric Vehicle Technology',
+    achievement: '20-30% Lifespan Increase',
     description: "Designed a sick flyback converter that shuffles energy between battery cells - basically giving EVs a 30% longer lifespan. Power electronics go brrrr.",
-    tech: ["Power Electronics", "EV Systems", "BMS", "LTSpice", "Circuit Design"],
-    githubLink: "https://github.com/Manikanta25055/Active_Battery_cell_Equalisation",
-    problemStatement: "Lithium-ion battery packs in electric vehicles suffer from cell imbalance, where individual cells charge and discharge at different rates. This reduces overall pack capacity, efficiency, and lifespan.",
-    solution: "Implemented an active cell equalization system using flyback converter topology for bidirectional energy transfer between cells. The system monitors individual cell voltages and actively transfers charge from higher voltage cells to lower voltage cells.",
+    tech: ['Power Electronics', 'EV Systems', 'BMS', 'LTSpice', 'Circuit Design'],
+    githubLink: 'https://github.com/Manikanta25055/Active_Battery_cell_Equalisation',
+    problemStatement: 'Lithium-ion battery packs in electric vehicles suffer from cell imbalance, where individual cells charge and discharge at different rates. This reduces overall pack capacity, efficiency, and lifespan.',
+    solution: 'Implemented an active cell equalization system using flyback converter topology for bidirectional energy transfer between cells. The system monitors individual cell voltages and actively transfers charge from higher voltage cells to lower voltage cells.',
     keyFeatures: [
-      "Flyback converter-based bidirectional charge transfer",
-      "Individual cell voltage monitoring",
-      "Automated balancing algorithm",
-      "High efficiency energy transfer (>85%)",
-      "Integration with Battery Management System (BMS)"
+      'Flyback converter-based bidirectional charge transfer',
+      'Individual cell voltage monitoring',
+      'Automated balancing algorithm',
+      'High efficiency energy transfer (>85%)',
+      'Integration with Battery Management System (BMS)',
     ],
     achievements: [
-      { value: "20-30%", label: "Battery Life Increase" },
-      { value: "85%+", label: "Transfer Efficiency" },
-      { value: "15%", label: "Capacity Improvement" }
+      { value: '20-30%', label: 'Battery Life Increase' },
+      { value: '85%+', label: 'Transfer Efficiency' },
+      { value: '15%', label: 'Capacity Improvement' },
     ],
-    timeline: "August 2024 - November 2024"
+    timeline: 'August 2024 - November 2024',
   },
   {
-    title: "Active Suspension System",
-    subtitle: "Control Systems Design",
-    achievement: "15.24 dB Vibration Reduction",
+    categories: ['Control Systems'],
+    title: 'Active Suspension System',
+    subtitle: 'Control Systems Design',
+    achievement: '15.24 dB Vibration Reduction',
     description: "Built a PID controller that absolutely destroys road vibrations - 15dB reduction means your coffee stays in the cup. Control theory actually being useful for once.",
-    tech: ["Control Systems", "PID", "MATLAB", "Simulink", "System Modeling"],
-    githubLink: "https://github.com/Manikanta25055/Active_Suspension_system",
-    problemStatement: "Passive suspension systems in vehicles cannot adapt to varying road conditions, resulting in poor ride comfort and handling. There was a need for an intelligent suspension system that could actively respond to road disturbances.",
-    solution: "Designed and simulated an active suspension system using PID control methodology in MATLAB/Simulink. The system uses accelerometer feedback to adjust damping forces in real-time, significantly reducing vehicle body vibrations.",
+    tech: ['Control Systems', 'PID', 'MATLAB', 'Simulink', 'System Modeling'],
+    githubLink: 'https://github.com/Manikanta25055/Active_Suspension_system',
+    problemStatement: 'Passive suspension systems in vehicles cannot adapt to varying road conditions, resulting in poor ride comfort and handling. There was a need for an intelligent suspension system that could actively respond to road disturbances.',
+    solution: 'Designed and simulated an active suspension system using PID control methodology in MATLAB/Simulink. The system uses accelerometer feedback to adjust damping forces in real-time, significantly reducing vehicle body vibrations.',
     keyFeatures: [
-      "PID controller with optimized tuning parameters",
-      "Real-time vibration sensing and actuation",
-      "MATLAB/Simulink simulation and validation",
-      "Comparative analysis with passive systems",
-      "Road disturbance rejection capability"
+      'PID controller with optimized tuning parameters',
+      'Real-time vibration sensing and actuation',
+      'MATLAB/Simulink simulation and validation',
+      'Comparative analysis with passive systems',
+      'Road disturbance rejection capability',
     ],
     achievements: [
-      { value: "15.24 dB", label: "Vibration Reduction" },
-      { value: "60%", label: "Settling Time Improvement" },
-      { value: "<5%", label: "Steady-State Error" }
+      { value: '15.24 dB', label: 'Vibration Reduction' },
+      { value: '60%', label: 'Settling Time Improvement' },
+      { value: '<5%', label: 'Steady-State Error' },
     ],
-    timeline: "March 2024 - June 2024"
+    timeline: 'March 2024 - June 2024',
   },
   {
-    title: "Secure Communication System",
-    subtitle: "Digital Communication & Encryption",
-    achievement: "14.91 dB Processing Gain",
+    categories: ['Signal Processing'],
+    title: 'Secure Communication System',
+    subtitle: 'Digital Communication & Encryption',
+    achievement: '14.91 dB Processing Gain',
     description: "Engineered a military-grade comms system using spread spectrum - 15dB processing gain means good luck trying to jam this bad boy. Encryption that actually slaps.",
-    tech: ["MATLAB", "DSSS", "Digital Signal Processing", "Encryption", "Communication Theory"],
-    githubLink: "https://github.com/Manikanta25055/Secure_Communication_System",
-    problemStatement: "Traditional communication systems are vulnerable to eavesdropping and jamming attacks. Sensitive data transmission requires robust protection against both unauthorized interception and intentional interference, especially in wireless environments.",
-    solution: "Developed a multi-layered secure communication system combining Direct Sequence Spread Spectrum (DSSS) modulation with XOR-based encryption. The system uses a 31-chip spreading factor for signal spreading and correlation-based despreading at the receiver, providing both security and jamming resistance.",
+    tech: ['MATLAB', 'DSSS', 'Digital Signal Processing', 'Encryption', 'Communication Theory'],
+    githubLink: 'https://github.com/Manikanta25055/Secure_Communication_System',
+    problemStatement: 'Traditional communication systems are vulnerable to eavesdropping and jamming attacks. Sensitive data transmission requires robust protection against both unauthorized interception and intentional interference, especially in wireless environments.',
+    solution: 'Developed a multi-layered secure communication system combining Direct Sequence Spread Spectrum (DSSS) modulation with XOR-based encryption. The system uses a 31-chip spreading factor for signal spreading and correlation-based despreading at the receiver, providing both security and jamming resistance.',
     keyFeatures: [
-      "Direct Sequence Spread Spectrum with 31 chips/bit spreading factor",
-      "XOR-based encryption with pseudo-random key stream",
-      "Correlation-based despreading for signal recovery",
-      "AWGN channel modeling with narrowband jamming simulation",
-      "BER performance analysis across 4 scenarios",
-      "Processing gain of 14.91 dB for noise suppression"
+      'Direct Sequence Spread Spectrum with 31 chips/bit spreading factor',
+      'XOR-based encryption with pseudo-random key stream',
+      'Correlation-based despreading for signal recovery',
+      'AWGN channel modeling with narrowband jamming simulation',
+      'BER performance analysis across 4 scenarios',
+      'Processing gain of 14.91 dB for noise suppression',
     ],
     achievements: [
-      { value: "14.91 dB", label: "Processing Gain" },
-      { value: "10 dB", label: "Jamming Suppression" },
-      { value: "4 Scenarios", label: "BER Analysis" }
+      { value: '14.91 dB', label: 'Processing Gain' },
+      { value: '10 dB', label: 'Jamming Suppression' },
+      { value: '4 Scenarios', label: 'BER Analysis' },
     ],
-    timeline: "November 2024"
+    timeline: 'November 2024',
   },
   {
-    title: "Speech Denoising using Spectral Subtraction",
-    subtitle: "Digital Signal Processing",
-    achievement: "5-10 dB SNR Improvement",
+    categories: ['Signal Processing'],
+    title: 'Speech Denoising using Spectral Subtraction',
+    subtitle: 'Digital Signal Processing',
+    achievement: '5-10 dB SNR Improvement',
     description: "Made noisy audio crystal clear using FFT magic - spectral subtraction that cleans up speech like nobody's business. DSP wizardry at its finest.",
-    tech: ["MATLAB", "FFT/IFFT", "Spectral Analysis", "Audio Processing", "Signal Processing"],
-    githubLink: "https://github.com/Manikanta25055/Speech_Denoising_Using_Spectral_Subtraction",
-    problemStatement: "Speech signals are often corrupted by background noise in real-world applications such as telecommunication, voice recognition, and hearing aids. Traditional time-domain filtering methods struggle with non-stationary noise, requiring more sophisticated frequency-domain techniques.",
-    solution: "Implemented a spectral subtraction algorithm using N-point Fast Fourier Transform to transform signals into the frequency domain. The system estimates noise characteristics from silent frames and subtracts the noise spectrum from the noisy speech spectrum, with spectral floor protection to prevent over-subtraction artifacts.",
+    tech: ['MATLAB', 'FFT/IFFT', 'Spectral Analysis', 'Audio Processing', 'Signal Processing'],
+    githubLink: 'https://github.com/Manikanta25055/Speech_Denoising_Using_Spectral_Subtraction',
+    problemStatement: 'Speech signals are often corrupted by background noise in real-world applications such as telecommunication, voice recognition, and hearing aids. Traditional time-domain filtering methods struggle with non-stationary noise, requiring more sophisticated frequency-domain techniques.',
+    solution: 'Implemented a spectral subtraction algorithm using N-point Fast Fourier Transform to transform signals into the frequency domain. The system estimates noise characteristics from silent frames and subtracts the noise spectrum from the noisy speech spectrum, with spectral floor protection to prevent over-subtraction artifacts.',
     keyFeatures: [
-      "Frame-based processing with Hamming windowing",
-      "N-point FFT for frequency domain transformation",
-      "Adaptive noise spectrum estimation",
-      "Spectral subtraction with over-subtraction factor",
-      "Spectral floor to prevent musical noise artifacts",
-      "Overlap-add synthesis for signal reconstruction"
+      'Frame-based processing with Hamming windowing',
+      'N-point FFT for frequency domain transformation',
+      'Adaptive noise spectrum estimation',
+      'Spectral subtraction with over-subtraction factor',
+      'Spectral floor to prevent musical noise artifacts',
+      'Overlap-add synthesis for signal reconstruction',
     ],
     achievements: [
-      { value: "5-10 dB", label: "SNR Improvement" },
-      { value: ">0.85", label: "Correlation" },
-      { value: "2.5-3.5", label: "PESQ Score" }
+      { value: '5-10 dB', label: 'SNR Improvement' },
+      { value: '>0.85', label: 'Correlation' },
+      { value: '2.5-3.5', label: 'PESQ Score' },
     ],
-    timeline: "October 2024"
+    timeline: 'October 2024',
   },
   {
-    id: "thermal-profiling",
-    title: "4-Channel Thermal Profiling System",
-    subtitle: "Measurement & Instrumentation",
-    achievement: "Industrial MODBUS RTU Protocol",
-    description: "Built an 8-sensor thermal profiling rig with real-time 2D heatmaps. DS18B20 sensors over 1-Wire, ESP32-S3 as MODBUS RTU slave, Python SCADA dashboard - full industrial stack from scratch.",
-    tech: ["ESP32-S3", "DS18B20", "Python", "PyQt5", "MODBUS RTU", "RS485", "Arduino C"],
-    githubLink: "https://github.com/Manikanta25055/Thermal_Profiling",
-    problemStatement: "Single-point temperature sensors fail to capture thermal gradients and hotspot migration in electronics. Multi-point monitoring with industrial-grade communication was needed to enable predictive thermal management in academic and lab settings.",
-    solution: "Designed a complete thermal monitoring system using 8 DS18B20 sensors on a single 1-Wire bus (GPIO + 4.7kΩ pull-up) connected to an ESP32-S3 MODBUS RTU slave. A Python SCADA app on macOS acts as the MODBUS master over RS485, rendering real-time 2D heatmaps, 8 trend plots, and logging timestamped CSV data.",
+    id: 'thermal-profiling',
+    categories: ['Embedded', 'IoT'],
+    title: '4-Channel Thermal Profiling System',
+    subtitle: 'Measurement & Instrumentation',
+    achievement: 'Industrial MODBUS RTU Protocol',
+    description: 'Built an 8-sensor thermal profiling rig with real-time 2D heatmaps. DS18B20 sensors over 1-Wire, ESP32-S3 as MODBUS RTU slave, Python SCADA dashboard - full industrial stack from scratch.',
+    tech: ['ESP32-S3', 'DS18B20', 'Python', 'PyQt5', 'MODBUS RTU', 'RS485', 'Arduino C'],
+    githubLink: 'https://github.com/Manikanta25055/Thermal_Profiling',
+    problemStatement: 'Single-point temperature sensors fail to capture thermal gradients and hotspot migration in electronics. Multi-point monitoring with industrial-grade communication was needed to enable predictive thermal management in academic and lab settings.',
+    solution: 'Designed a complete thermal monitoring system using 8 DS18B20 sensors on a single 1-Wire bus (GPIO + 4.7kΩ pull-up) connected to an ESP32-S3 MODBUS RTU slave. A Python SCADA app on macOS acts as the MODBUS master over RS485, rendering real-time 2D heatmaps, 8 trend plots, and logging timestamped CSV data.',
     keyFeatures: [
-      "8-channel simultaneous temperature measurement (±0.5°C, 12-bit resolution)",
-      "1-Wire protocol - all sensors on single GPIO with 4.7kΩ pull-up resistor",
-      "MODBUS RTU slave on ESP32-S3 via MAX485 RS485 transceiver (27 holding registers)",
-      "Python SCADA dashboard with real-time 2D thermal heatmap (PyQt5 + matplotlib)",
-      "Hotspot/coldspot detection and thermal gradient analysis",
-      "2 Hz update rate with 60-second scrolling trend plots and CSV data logging"
+      '8-channel simultaneous temperature measurement (±0.5°C, 12-bit resolution)',
+      '1-Wire protocol - all sensors on single GPIO with 4.7kΩ pull-up resistor',
+      'MODBUS RTU slave on ESP32-S3 via MAX485 RS485 transceiver (27 holding registers)',
+      'Python SCADA dashboard with real-time 2D thermal heatmap (PyQt5 + matplotlib)',
+      'Hotspot/coldspot detection and thermal gradient analysis',
+      '2 Hz update rate with 60-second scrolling trend plots and CSV data logging',
     ],
     achievements: [
-      { value: "8 Channels", label: "Simultaneous Sensors" },
-      { value: "±0.5°C", label: "Measurement Accuracy" },
-      { value: "MODBUS RTU", label: "Industrial Protocol" }
+      { value: '8 Channels', label: 'Simultaneous Sensors' },
+      { value: '±0.5°C', label: 'Measurement Accuracy' },
+      { value: 'MODBUS RTU', label: 'Industrial Protocol' },
     ],
-    timeline: "January 2026 - February 2026"
+    timeline: 'January 2026 - February 2026',
   },
   {
-    title: "Power Quality Analysis using DTFS",
-    subtitle: "Power Systems & Harmonic Analysis",
-    achievement: "IEEE 519 Compliance",
+    categories: ['Signal Processing', 'Power Electronics'],
+    title: 'Power Quality Analysis using DTFS',
+    subtitle: 'Power Systems & Harmonic Analysis',
+    achievement: 'IEEE 519 Compliance',
     description: "Built a power quality analyzer that catches nasty harmonics red-handed - DTFS-powered THD calculations keeping the grid IEEE 519 compliant. Clean power or bust.",
-    tech: ["MATLAB", "DTFS", "Power Systems", "Harmonic Analysis", "IEEE 519"],
-    githubLink: "https://github.com/Manikanta25055/Power_Quality_Analysis_Using_DTFS",
-    problemStatement: "Modern electrical loads like LED lighting, variable frequency drives, and switch-mode power supplies introduce harmonic distortion into power systems. This degrades power quality, increases losses, causes equipment malfunction, and violates IEEE 519 standards.",
-    solution: "Developed a MATLAB-based power quality analysis tool using Discrete-Time Fourier Series (DTFS) to decompose distorted power signals into harmonic components. The system analyzes multiple real-world scenarios (LED lighting, motor drives, data centers), calculates comprehensive power quality metrics, and designs harmonic filters for mitigation.",
+    tech: ['MATLAB', 'DTFS', 'Power Systems', 'Harmonic Analysis', 'IEEE 519'],
+    githubLink: 'https://github.com/Manikanta25055/Power_Quality_Analysis_Using_DTFS',
+    problemStatement: 'Modern electrical loads like LED lighting, variable frequency drives, and switch-mode power supplies introduce harmonic distortion into power systems. This degrades power quality, increases losses, causes equipment malfunction, and violates IEEE 519 standards.',
+    solution: 'Developed a MATLAB-based power quality analysis tool using Discrete-Time Fourier Series (DTFS) to decompose distorted power signals into harmonic components. The system analyzes multiple real-world scenarios (LED lighting, motor drives, data centers), calculates comprehensive power quality metrics, and designs harmonic filters for mitigation.',
     keyFeatures: [
-      "DTFS-based harmonic content extraction",
-      "Total Harmonic Distortion (THD) calculation",
-      "IEEE 519 compliance assessment",
-      "Power factor and K-factor computation",
-      "Harmonic filter design for mitigation",
-      "Multiple real-world scenario analysis"
+      'DTFS-based harmonic content extraction',
+      'Total Harmonic Distortion (THD) calculation',
+      'IEEE 519 compliance assessment',
+      'Power factor and K-factor computation',
+      'Harmonic filter design for mitigation',
+      'Multiple real-world scenario analysis',
     ],
     achievements: [
-      { value: "<5%", label: "THD after Filtering" },
-      { value: "3 Scenarios", label: "Industrial Cases" },
-      { value: "IEEE 519", label: "Compliance" }
+      { value: '<5%', label: 'THD after Filtering' },
+      { value: '3 Scenarios', label: 'Industrial Cases' },
+      { value: 'IEEE 519', label: 'Compliance' },
     ],
-    timeline: "October 2024"
-  }
+    timeline: 'October 2024',
+  },
 ];
 
 const Projects = () => {
   const [selectedProject, setSelectedProject] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [activeFilter, setActiveFilter] = useState('All');
   const touchStartRef = useRef({ x: 0, y: 0 });
+  const tiltRefs = useRef(new Map());
 
   const isMobile = useMediaQuery('(max-width: 768px)');
   const prefersReducedMotion = useReducedMotion();
+  const shouldAnimate = useMemo(() => !isMobile && !prefersReducedMotion, [isMobile, prefersReducedMotion]);
 
-  const shouldAnimate = useMemo(() => {
-    return !isMobile && !prefersReducedMotion;
-  }, [isMobile, prefersReducedMotion]);
+  const filteredProjects = useMemo(
+    () => activeFilter === 'All' ? projects : projects.filter(p => p.categories.includes(activeFilter)),
+    [activeFilter]
+  );
+
+  const handleTilt = useCallback((e, key) => {
+    const el = tiltRefs.current.get(key);
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    el.style.transform = `perspective(900px) rotateX(${-y * 7}deg) rotateY(${x * 10}deg)`;
+  }, []);
+
+  const resetTilt = useCallback((key) => {
+    const el = tiltRefs.current.get(key);
+    if (!el) return;
+    el.style.transform = '';
+  }, []);
 
   const handleProjectClick = (project) => {
     setSelectedProject(project);
@@ -313,114 +335,96 @@ const Projects = () => {
     const touch = e.changedTouches[0];
     const deltaX = Math.abs(touch.clientX - touchStartRef.current.x);
     const deltaY = Math.abs(touch.clientY - touchStartRef.current.y);
-
-    if (deltaX < 10 && deltaY < 10) {
-      handleProjectClick(project);
-    }
+    if (deltaX < 10 && deltaY < 10) handleProjectClick(project);
   };
-
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { duration: 0.8 }
-    }
-  };
-
-  const titleVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6 }
-    }
-  };
-
-  const cardVariants = (index) => ({
-    hidden: { opacity: 0, y: 50 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.6,
-        delay: shouldAnimate ? index * 0.1 : 0
-      }
-    }
-  });
-
-  const SectionContainer = shouldAnimate ? motion.div : 'div';
-  const TitleContainer = shouldAnimate ? motion.h2 : 'h2';
-  const CardContainer = shouldAnimate ? motion.div : 'div';
 
   return (
     <section className="projects" id="projects">
-      <SectionContainer
-        className="section-container"
-        {...(shouldAnimate && {
-          initial: "hidden",
-          whileInView: "visible",
-          viewport: { once: true, amount: 0.05, margin: "200px 0px -200px 0px" },
-          variants: containerVariants
-        })}
-      >
-        <TitleContainer
+      <div className="section-container">
+        <motion.h2
           className="section-title"
-          {...(shouldAnimate && {
-            initial: "hidden",
-            whileInView: "visible",
-            viewport: { once: true, margin: "0px 0px -50px 0px" },
-            variants: titleVariants
-          })}
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
         >
           Featured Projects
-        </TitleContainer>
+        </motion.h2>
+
+        {/* Filter bar */}
+        <motion.div
+          className="project-filter-bar"
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          {FILTER_CATEGORIES.map(cat => (
+            <button
+              key={cat}
+              className={`project-filter-btn${activeFilter === cat ? ' active' : ''}`}
+              onClick={() => setActiveFilter(cat)}
+            >
+              {cat}
+            </button>
+          ))}
+        </motion.div>
 
         <div className="projects-grid">
-          {projects.map((project, index) => (
-            <CardContainer
-              key={index}
-              id={project.id}
-              className={`project-card ${index === 0 ? 'featured' : ''}`}
-              {...(shouldAnimate && {
-                initial: "hidden",
-                whileInView: "visible",
-                viewport: { once: true, amount: 0.1, margin: "150px 0px -150px 0px" },
-                variants: cardVariants(index),
-                whileHover: { y: -10, transition: { duration: 0.3 } }
-              })}
-              onClick={() => handleProjectClick(project)}
-              onTouchStart={handleTouchStart}
-              onTouchEnd={(e) => handleTouchEnd(e, project)}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  handleProjectClick(project);
-                }
-              }}
-              style={!shouldAnimate ? { opacity: 1, transform: 'none' } : {}}
-            >
-              <div className="project-badge">{project.achievement}</div>
-              <h3>{project.title}</h3>
-              <h4>{project.subtitle}</h4>
-              <p>{project.description}</p>
-              <div className="project-tech">
-                {project.tech.map((tech, i) => (
-                  <span key={i}>{tech}</span>
-                ))}
-              </div>
-              {project.githubLink && <RepoStats githubLink={project.githubLink} />}
-              <div className="view-details">
-                <span>View Details</span>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M5 12h14M12 5l7 7-7 7"/>
-                </svg>
-              </div>
-            </CardContainer>
-          ))}
+          <AnimatePresence mode="popLayout">
+            {filteredProjects.map((project, index) => (
+              <motion.div
+                key={project.title}
+                layout
+                className={`project-outer${project.featured && activeFilter === 'All' ? ' project-outer-featured' : ''}`}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
+                viewport={{ once: true, amount: 0.08 }}
+                transition={{ duration: 0.4, delay: shouldAnimate ? index * 0.06 : 0 }}
+              >
+                {/* Tilt wrapper - handles 3D perspective via direct DOM style */}
+                <div
+                  className="project-tilt"
+                  ref={el => { if (el) tiltRefs.current.set(project.title, el); }}
+                  onMouseMove={shouldAnimate ? (e) => handleTilt(e, project.title) : undefined}
+                  onMouseLeave={shouldAnimate ? () => resetTilt(project.title) : undefined}
+                >
+                  <div
+                    id={project.id}
+                    className="project-card"
+                    onClick={() => handleProjectClick(project)}
+                    onTouchStart={handleTouchStart}
+                    onTouchEnd={(e) => handleTouchEnd(e, project)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') handleProjectClick(project);
+                    }}
+                  >
+                    <div className="project-badge">{project.achievement}</div>
+                    <h3>{project.title}</h3>
+                    <h4>{project.subtitle}</h4>
+                    <p>{project.description}</p>
+                    <div className="project-tech">
+                      {project.tech.map((tech, i) => (
+                        <span key={i}>{tech}</span>
+                      ))}
+                    </div>
+                    {project.githubLink && <RepoStats githubLink={project.githubLink} />}
+                    <div className="view-details">
+                      <span>View Details</span>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M5 12h14M12 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
-      </SectionContainer>
+      </div>
 
       <ProjectModal
         project={selectedProject}

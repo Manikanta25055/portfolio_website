@@ -12,6 +12,8 @@ import GitHubActivity from './components/GitHubActivity';
 import Coursework from './components/Coursework';
 import Blog from './components/Blog';
 import Contact from './components/Contact';
+import SkillsRadar from './components/SkillsRadar';
+import StatusWidget from './components/StatusWidget';
 import KeyboardHint from './components/KeyboardHint';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 
@@ -34,11 +36,13 @@ function AppContent() {
       <Hero />
       <DualDegree />
       <WorkTimeline />
+      <SkillsRadar />
       <Projects />
       <GitHubActivity />
       <Coursework />
       <Blog />
       <Contact />
+      <StatusWidget />
       <KeyboardHint isVisible={hintVisible} onClose={() => setHintVisible(false)} />
       <button
         className="shortcuts-trigger"

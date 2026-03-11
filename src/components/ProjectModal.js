@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import CountUp from './CountUp';
 
 const ProjectModal = ({ project, isOpen, onClose }) => {
   const scrollPositionRef = useRef(0);
@@ -98,7 +99,9 @@ const ProjectModal = ({ project, isOpen, onClose }) => {
                   <div className="achievements-grid">
                     {project.achievements.map((achievement, index) => (
                       <div key={index} className="achievement-item">
-                        <div className="achievement-value">{achievement.value}</div>
+                        <div className="achievement-value">
+                          <CountUp value={achievement.value} trigger={isOpen} duration={900} />
+                        </div>
                         <div className="achievement-label">{achievement.label}</div>
                       </div>
                     ))}

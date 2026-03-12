@@ -3756,6 +3756,21 @@ section {
 .contact-form-submit:active { transform: scale(0.98); }
 .contact-form-submit.sending { opacity: 0.6; cursor: not-allowed; }
 
+.contact-form-input.input-error,
+.contact-form-textarea.input-error {
+  border-color: rgba(248, 81, 73, 0.6);
+  background: rgba(248, 81, 73, 0.05);
+}
+
+.contact-form-field-error {
+  display: block;
+  font-size: 0.72rem;
+  color: #f85149;
+  margin-top: 0.35rem;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.02em;
+}
+
 .contact-form-status {
   font-size: 0.82rem;
   margin: 0;

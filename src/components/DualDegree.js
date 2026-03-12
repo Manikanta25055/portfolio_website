@@ -177,7 +177,7 @@ const DualDegree = () => {
 
             <div className="degree-stats">
               <div className="stat-item">
-                <CircularProgress progress={mitData.progress} />
+                <CircularProgress progress={mitData.progress} size={88} strokeWidth={6} />
                 <div className="stat-info">
                   <span className="stat-label">Progress</span>
                   <span className="stat-value">Semester {mitData.currentSem}/{mitData.totalSems}</span>

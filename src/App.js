@@ -91,22 +91,22 @@ function App() {
 
           {/* Name block */}
           <div className="loader-name-block">
-            <motion.p
-              className="loader-first"
-              initial={{ opacity: 0, letterSpacing: '0.5em' }}
-              animate={{ opacity: 1, letterSpacing: '-0.01em' }}
-              transition={{ delay: 0.8, duration: 0.9, ease: [0.4, 0, 0.2, 1] }}
-            >
-              Veera Manikanta
-            </motion.p>
             <motion.h1
               className="loader-last"
               initial={{ opacity: 0, letterSpacing: '0.6em' }}
               animate={{ opacity: 1, letterSpacing: '-0.02em' }}
+              transition={{ delay: 0.8, duration: 0.9, ease: [0.4, 0, 0.2, 1] }}
+            >
+              Veera Manikanta
+            </motion.h1>
+            <motion.p
+              className="loader-first"
+              initial={{ opacity: 0, letterSpacing: '0.5em' }}
+              animate={{ opacity: 1, letterSpacing: '0.18em' }}
               transition={{ delay: 1.05, duration: 0.9, ease: [0.4, 0, 0.2, 1] }}
             >
               Gonugondla
-            </motion.h1>
+            </motion.p>
             <motion.p
               className="loader-role"
               initial={{ opacity: 0, y: 10 }}

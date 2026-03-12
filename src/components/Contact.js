@@ -4,15 +4,37 @@ import FloatingParticles from './FloatingParticles';
 
 const ContactForm = () => {
   const [form, setForm] = useState({ name: '', email: '', message: '' });
+  const [errors, setErrors] = useState({ name: '', email: '', message: '' });
   const [status, setStatus] = useState('idle'); // idle | sending | success | error
 
+  const validate = () => {
+    const e = { name: '', email: '', message: '' };
+    if (!form.name.trim()) e.name = 'Name is required.';
+    if (!form.email.trim()) {
+      e.email = 'Email is required.';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+      e.email = 'Enter a valid email address.';
+    }
+    if (!form.message.trim()) e.message = 'Message is required.';
+    return e;
+  };
+
   const handleChange = (e) => {
-    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+    setForm(prev => ({ ...prev, [name]: value }));
+    if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (status === 'sending') return;
+
+    const fieldErrors = validate();
+    if (Object.values(fieldErrors).some(v => v)) {
+      setErrors(fieldErrors);
+      return;
+    }
+
     setStatus('sending');
 
     try {
@@ -47,39 +69,39 @@ const ContactForm = () => {
       <div className="contact-form-row">
         <div className="contact-form-group">
           <input
-            className="contact-form-input"
+            className={`contact-form-input${errors.name ? ' input-error' : ''}`}
             type="text"
             name="name"
             placeholder="Name"
             value={form.name}
             onChange={handleChange}
-            required
             autoComplete="name"
           />
+          {errors.name && <span className="contact-form-field-error">{errors.name}</span>}
         </div>
         <div className="contact-form-group">
           <input
-            className="contact-form-input"
+            className={`contact-form-input${errors.email ? ' input-error' : ''}`}
             type="email"
             name="email"
             placeholder="Email"
             value={form.email}
             onChange={handleChange}
-            required
             autoComplete="email"
           />
+          {errors.email && <span className="contact-form-field-error">{errors.email}</span>}
         </div>
       </div>
       <div className="contact-form-group">
         <textarea
-          className="contact-form-textarea"
+          className={`contact-form-textarea${errors.message ? ' input-error' : ''}`}
           name="message"
           placeholder="Message"
           value={form.message}
           onChange={handleChange}
-          required
           rows={4}
         />
+        {errors.message && <span className="contact-form-field-error">{errors.message}</span>}
       </div>
       <button
         type="submit"

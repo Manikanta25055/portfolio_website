@@ -51,5 +51,6 @@ with the same color theme everything looks modern.
 
 ## Workflow Rules
 
-- After completing any code changes, always commit and push to a GitHub PR. Never leave changes only local.
+- Push to GitHub PR after EVERY task, no exceptions. Even single-file edits must be committed and pushed immediately.
+- Do not batch changes across multiple tasks before pushing. Each completed task = one commit + push.
 - Do not take screenshots to verify changes. The user will check the output manually. Only take screenshots if explicitly asked.

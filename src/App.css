@@ -44,10 +44,9 @@ section {
 body {
   font-family: 'JetBrains Mono', 'Courier New', monospace;
   background-color: var(--black);
-  /* More subtle grid — Apple uses very restrained background textures */
   background-image:
-    linear-gradient(rgba(255,255,255,0.028) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.028) 1px, transparent 1px);
+    linear-gradient(rgba(255,255,255,0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.055) 1px, transparent 1px);
   background-size: 44px 44px;
   color: var(--white);
   overflow-x: hidden;
@@ -1917,24 +1916,6 @@ section {
   transform: translateX(4px);
 }
 
-/* ==================== HERO 3D SILICON ORB ==================== */
-
-.hero-orb-model {
-  position: absolute;
-  right: 6%;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 300px;
-  height: 300px;
-  pointer-events: none;
-  opacity: 0.75;
-}
-
-@media (max-width: 1000px) {
-  .hero-orb-model {
-    display: none;
-  }
-}
 
 /* ==================== RADAR NEURAL ORB ==================== */
 

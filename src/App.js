@@ -1,6 +1,7 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import posthog from 'posthog-js';
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import './App.css';
 import CustomCursor from './components/CustomCursor';
 import CanvasWorld from './components/CanvasWorld';
@@ -59,6 +60,8 @@ function App() {
   const handleRevealComplete = useCallback(() => {
     setRevealDone(true);
   }, []);
+
+  useKeyboardShortcuts(canvasRef, null);
 
   return (
     <div className="App">

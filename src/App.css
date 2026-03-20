@@ -133,88 +133,143 @@ h1, h2, h3, h4, h5, h6,
 }
 
 /* ==================== CUSTOM CURSOR ==================== */
-.cursor-dot,
-.cursor-outline {
+.cursor-reticle,
+.cursor-ring {
   position: fixed;
   top: 0;
   left: 0;
   pointer-events: none;
   z-index: 999999;
-  border-radius: 50%;
   will-change: transform;
   backface-visibility: hidden;
-  transform-style: preserve-3d;
 }
 
-.cursor-dot {
-  width: 8px;
-  height: 8px;
+/* Reticle: snaps instantly to mouse */
+.cursor-reticle {
+  width: 32px;
+  height: 32px;
+  margin-left: -16px;
+  margin-top: -16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--orange);
+  transition: width 0.15s var(--ease-smooth),
+              height 0.15s var(--ease-smooth),
+              margin 0.15s var(--ease-smooth),
+              opacity 0.15s ease;
+}
+
+.cursor-brackets {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transition: opacity 0.15s ease, transform 0.15s var(--ease-smooth);
+}
+
+.cursor-core {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
   background: var(--orange);
-  margin-left: -4px;
-  margin-top: -4px;
-  transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-              height 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-              background 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-              margin 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 6px rgba(200,85,58,0.9);
+  transition: width 0.15s var(--ease-smooth),
+              height 0.15s var(--ease-smooth),
+              border-radius 0.15s ease;
 }
 
-.cursor-dot.hovering {
-  width: 20px;
-  height: 20px;
-  background: rgba(200, 85, 58, 0.8);
-  margin-left: -10px;
-  margin-top: -10px;
+/* Ring: lags behind with velocity prediction */
+.cursor-ring {
+  width: 44px;
+  height: 44px;
+  margin-left: -22px;
+  margin-top: -22px;
+  border-radius: 50%;
+  border: 1px solid rgba(200,85,58,0.35);
+  transition: width 0.2s var(--ease-smooth),
+              height 0.2s var(--ease-smooth),
+              margin 0.2s var(--ease-smooth),
+              border-color 0.2s ease,
+              opacity 0.2s ease;
 }
 
-.cursor-dot.clicking {
-  animation: clickPulse 0.2s ease-out;
-}
-
-.cursor-outline {
+/* Hover state */
+.cursor-reticle.cursor-hover {
   width: 40px;
   height: 40px;
-  border: 2px solid var(--orange);
-  background: transparent;
-  opacity: 0.5;
   margin-left: -20px;
   margin-top: -20px;
-  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-              height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-              opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-              border-width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-              margin 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  color: var(--orange-light);
+}
+.cursor-reticle.cursor-hover .cursor-brackets { transform: scale(1.15); opacity: 0.6; }
+.cursor-reticle.cursor-hover .cursor-core {
+  width: 6px;
+  height: 6px;
+  background: var(--orange-light);
+}
+.cursor-ring.cursor-hover {
+  width: 56px;
+  height: 56px;
+  margin-left: -28px;
+  margin-top: -28px;
+  border-color: rgba(200,85,58,0.55);
 }
 
-.cursor-outline.hovering {
-  width: 50px;
-  height: 50px;
-  opacity: 0.7;
-  border-width: 3px;
-  margin-left: -25px;
-  margin-top: -25px;
+/* Click state */
+.cursor-reticle.cursor-click {
+  width: 24px;
+  height: 24px;
+  margin-left: -12px;
+  margin-top: -12px;
+}
+.cursor-reticle.cursor-click .cursor-core {
+  width: 8px;
+  height: 8px;
+  box-shadow: 0 0 12px rgba(200,85,58,1);
+}
+.cursor-ring.cursor-click {
+  width: 30px;
+  height: 30px;
+  margin-left: -15px;
+  margin-top: -15px;
+  border-color: rgba(200,85,58,0.7);
 }
 
-.cursor-outline.clicking {
-  animation: clickOutline 0.2s ease-out;
+/* Pan/grab state */
+.cursor-reticle.cursor-pan {
+  width: 28px;
+  height: 28px;
+  margin-left: -14px;
+  margin-top: -14px;
+}
+.cursor-reticle.cursor-pan .cursor-brackets { opacity: 0; }
+.cursor-reticle.cursor-pan .cursor-core {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: transparent;
+  border: 1.5px solid rgba(200,85,58,0.5);
+  box-shadow: none;
+}
+.cursor-ring.cursor-pan {
+  width: 36px;
+  height: 36px;
+  margin-left: -18px;
+  margin-top: -18px;
+  border-color: rgba(200,85,58,0.3);
 }
 
-@keyframes clickPulse {
-  0%, 100% {
-    filter: brightness(1);
-  }
-  50% {
-    filter: brightness(1.5);
-  }
+/* Text state */
+.cursor-reticle.cursor-text .cursor-brackets { opacity: 0; }
+.cursor-reticle.cursor-text .cursor-core {
+  width: 2px;
+  height: 20px;
+  border-radius: 1px;
+  background: var(--white-muted);
+  box-shadow: none;
 }
-
-@keyframes clickOutline {
-  0%, 100% {
-    opacity: 0.5;
-  }
-  50% {
-    opacity: 1;
-  }
-}
+.cursor-ring.cursor-text { opacity: 0; }
 
 /* ==================== BLUEPRINT REVEAL ==================== */
 

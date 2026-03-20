@@ -1,134 +1,123 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-const CustomCursor = () => {
-  const cursorDotRef = useRef(null);
-  const cursorOutlineRef = useRef(null);
+const CLICKABLE = 'a, button, .minimap-dot, .minimap-legend-item, .cta-primary, .achievement-badge, [role="button"]';
+const TEXT_TARGETS = 'input, textarea, [contenteditable]';
+
+const CustomCursor = ({ isPanning }) => {
+  const reticleRef = useRef(null);
+  const ringRef = useRef(null);
   const [isTouchDevice, setIsTouchDevice] = useState(true);
 
   useEffect(() => {
-    const checkTouchDevice = () => {
-      const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-      setIsTouchDevice(hasTouch);
-    };
-
-    checkTouchDevice();
-    // No need for resize listener since touch capability doesn't change
+    setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
   }, []);
 
   useEffect(() => {
     if (isTouchDevice) return;
 
-    const cursorDot = cursorDotRef.current;
-    const cursorOutline = cursorOutlineRef.current;
+    let mX = 0, mY = 0, rX = 0, rY = 0;
+    let vX = 0, vY = 0, pX = 0, pY = 0;
+    let rafId;
+    let lastMove = 0, lastCheck = 0;
+    let state = 'default';
+    let mouseDown = false;
 
-    let mouseX = 0;
-    let mouseY = 0;
-    let prevMouseX = 0;
-    let prevMouseY = 0;
-    let velocityX = 0;
-    let velocityY = 0;
-    let outlineX = 0;
-    let outlineY = 0;
-    let animationFrameId;
-    let lastHoverCheck = 0;
-    let isHovering = false;
-    let lastMoveTime = 0;
+    const reticle = reticleRef.current;
+    const ring = ringRef.current;
 
-    const handleMouseMove = (e) => {
+    const setState = (s) => {
+      if (state === s) return;
+      state = s;
+      reticle.className = `cursor-reticle cursor-${s}`;
+      ring.className = `cursor-ring cursor-${s}`;
+    };
+
+    const onMove = (e) => {
       const now = performance.now();
-      const deltaTime = Math.max(1, now - lastMoveTime);
-      lastMoveTime = now;
+      const dt = Math.max(1, now - lastMove);
+      lastMove = now;
+      pX = mX; pY = mY;
+      mX = e.clientX; mY = e.clientY;
+      vX = (mX - pX) / dt; vY = (mY - pY) / dt;
+      reticle.style.transform = `translate3d(${mX}px, ${mY}px, 0)`;
 
-      prevMouseX = mouseX;
-      prevMouseY = mouseY;
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-
-      // Calculate velocity for predictive movement
-      velocityX = (mouseX - prevMouseX) / deltaTime;
-      velocityY = (mouseY - prevMouseY) / deltaTime;
-
-      if (cursorDot) {
-        cursorDot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
-      }
-
-      // Throttle hover detection to every 150ms
-      if (now - lastHoverCheck > 150) {
-        lastHoverCheck = now;
-        const target = e.target;
-        const isClickable = !!target.closest('a, button, .project-card, .skill-card, .category-btn, .timeline-content, .tech-pill, .section-dot, .hamburger, .mobile-menu-item, .degree-card, .expand-btn, .course-item, .phase-item, .glass-nav-item');
-
-        // Only update DOM if hover state changed
-        if (isClickable !== isHovering) {
-          isHovering = isClickable;
-          if (isClickable) {
-            if (cursorDot) cursorDot.classList.add('hovering');
-            if (cursorOutline) cursorOutline.classList.add('hovering');
-          } else {
-            if (cursorDot) cursorDot.classList.remove('hovering');
-            if (cursorOutline) cursorOutline.classList.remove('hovering');
-          }
+      if (now - lastCheck > 100) {
+        lastCheck = now;
+        const el = e.target;
+        if (mouseDown) {
+          setState('click');
+        } else if (el.closest(TEXT_TARGETS)) {
+          setState('text');
+        } else if (el.closest(CLICKABLE)) {
+          setState('hover');
+        } else {
+          setState('default');
         }
       }
     };
 
-    const handleMouseDown = () => {
-      if (cursorDot) cursorDot.classList.add('clicking');
-      if (cursorOutline) cursorOutline.classList.add('clicking');
+    const onDown = () => {
+      mouseDown = true;
+      setState('click');
+    };
+    const onUp = () => {
+      mouseDown = false;
+      setState('default');
     };
 
-    const handleMouseUp = () => {
-      if (cursorDot) cursorDot.classList.remove('clicking');
-      if (cursorOutline) cursorOutline.classList.remove('clicking');
+    const animateRing = () => {
+      const dx = mX - rX, dy = mY - rY;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const d = Math.min(0.18, 0.07 + dist / 3000);
+      const p = Math.min(1.5, (Math.abs(vX) + Math.abs(vY)) * 0.8);
+      rX += dx * d + vX * p;
+      rY += dy * d + vY * p;
+      ring.style.transform = `translate3d(${rX}px, ${rY}px, 0)`;
+      rafId = requestAnimationFrame(animateRing);
     };
 
-    const animateOutline = () => {
-      const deltaX = mouseX - outlineX;
-      const deltaY = mouseY - outlineY;
-      const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-
-      // Adaptive damping: faster when farther, slower when closer
-      // Velocity-based prediction: add slight prediction for smoother tracking
-      const speed = Math.abs(velocityX) + Math.abs(velocityY);
-      const baseDamping = 0.08;
-      const adaptiveDamping = Math.min(0.2, baseDamping + (distance / 2000));
-      const prediction = Math.min(2, speed * 1);
-
-      outlineX += deltaX * adaptiveDamping + velocityX * prediction;
-      outlineY += deltaY * adaptiveDamping + velocityY * prediction;
-
-      if (cursorOutline) {
-        cursorOutline.style.transform = `translate3d(${outlineX}px, ${outlineY}px, 0)`;
-      }
-
-      animationFrameId = requestAnimationFrame(animateOutline);
-    };
-
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
-    window.addEventListener('mousedown', handleMouseDown);
-    window.addEventListener('mouseup', handleMouseUp);
-    animateOutline();
+    window.addEventListener('mousemove', onMove, { passive: true });
+    window.addEventListener('mousedown', onDown);
+    window.addEventListener('mouseup', onUp);
+    animateRing();
 
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mousedown', handleMouseDown);
-      window.removeEventListener('mouseup', handleMouseUp);
-      cancelAnimationFrame(animationFrameId);
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mousedown', onDown);
+      window.removeEventListener('mouseup', onUp);
+      cancelAnimationFrame(rafId);
     };
   }, [isTouchDevice]);
+
+  // React to isPanning prop changes
+  useEffect(() => {
+    if (isTouchDevice) return;
+    const reticle = reticleRef.current;
+    const ring = ringRef.current;
+    if (!reticle || !ring) return;
+    if (isPanning) {
+      reticle.className = 'cursor-reticle cursor-pan';
+      ring.className = 'cursor-ring cursor-pan';
+    } else {
+      reticle.className = 'cursor-reticle cursor-default';
+      ring.className = 'cursor-ring cursor-default';
+    }
+  }, [isPanning, isTouchDevice]);
 
   if (isTouchDevice) return null;
 
   return (
     <>
-      <div
-        ref={cursorDotRef}
-        className="cursor-dot"
-      ></div>
-      <div
-        ref={cursorOutlineRef}
-        className="cursor-outline"
-      ></div>
+      <div ref={reticleRef} className="cursor-reticle cursor-default">
+        <svg className="cursor-brackets" viewBox="0 0 32 32" fill="none">
+          <path d="M2 10 L2 2 L10 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square"/>
+          <path d="M22 2 L30 2 L30 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square"/>
+          <path d="M2 22 L2 30 L10 30" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square"/>
+          <path d="M22 30 L30 30 L30 22" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square"/>
+        </svg>
+        <div className="cursor-core" />
+      </div>
+      <div ref={ringRef} className="cursor-ring cursor-default" />
     </>
   );
 };

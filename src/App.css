@@ -26,35 +26,57 @@ section {
   --orange: #C8553A;
   --orange-light: #D96848;
   --orange-dark: #A8422C;
-  --black: #0a0a0a;
-  --black-light: #111111;
-  --gray: #8a8a8a;
-  --gray-light: #5a5a5a;
-  --white: #f0f0f0;
-  /* Glass tokens */
-  --glass-bg: rgba(255,255,255,0.045);
-  --glass-bg-hover: rgba(255,255,255,0.075);
-  --glass-border: rgba(255,255,255,0.09);
-  --glass-border-hover: rgba(255,255,255,0.16);
-  --glass-highlight: inset 0 1px 0 rgba(255,255,255,0.10);
-  --glass-shadow: 0 1px 3px rgba(0,0,0,0.28), 0 6px 24px rgba(0,0,0,0.18);
-  --glass-blur: blur(20px) saturate(160%);
+  --orange-glow: rgba(200,85,58,0.25);
+  --black: #080808;
+  --black-light: #0f0f0f;
+  --black-surface: #141414;
+  --black-elevated: #1a1a1a;
+  --white: #f2f2f0;
+  --white-muted: rgba(242,242,240,0.55);
+  --white-dim: rgba(242,242,240,0.22);
+  --gray: #7a7a7a;
+  --gray-light: #4a4a4a;
+  --green-bright: #64C88C;
+  --glass-bg: rgba(255,255,255,0.04);
+  --glass-bg-hover: rgba(255,255,255,0.07);
+  --glass-border: rgba(255,255,255,0.08);
+  --glass-border-hover: rgba(255,255,255,0.15);
+  --glass-highlight: inset 0 1px 0 rgba(255,255,255,0.09);
+  --glass-shadow: 0 1px 3px rgba(0,0,0,0.4), 0 8px 32px rgba(0,0,0,0.25);
+  --glass-blur: blur(24px) saturate(180%);
+  --font-display: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'DM Mono', 'JetBrains Mono', 'Courier New', monospace;
+  --text-xs: 0.68rem;
+  --text-sm: 0.78rem;
+  --text-base: 0.9rem;
+  --text-md: 1rem;
+  --text-lg: 1.15rem;
+  --text-xl: 1.35rem;
+  --text-2xl: 1.75rem;
+  --text-3xl: 2.5rem;
+  --text-5xl: clamp(3rem, 8vw, 6rem);
+  --text-6xl: clamp(4rem, 12vw, 9rem);
+  --ease-spring: cubic-bezier(0.34,1.2,0.64,1);
+  --ease-smooth: cubic-bezier(0.4,0,0.2,1);
+  --ease-out: cubic-bezier(0,0,0.2,1);
 }
 
 body {
-  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-family: var(--font-mono);
   background-color: var(--black);
-  background-image:
-    linear-gradient(rgba(255,255,255,0.055) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.055) 1px, transparent 1px);
-  background-size: 44px 44px;
   color: var(--white);
-  overflow-x: hidden;
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   line-height: 1.65;
+  user-select: none;
 }
+
+/* Re-enable text selection inside panels */
+.world-node { user-select: text; }
 
 /* GPU acceleration for animations */
 .project-card, .skill-card, .achievement-badge, .degree-card,
@@ -107,7 +129,7 @@ h1, h2, h3, h4, h5, h6,
 .section-title,
 .hero-title,
 .nav-logo {
-  font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: var(--font-display);
 }
 
 /* ==================== CUSTOM CURSOR ==================== */

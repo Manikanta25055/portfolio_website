@@ -18,6 +18,7 @@ import Blog from './components/Blog';
 import Contact from './components/Contact';
 import SkillsRadar from './components/SkillsRadar';
 import StatusWidget from './components/StatusWidget';
+import ThemeToggle from './components/ThemeToggle';
 
 if (process.env.REACT_APP_POSTHOG_KEY) {
   posthog.init(process.env.REACT_APP_POSTHOG_KEY, {
@@ -105,6 +106,7 @@ function App() {
       )}
 
       <StatusWidget />
+      <ThemeToggle />
     </div>
   );
 }

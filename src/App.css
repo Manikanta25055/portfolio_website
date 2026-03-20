@@ -4034,3 +4034,67 @@ section {
 @media (max-width: 768px) {
   .shortcuts-trigger { display: none !important; }
 }
+
+/* ==================== CANVAS WORLD ==================== */
+.canvas-viewport {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  cursor: grab;
+  z-index: 1;
+}
+
+.canvas-viewport:active {
+  cursor: grabbing;
+}
+
+.canvas-world {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+
+/* Background dot grid — rendered on the viewport so it stays fixed */
+.canvas-viewport::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,0.12) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ==================== WORLD NODE ==================== */
+.world-node {
+  position: absolute;
+  z-index: 1;
+}
+
+.world-node-label {
+  position: absolute;
+  top: -28px;
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--white-dim);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.world-node-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--orange);
+  opacity: 0.6;
+  flex-shrink: 0;
+}

@@ -30,7 +30,6 @@ const CanvasWorld = forwardRef(({ children, onPanStart, onPanEnd }, ref) => {
 
   const clampScale = (s) => Math.min(MAX_SCALE, Math.max(MIN_SCALE, s));
 
-  // Expose navigation API to parent (for minimap + keyboard nav)
   useImperativeHandle(ref, () => ({
     panTo: (worldX, worldY, targetScale) => {
       const s = stateRef.current;
@@ -66,9 +65,12 @@ const CanvasWorld = forwardRef(({ children, onPanStart, onPanEnd }, ref) => {
     getState: () => ({ ...stateRef.current }),
   }));
 
-  // ── Mouse events ──
+  // ── Mouse events — attached to window during drag for smooth off-canvas movement ──
   const onMouseDown = useCallback((e) => {
     if (e.button !== 0) return;
+    // Don't start pan if clicking on interactive elements inside panels
+    if (e.target.closest('a, button, input, textarea, select, [role="button"]')) return;
+
     const s = stateRef.current;
     s.dragging = true;
     s.startMouseX = e.clientX;
@@ -81,42 +83,56 @@ const CanvasWorld = forwardRef(({ children, onPanStart, onPanEnd }, ref) => {
     s.lastY = e.clientY;
     s.lastTime = performance.now();
     cancelAnimationFrame(s.rafId);
+
+    // Prevent text selection during drag
+    document.body.classList.add('is-panning');
+
     onPanStart?.();
-    viewportRef.current.style.cursor = 'none';
   }, [onPanStart]);
 
-  const onMouseMove = useCallback((e) => {
-    const s = stateRef.current;
-    if (!s.dragging) return;
-    const now = performance.now();
-    const dt = Math.max(1, now - s.lastTime);
-    s.velX = (e.clientX - s.lastX) / dt * 16;
-    s.velY = (e.clientY - s.lastY) / dt * 16;
-    s.lastX = e.clientX;
-    s.lastY = e.clientY;
-    s.lastTime = now;
-    s.x = s.startWorldX + (e.clientX - s.startMouseX);
-    s.y = s.startWorldY + (e.clientY - s.startMouseY);
-    applyTransform();
-  }, [applyTransform]);
-
-  const onMouseUp = useCallback(() => {
-    const s = stateRef.current;
-    if (!s.dragging) return;
-    s.dragging = false;
-    onPanEnd?.();
-    if (viewportRef.current) viewportRef.current.style.cursor = 'none';
-    const inertia = () => {
-      s.velX *= INERTIA_FACTOR;
-      s.velY *= INERTIA_FACTOR;
-      s.x += s.velX;
-      s.y += s.velY;
+  // These are attached to window so drag continues off-element
+  useEffect(() => {
+    const onWindowMouseMove = (e) => {
+      const s = stateRef.current;
+      if (!s.dragging) return;
+      const now = performance.now();
+      const dt = Math.max(1, now - s.lastTime);
+      s.velX = (e.clientX - s.lastX) / dt * 16;
+      s.velY = (e.clientY - s.lastY) / dt * 16;
+      s.lastX = e.clientX;
+      s.lastY = e.clientY;
+      s.lastTime = now;
+      s.x = s.startWorldX + (e.clientX - s.startMouseX);
+      s.y = s.startWorldY + (e.clientY - s.startMouseY);
       applyTransform();
-      if (Math.abs(s.velX) > 0.05 || Math.abs(s.velY) > 0.05) {
-        s.rafId = requestAnimationFrame(inertia);
-      }
     };
-    s.rafId = requestAnimationFrame(inertia);
+
+    const onWindowMouseUp = () => {
+      const s = stateRef.current;
+      if (!s.dragging) return;
+      s.dragging = false;
+      document.body.classList.remove('is-panning');
+      onPanEnd?.();
+
+      const inertia = () => {
+        s.velX *= INERTIA_FACTOR;
+        s.velY *= INERTIA_FACTOR;
+        s.x += s.velX;
+        s.y += s.velY;
+        applyTransform();
+        if (Math.abs(s.velX) > 0.05 || Math.abs(s.velY) > 0.05) {
+          s.rafId = requestAnimationFrame(inertia);
+        }
+      };
+      s.rafId = requestAnimationFrame(inertia);
+    };
+
+    window.addEventListener('mousemove', onWindowMouseMove, { passive: true });
+    window.addEventListener('mouseup', onWindowMouseUp);
+    return () => {
+      window.removeEventListener('mousemove', onWindowMouseMove);
+      window.removeEventListener('mouseup', onWindowMouseUp);
+    };
   }, [applyTransform, onPanEnd]);
 
   const onWheel = useCallback((e) => {
@@ -211,9 +227,6 @@ const CanvasWorld = forwardRef(({ children, onPanStart, onPanEnd }, ref) => {
       ref={viewportRef}
       className="canvas-viewport"
       onMouseDown={onMouseDown}
-      onMouseMove={onMouseMove}
-      onMouseUp={onMouseUp}
-      onMouseLeave={onMouseUp}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >

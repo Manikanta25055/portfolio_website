@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const BOOT_LINES = [
-  { text: '> BOOTING PORTFOLIO_OS v2.6 ...', delay: 0.1 },
+  { text: '> BOOTING GVM-WAYPOINT v1.0 ...', delay: 0.1 },
   { text: '> LOADING FPGA MODULES ... OK', delay: 0.4 },
   { text: '> NEURAL LINK ... ESTABLISHED', delay: 0.7 },
   { text: '> RENDERING WORLD MAP ...', delay: 1.0 },
@@ -76,7 +76,7 @@ const BlueprintReveal = ({ onComplete }) => {
               animate={{ opacity: 1, letterSpacing: '0.28em' }}
               transition={{ delay: 0.3, duration: 0.8 }}
             >
-              GONUGONDLA
+              GVM — WAYPOINT
             </motion.div>
             <motion.h1
               className="bp-name"

@@ -1031,18 +1031,22 @@ h1, h2, h3, h4, h5, h6,
 
 /* ==================== HERO ==================== */
 .hero {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  padding: 60px 0 100px;
+  width: 640px;
+  padding: 48px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  box-shadow: var(--glass-shadow);
   position: relative;
-  overflow: hidden;
+  overflow: visible;
+  display: flex;
+  align-items: flex-start;
 }
 
 .hero-container {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 0 clamp(20px, 5vw, 80px);
+  width: 100%;
 }
 
 .hero-tag {
@@ -1258,25 +1262,55 @@ h1, h2, h3, h4, h5, h6,
   color: var(--white);
 }
 
-.scroll-indicator {
-  text-align: center;
-  color: var(--gray-light);
-  font-size: 0.85rem;
+.hero-canvas-hint {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 1rem;
+  gap: 8px;
+  color: var(--white-dim);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 0.5rem;
 }
 
-.scroll-line {
-  width: 2px;
-  height: 60px;
-  background: linear-gradient(to bottom, var(--orange), transparent);
+.hero-canvas-hint svg {
+  opacity: 0.5;
 }
 
-/* ==================== SECTIONS ==================== */
+/* ==================== SECTIONS — CANVAS PANELS ==================== */
+/* All sections become fixed-width glass panels on the canvas */
 section {
-  padding: clamp(60px, 10vw, 120px) 0;
+  padding: clamp(36px, 5vw, 64px);
+}
+
+.dual-degree,
+.work-timeline,
+.skills-radar,
+.gh-activity,
+.blog-section,
+.contact,
+.coursework-section {
+  width: 700px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  box-shadow: var(--glass-shadow);
+  overflow: visible;
+}
+
+/* Projects panel is wider to accommodate the grid */
+.projects {
+  width: 860px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  box-shadow: var(--glass-shadow);
+  overflow: visible;
 }
 
 .section-container {
@@ -1296,7 +1330,7 @@ section {
 
 /* ==================== DUAL DEGREE ==================== */
 .dual-degree {
-  background: var(--black-light);
+  /* Panel background applied globally above */
 }
 
 .degrees-grid {
@@ -1764,7 +1798,7 @@ section {
 
 /* ==================== WORK TIMELINE ==================== */
 .work-timeline {
-  padding: 5rem 0;
+  padding: clamp(36px, 5vw, 56px);
 }
 
 .timeline {
@@ -2137,7 +2171,7 @@ section {
 /* ==================== SKILLS RADAR ==================== */
 
 .skills-radar {
-  padding: 7rem 0;
+  padding: clamp(36px, 5vw, 56px);
 }
 
 .radar-wrapper {
@@ -2770,7 +2804,7 @@ section {
 
 /* ==================== CONTACT ==================== */
 .contact {
-  padding-bottom: 120px;
+  padding: clamp(36px, 5vw, 56px);
 }
 
 .contact-header {
@@ -3553,7 +3587,7 @@ section {
    BLOG SECTION
 ═══════════════════════════════════════════════ */
 .blog-section {
-  padding: clamp(60px, 10vw, 100px) 0;
+  padding: clamp(36px, 5vw, 56px);
 }
 
 .blog-grid {

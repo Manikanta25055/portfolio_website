@@ -156,12 +156,12 @@ const Hero = () => {
           </motion.a>
         </motion.div>
 
-        <motion.div
-          variants={itemVariants}
-          className="scroll-indicator"
-        >
-          <span>Scroll</span>
-          <div className="scroll-line" />
+        <motion.div variants={itemVariants} className="hero-canvas-hint">
+          <span className="hero-canvas-hint-text">Pan to explore</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <path d="M5 9l-3 3 3 3M9 5l3-3 3 3M15 19l-3 3-3-3M19 9l3 3-3 3M12 12v.01"/>
+            <path d="M3 12h3m12 0h3M12 3v3m0 12v3"/>
+          </svg>
         </motion.div>
       </motion.div>
     </section>

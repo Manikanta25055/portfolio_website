@@ -82,7 +82,7 @@ const CanvasWorld = forwardRef(({ children, onPanStart, onPanEnd }, ref) => {
     s.lastTime = performance.now();
     cancelAnimationFrame(s.rafId);
     onPanStart?.();
-    viewportRef.current.style.cursor = 'grabbing';
+    viewportRef.current.style.cursor = 'none';
   }, [onPanStart]);
 
   const onMouseMove = useCallback((e) => {
@@ -105,7 +105,7 @@ const CanvasWorld = forwardRef(({ children, onPanStart, onPanEnd }, ref) => {
     if (!s.dragging) return;
     s.dragging = false;
     onPanEnd?.();
-    if (viewportRef.current) viewportRef.current.style.cursor = '';
+    if (viewportRef.current) viewportRef.current.style.cursor = 'none';
     const inertia = () => {
       s.velX *= INERTIA_FACTOR;
       s.velY *= INERTIA_FACTOR;

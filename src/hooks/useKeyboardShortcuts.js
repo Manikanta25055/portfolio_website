@@ -1,38 +1,32 @@
 import { useEffect, useCallback } from 'react';
 
-function scrollToSection(id) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  const heading = id === 'home' ? null : el.querySelector('.section-title');
-  const target = heading || el;
-  const top = target.getBoundingClientRect().top + window.scrollY - 24;
-  window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
-}
-
-export const SHORTCUTS = [
-  { key: 'g', label: 'G', description: 'Open GitHub' },
-  { key: 'e', label: 'E', description: 'Send email' },
-  { key: '1', label: '1', description: 'Home' },
-  { key: '2', label: '2', description: 'About' },
-  { key: '3', label: '3', description: 'Work' },
-  { key: '4', label: '4', description: 'Projects' },
-  { key: '5', label: '5', description: 'Blog' },
-  { key: '6', label: '6', description: 'Contact' },
-  { key: '?', label: '?', description: 'Toggle this panel' },
-];
-
-const ACTIONS = {
-  g: () => window.open('https://github.com/Manikanta25055', '_blank'),
-  e: () => window.open('mailto:mgonugondlamanikanta@gmail.com'),
-  '1': () => scrollToSection('home'),
-  '2': () => scrollToSection('about'),
-  '3': () => scrollToSection('experience'),
-  '4': () => scrollToSection('projects'),
-  '5': () => scrollToSection('blog'),
-  '6': () => scrollToSection('contact'),
+// World-space positions for each section
+const SECTION_POSITIONS = {
+  '1': { wx: 0,     wy: 0,    label: 'Home'       },
+  '2': { wx: 900,   wy: -700, label: 'Education'  },
+  '3': { wx: 1100,  wy: -200, label: 'Skills'     },
+  '4': { wx: 1000,  wy: 600,  label: 'Projects'   },
+  '5': { wx: 100,   wy: 700,  label: 'Experience' },
+  '6': { wx: 0,     wy: 1300, label: 'Contact'    },
+  '7': { wx: -900,  wy: 400,  label: 'Blog'       },
+  '8': { wx: -800,  wy: -300, label: 'GitHub'     },
 };
 
-export function useKeyboardShortcuts(onToggleHint) {
+const PAN_STEP = 120;
+const ZOOM_IN_FACTOR = 1.15;
+const ZOOM_OUT_FACTOR = 1 / 1.15;
+
+export const SHORTCUTS = [
+  { key: '1–8', label: '1–8', description: 'Jump to section' },
+  { key: 'H / 0', label: 'H/0', description: 'Return to Hero' },
+  { key: '+', label: '+', description: 'Zoom in' },
+  { key: '-', label: '-', description: 'Zoom out' },
+  { key: 'Arrows', label: '↑↓←→', description: 'Pan canvas' },
+  { key: 'g', label: 'G', description: 'Open GitHub' },
+  { key: 'e', label: 'E', description: 'Send email' },
+];
+
+export function useKeyboardShortcuts(canvasRef, onToggleHint) {
   const handleKeyDown = useCallback((e) => {
     if (
       e.target.tagName === 'INPUT' ||
@@ -41,19 +35,49 @@ export function useKeyboardShortcuts(onToggleHint) {
     ) return;
     if (e.ctrlKey || e.metaKey || e.altKey) return;
 
-    const k = e.key === '?' ? '?' : e.key.toLowerCase();
+    const k = e.key;
+    const kl = k.toLowerCase();
 
-    if (k === '?') {
-      onToggleHint();
+    // Section jumps: 1–8
+    if (SECTION_POSITIONS[k]) {
+      e.preventDefault();
+      const pos = SECTION_POSITIONS[k];
+      canvasRef?.current?.panTo(pos.wx, pos.wy, 1.0);
       return;
     }
 
-    const action = ACTIONS[k];
-    if (action) {
+    // Home: H or 0
+    if (kl === 'h' || k === '0') {
       e.preventDefault();
-      action();
+      canvasRef?.current?.panTo(0, 0, 1.0);
+      return;
     }
-  }, [onToggleHint]);
+
+    // Zoom: + / =  and  - / _
+    if (k === '+' || k === '=') {
+      e.preventDefault();
+      canvasRef?.current?.zoomBy(ZOOM_IN_FACTOR);
+      return;
+    }
+    if (k === '-' || k === '_') {
+      e.preventDefault();
+      canvasRef?.current?.zoomBy(ZOOM_OUT_FACTOR);
+      return;
+    }
+
+    // Arrow pan
+    if (k === 'ArrowLeft') { e.preventDefault(); canvasRef?.current?.panBy(PAN_STEP, 0); return; }
+    if (k === 'ArrowRight') { e.preventDefault(); canvasRef?.current?.panBy(-PAN_STEP, 0); return; }
+    if (k === 'ArrowUp') { e.preventDefault(); canvasRef?.current?.panBy(0, PAN_STEP); return; }
+    if (k === 'ArrowDown') { e.preventDefault(); canvasRef?.current?.panBy(0, -PAN_STEP); return; }
+
+    // Utility shortcuts
+    if (kl === 'g') { window.open('https://github.com/Manikanta25055', '_blank'); return; }
+    if (kl === 'e') { window.open('mailto:mgonugondlamanikanta@gmail.com'); return; }
+
+    // Toggle hint panel
+    if (k === '?') { onToggleHint?.(); return; }
+  }, [canvasRef, onToggleHint]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);

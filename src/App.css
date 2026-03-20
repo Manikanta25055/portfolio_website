@@ -216,99 +216,156 @@ h1, h2, h3, h4, h5, h6,
   }
 }
 
-/* ==================== LOADER — CINEMATIC ==================== */
+/* ==================== BLUEPRINT REVEAL ==================== */
 
-.loader {
+.blueprint-overlay {
   position: fixed;
   inset: 0;
-  background: var(--black);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  background: #080c14;
+  display: grid;
+  place-items: center;
   z-index: 9999;
-  gap: 0;
+  overflow: hidden;
 }
 
-/* Orange anchor dot — first element to appear */
-.loader-dot-anchor {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--orange);
-  box-shadow: 0 0 18px rgba(200,85,58,0.9), 0 0 40px rgba(200,85,58,0.35);
-  margin-bottom: 2.8rem;
-  flex-shrink: 0;
-}
-
-/* Horizontal scan line that extends then vanishes */
-.loader-scanline {
+.blueprint-grid {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translateX(-50%) translateY(-1px);
-  width: 260px;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--orange), transparent);
-  transform-origin: center;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(80, 140, 220, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(80, 140, 220, 0.07) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
 }
 
-/* Name block */
-.loader-name-block {
+.blueprint-scanlines {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 2px,
+    rgba(0,0,0,0.15) 2px,
+    rgba(0,0,0,0.15) 4px
+  );
+  pointer-events: none;
+}
+
+.bp-corner {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: rgba(80,140,220,0.5);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.bp-corner--tl { top: 2rem; left: 2.5rem; }
+.bp-corner--tr { top: 2rem; right: 2.5rem; }
+.bp-corner--br { bottom: 4rem; right: 2.5rem; }
+
+.bp-bracket {
+  color: var(--orange);
+  opacity: 0.7;
+  font-size: var(--text-sm);
+}
+
+.bp-boot-log {
+  position: absolute;
+  left: 2.5rem;
+  top: 50%;
+  transform: translateY(-160px);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 0.55rem;
+  gap: 0.4rem;
 }
 
-.loader-first {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: clamp(0.85rem, 2vw, 1rem);
-  font-weight: 300;
-  letter-spacing: 0.22em;
-  color: rgba(240,240,240,0.5);
-  text-transform: uppercase;
+.bp-log-line {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--green-bright);
+  letter-spacing: 0.04em;
   margin: 0;
 }
 
-.loader-last {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: clamp(2.6rem, 7vw, 4.2rem);
-  font-weight: 700;
+.bp-title-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  text-align: center;
+  z-index: 2;
+}
+
+.bp-name-label {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.28em;
+  color: rgba(80,140,220,0.6);
+  text-transform: uppercase;
+}
+
+.bp-name {
+  font-family: var(--font-display);
+  font-size: var(--text-6xl);
+  font-weight: 800;
   letter-spacing: -0.02em;
   color: var(--white);
-  line-height: 1;
+  line-height: 0.95;
   margin: 0;
 }
 
-.loader-role {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: clamp(0.7rem, 1.5vw, 0.8rem);
+.bp-role {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
   color: var(--orange);
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  margin: 0.6rem 0 0;
+  margin-top: 0.4rem;
 }
 
-/* Thin progress line at bottom */
-.loader-progress-track {
+.bp-bracket-inline {
+  color: var(--white-muted);
+  margin: 0 4px;
+}
+
+.bp-unfold-mask {
+  position: absolute;
+  inset: 0;
+  background: #080c14;
+  z-index: 3;
+}
+
+.bp-progress-track {
   position: absolute;
   bottom: 2.5rem;
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(200px, 40vw);
+  left: 2.5rem;
+  right: 2.5rem;
   height: 1px;
-  background: rgba(255,255,255,0.07);
+  background: rgba(80,140,220,0.12);
   overflow: hidden;
-  border-radius: 1px;
 }
 
-.loader-progress-fill {
+.bp-progress-fill {
   height: 100%;
   width: 100%;
-  background: var(--orange);
+  background: linear-gradient(90deg, var(--orange-dark), var(--orange), var(--orange-light));
   transform-origin: left;
-  border-radius: 1px;
+  box-shadow: 0 0 8px rgba(200,85,58,0.5);
+}
+
+.bp-dot-anchor {
+  position: absolute;
+  top: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--orange);
+  box-shadow: 0 0 14px rgba(200,85,58,0.9), 0 0 36px rgba(200,85,58,0.3);
 }
 
 /* ==================== DOT GRID ==================== */

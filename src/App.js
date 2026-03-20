@@ -14,7 +14,6 @@ import DualDegree from './components/DualDegree';
 import WorkTimeline from './components/WorkTimeline';
 import Projects from './components/Projects';
 import GitHubActivity from './components/GitHubActivity';
-import Coursework from './components/Coursework';
 import Blog from './components/Blog';
 import Contact from './components/Contact';
 import SkillsRadar from './components/SkillsRadar';

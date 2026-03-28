@@ -2,14 +2,14 @@ import { useEffect, useCallback } from 'react';
 
 // World-space positions for each section
 const SECTION_POSITIONS = {
-  '1': { wx: 0,     wy: 0,    label: 'Home'       },
-  '2': { wx: 900,   wy: -700, label: 'Education'  },
-  '3': { wx: 1100,  wy: -200, label: 'Skills'     },
-  '4': { wx: 1000,  wy: 600,  label: 'Projects'   },
-  '5': { wx: 100,   wy: 700,  label: 'Experience' },
-  '6': { wx: 0,     wy: 1300, label: 'Contact'    },
-  '7': { wx: -900,  wy: 400,  label: 'Blog'       },
-  '8': { wx: -800,  wy: -300, label: 'GitHub'     },
+  '1': { wx: 0,      wy: 0,     label: 'Home'       },
+  '2': { wx: 1100,   wy: -900,  label: 'Education'  },
+  '3': { wx: 1600,   wy: -100,  label: 'Skills'     },
+  '4': { wx: 950,    wy: 1050,  label: 'Projects'   },
+  '5': { wx: -350,   wy: 1000,  label: 'Experience' },
+  '6': { wx: 0,      wy: 1950,  label: 'Contact'    },
+  '7': { wx: -1200,  wy: 380,   label: 'Blog'       },
+  '8': { wx: -1000,  wy: -650,  label: 'GitHub'     },
 };
 
 const PAN_STEP = 120;

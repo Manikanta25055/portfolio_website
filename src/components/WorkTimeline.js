@@ -1,184 +1,98 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import React from 'react';
 
-const useMediaQuery = (query) => {
-  const getMatches = (query) => {
-    if (typeof window !== 'undefined') {
-      return window.matchMedia(query).matches;
-    }
-    return false;
-  };
+const experiences = [
+  {
+    id: 'APX-001',
+    role: "Project Intern",
+    company: "Apsis Solutions",
+    location: "Bangalore, IN",
+    period: "Jul 2025 – Sep 2025",
+    clearance: "ACTIVE",
+    skills: ["IoT Development", "Industry Solutions", "Technical Leadership"],
+    summary: "IoT solutions for FMCG, banking, supply chain and telecom sectors.",
+  },
+  {
+    id: 'MDN-002',
+    role: "Project Intern",
+    company: "Mindenious Edutech",
+    location: "Bangalore, IN",
+    period: "Jul 2025 – Sep 2025",
+    clearance: "ACTIVE",
+    skills: ["FPGA Validation", "RTL Design", "Test Bench Dev", "ASIC Flow"],
+    summary: "VLSI design training — RTL design, verification, synthesis and ASIC design flow.",
+  },
+  {
+    id: 'IIT-003',
+    role: "Summer School Participant",
+    company: "IIIT Hyderabad",
+    location: "Hyderabad, IN",
+    period: "Jun 2024 – Jul 2024",
+    clearance: "COMPLETED",
+    skills: ["Product Development", "Project Management", "Innovation Strategy"],
+    summary: "Product Development Management programme — concept to product lifecycle.",
+  },
+];
 
-  const [matches, setMatches] = useState(() => getMatches(query));
+const WorkTimeline = () => (
+  <div className="dossier-doc">
+    {/* Document header */}
+    <div className="dossier-header">
+      <div className="dossier-header-left">
+        <div className="dossier-seal">&#9670;</div>
+        <div>
+          <div className="dossier-title">PERSONNEL DOSSIER</div>
+          <div className="dossier-subtitle">EMPLOYMENT MANIFEST — CONFIDENTIAL</div>
+        </div>
+      </div>
+      <div className="dossier-header-right">
+        <div className="dossier-ref">REF: GVM-EXP-2025</div>
+        <div className="dossier-date">ISSUED: 2025-07-01</div>
+      </div>
+    </div>
 
-  useEffect(() => {
-    const media = window.matchMedia(query);
+    <div className="dossier-rule" />
 
-    const updateMatch = () => {
-      setMatches(media.matches);
-    };
+    {/* Subject line */}
+    <div className="dossier-subject">
+      <span className="dossier-field-label">SUBJECT:</span>
+      <span className="dossier-field-val">GONUGONDLA, VEERA MANIKANTA</span>
+    </div>
+    <div className="dossier-subject">
+      <span className="dossier-field-label">DESIGNATION:</span>
+      <span className="dossier-field-val">ELECTRICAL &amp; ELECTRONICS ENGINEER</span>
+    </div>
 
-    updateMatch();
-    media.addEventListener('change', updateMatch);
+    <div className="dossier-rule" />
 
-    return () => media.removeEventListener('change', updateMatch);
-  }, [query]);
-
-  return matches;
-};
-
-const WorkTimeline = () => {
-  const isMobile = useMediaQuery('(max-width: 768px)');
-  const prefersReducedMotion = useReducedMotion();
-
-  const shouldAnimate = useMemo(() => {
-    return !isMobile && !prefersReducedMotion;
-  }, [isMobile, prefersReducedMotion]);
-
-  const experiences = [
-    {
-      role: "Project Intern",
-      company: "Apsis Solutions",
-      location: "Bangalore, India",
-      period: "July 2025 - September 2025",
-      current: false,
-      description: "Diving deep into IoT solutions that actually matter - building stuff for banks, supply chains, and telecom giants. Learning from the best while shipping real products.",
-      skills: ["IoT Development", "Industry Solutions", "Mentorship", "Technical Leadership"]
-    },
-    {
-      role: "Project Intern",
-      company: "Mindenious Edutech",
-      location: "Bangalore, India",
-      period: "July 2025 - September 2025",
-      current: false,
-      description: "Getting my hands dirty with hardcore VLSI - FPGAs, RTL design, the whole ASIC flow. Writing testbenches that actually catch bugs before they become disasters.",
-      skills: ["FPGA Validation", "RTL Design", "Verification", "Test Bench Development", "ASIC Design Flow"]
-    },
-    {
-      role: "Summer School Participant",
-      company: "IIIT Hyderabad",
-      location: "Hyderabad, India",
-      period: "June 2024 - July 2024",
-      description: "Leveled up my product game at one of India's top tech schools - learned how to turn wild ideas into actual products people want to use.",
-      skills: ["Product Development", "Project Management", "Innovation Strategy"]
-    }
-  ];
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { duration: 0.8 } }
-  };
-
-  const titleVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
-  };
-
-  const itemVariants = (index) => ({
-    hidden: { opacity: 0, x: index % 2 === 0 ? -50 : 50 },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: { duration: 0.6, delay: shouldAnimate ? index * 0.2 : 0 }
-    }
-  });
-
-  const SectionContainer = shouldAnimate ? motion.div : 'div';
-  const TitleContainer = shouldAnimate ? motion.h2 : 'h2';
-  const TimelineItem = shouldAnimate ? motion.div : 'div';
-  const TimelineContent = shouldAnimate ? motion.div : 'div';
-
-  return (
-    <section className="work-timeline" id="experience">
-      <SectionContainer
-        className="section-container"
-        {...(shouldAnimate && {
-          initial: "hidden",
-          whileInView: "visible",
-          viewport: { once: true, amount: 0.1 },
-          variants: containerVariants
-        })}
-      >
-        <TitleContainer
-          className="section-title"
-          {...(shouldAnimate && {
-            initial: "hidden",
-            whileInView: "visible",
-            viewport: { once: true },
-            variants: titleVariants
-          })}
-        >
-          Work Experience
-        </TitleContainer>
-
-        {/* Desktop: classic timeline */}
-        <div className="timeline timeline-desktop">
-          {experiences.map((exp, index) => (
-            <TimelineItem
-              key={index}
-              className="timeline-item"
-              {...(shouldAnimate && {
-                initial: "hidden",
-                whileInView: "visible",
-                viewport: { once: true, amount: 0.3 },
-                variants: itemVariants(index)
-              })}
-              style={!shouldAnimate ? { opacity: 1, transform: 'none' } : {}}
-            >
-              <div className="timeline-marker">
-                <div className="timeline-dot"></div>
-              </div>
-              <TimelineContent
-                className="timeline-content"
-                {...(shouldAnimate && {
-                  whileHover: { y: -5, boxShadow: "0 12px 32px rgba(255, 107, 53, 0.2)" },
-                  transition: { duration: 0.3 }
-                })}
-              >
-                {exp.current && <div className="current-badge">Current</div>}
-                <h3>{exp.role}</h3>
-                <h4>{exp.company}</h4>
-                <div className="timeline-meta">
-                  <span className="timeline-location">{exp.location}</span>
-                  <span className="timeline-period">{exp.period}</span>
-                </div>
-                <p>{exp.description}</p>
-                <div className="timeline-skills">
-                  {exp.skills.map((skill, idx) => (
-                    <span key={idx} className="timeline-skill">{skill}</span>
-                  ))}
-                </div>
-              </TimelineContent>
-            </TimelineItem>
+    {/* Entries */}
+    {experiences.map((exp) => (
+      <div key={exp.id} className="dossier-entry">
+        <div className="dossier-entry-header">
+          <span className="dossier-entry-id">{exp.id}</span>
+          <span className="dossier-entry-period">{exp.period}</span>
+          <span className={`dossier-status dossier-status--${exp.clearance === 'ACTIVE' ? 'active' : 'done'}`}>
+            {exp.clearance}
+          </span>
+        </div>
+        <div className="dossier-entry-role">{exp.role}</div>
+        <div className="dossier-entry-org">{exp.company} · {exp.location}</div>
+        <div className="dossier-entry-summary">{exp.summary}</div>
+        <div className="dossier-entry-skills">
+          {exp.skills.map((s) => (
+            <span key={s} className="dossier-skill">{s}</span>
           ))}
         </div>
+      </div>
+    ))}
 
-        {/* Mobile: simple always-visible cards */}
-        <div className="timeline-mobile">
-          {experiences.map((exp, index) => (
-            <div key={index} className="tl-simple-card">
-              <div className="tl-sc-top">
-                <span className="tl-sc-num">0{index + 1}</span>
-                <div className="tl-sc-header">
-                  <span className="tl-sc-company">{exp.company}</span>
-                  <span className="tl-sc-role">{exp.role}</span>
-                </div>
-              </div>
-              <p className="tl-sc-period">{exp.period}</p>
-              <p className="tl-sc-location">{exp.location}</p>
-              <p className="tl-sc-desc">{exp.description}</p>
-              <div className="tl-sc-skills">
-                {exp.skills.map((skill, idx) => (
-                  <span key={idx} className="timeline-skill">{skill}</span>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
+    <div className="dossier-rule" />
 
-      </SectionContainer>
-    </section>
-  );
-};
+    {/* Footer */}
+    <div className="dossier-footer">
+      <span className="dossier-footer-stamp">VERIFIED</span>
+      <span className="dossier-footer-text">GVM PERSONNEL RECORDS — PAGE 1 OF 1</span>
+    </div>
+  </div>
+);
 
 export default WorkTimeline;

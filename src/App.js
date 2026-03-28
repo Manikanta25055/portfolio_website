@@ -28,16 +28,16 @@ if (process.env.REACT_APP_POSTHOG_KEY) {
   });
 }
 
-// World-space layout — all positions relative to Hero at (0, 0)
+// World-space layout — generous spacing so panels never overlap
 const WORLD_LAYOUT = [
-  { id: 'home',       label: '00 · HOME',       x: 0,     y: 0     },
-  { id: 'about',      label: '01 · EDUCATION',  x: 900,   y: -700  },
-  { id: 'skills',     label: '02 · SKILLS',     x: 1100,  y: -200  },
-  { id: 'projects',   label: '03 · PROJECTS',   x: 1000,  y: 600   },
-  { id: 'experience', label: '04 · EXPERIENCE', x: 100,   y: 700   },
-  { id: 'contact',    label: '05 · CONTACT',    x: 0,     y: 1300  },
-  { id: 'blog',       label: '06 · BLOG',       x: -900,  y: 400   },
-  { id: 'github',     label: '07 · GITHUB',     x: -800,  y: -300  },
+  { id: 'home',       label: '00 · GVM — WAYPOINT', x: 0,      y: 0     },
+  { id: 'about',      label: '01 · EDUCATION',       x: 1100,   y: -900  },
+  { id: 'skills',     label: '02 · SKILLS',          x: 1600,   y: -100  },
+  { id: 'projects',   label: '03 · PROJECTS',        x: 950,    y: 1050  },
+  { id: 'experience', label: '04 · EXPERIENCE',      x: -350,   y: 1000  },
+  { id: 'contact',    label: '05 · CONTACT',         x: 0,      y: 1950  },
+  { id: 'blog',       label: '06 · BLOG',            x: -1200,  y: 380   },
+  { id: 'github',     label: '07 · GITHUB',          x: -1000,  y: -650  },
 ];
 
 const SECTION_COMPONENTS = {

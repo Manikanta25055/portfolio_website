@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 
-// x, y = % positions on the 100x100 minimap viewport
+// x, y = % positions on the 100x100 minimap (mapped from updated world coords)
 // wx, wy = world-space coordinates to panTo
 const SECTIONS = [
-  { id: 'home',       label: 'Home',       x: 38, y: 38, wx: 0,     wy: 0     },
-  { id: 'about',      label: 'Education',  x: 62, y: 8,  wx: 900,   wy: -700  },
-  { id: 'skills',     label: 'Skills',     x: 72, y: 32, wx: 1100,  wy: -200  },
-  { id: 'projects',   label: 'Projects',   x: 68, y: 58, wx: 1000,  wy: 600   },
-  { id: 'experience', label: 'Experience', x: 40, y: 62, wx: 100,   wy: 700   },
-  { id: 'contact',    label: 'Contact',    x: 38, y: 80, wx: 0,     wy: 1300  },
-  { id: 'blog',       label: 'Blog',       x: 10, y: 52, wx: -900,  wy: 400   },
-  { id: 'github',     label: 'GitHub',     x: 8,  y: 26, wx: -800,  wy: -300  },
+  { id: 'home',       label: 'Home',       x: 45, y: 35, wx: 0,      wy: 0     },
+  { id: 'about',      label: 'Education',  x: 78, y: 9,  wx: 1100,   wy: -900  },
+  { id: 'skills',     label: 'Skills',     x: 93, y: 32, wx: 1600,   wy: -100  },
+  { id: 'projects',   label: 'Projects',   x: 73, y: 67, wx: 950,    wy: 1050  },
+  { id: 'experience', label: 'Experience', x: 35, y: 64, wx: -350,   wy: 1000  },
+  { id: 'contact',    label: 'Contact',    x: 45, y: 93, wx: 0,      wy: 1950  },
+  { id: 'blog',       label: 'Blog',       x: 9,  y: 47, wx: -1200,  wy: 380   },
+  { id: 'github',     label: 'GitHub',     x: 15, y: 17, wx: -1000,  wy: -650  },
 ];
 
 const Minimap = ({ canvasRef, activeSection }) => {

@@ -254,6 +254,7 @@ html, body {
   border: 4px solid #000;
   box-shadow: 0 0 0 2px #fff, 0 0 0 6px #000;
   background: var(--grass);
+  transform-origin: center center;
 }
 
 /* ============================================================
@@ -511,112 +512,180 @@ html, body {
 }
 
 /* ============================================================
-   PLAYER SPRITE (CSS pixel art — top-down view)
+   PLAYER SPRITE — ASH KETCHUM (CSS pixel art, 32×32)
    ============================================================ */
 .player {
   position: absolute;
-  width: 32px;
-  height: 32px;
+  width: 32px; height: 32px;
   z-index: 10;
   pointer-events: none;
-  /* smooth pixel movement */
   transition: left 0.1s linear, top 0.1s linear;
 }
-
-.player-sprite {
-  width: 32px;
-  height: 32px;
-  position: relative;
-}
-
-/* Shadow under player */
+/* Ground shadow */
 .player::before {
   content: '';
   position: absolute;
-  bottom: 0; left: 50%;
+  bottom: 1px; left: 50%;
   transform: translateX(-50%);
-  width: 20px; height: 6px;
-  background: rgba(0,0,0,0.25);
+  width: 22px; height: 5px;
+  background: rgba(0,0,0,0.22);
   border-radius: 50%;
   z-index: -1;
 }
-
-/* Player body — built from layers */
-.player-head {
-  position: absolute;
-  top: 2px; left: 50%;
-  transform: translateX(-50%);
-  width: 16px; height: 14px;
-  background: #F8C8A0; /* skin */
-  border-top: 3px solid #C83018; /* hat top (red) */
-}
-.player-head::before {
-  content: '';
-  position: absolute;
-  top: -5px; left: -2px;
-  width: 20px; height: 6px;
-  background: #C83018; /* hat brim */
-}
-.player-hat-b {
-  position: absolute;
-  top: 1px; left: 50%;
-  transform: translateX(-50%);
-  width: 14px; height: 3px;
-  background: #181018; /* hat band */
-}
-.player-body {
-  position: absolute;
-  top: 16px; left: 50%;
-  transform: translateX(-50%);
-  width: 18px; height: 10px;
-  background: #A01818; /* red jacket */
-  border: 1px solid rgba(0,0,0,0.3);
-}
-.player-legs {
-  position: absolute;
-  bottom: 0; left: 50%;
-  transform: translateX(-50%);
-  width: 18px; height: 8px;
-  background: #302858; /* dark pants */
-}
-.player-legs::before {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 2px;
-  width: 5px; height: 4px;
-  background: #A08050; /* shoe */
-}
-.player-legs::after {
-  content: '';
-  position: absolute;
-  bottom: 0; right: 2px;
-  width: 5px; height: 4px;
-  background: #A08050; /* shoe */
+/* Content wrapper — mirrored for facing-left */
+.pc {
+  position: relative;
+  width: 32px; height: 32px;
 }
 
-/* Walking animation */
-.player.walking .player-legs::before {
-  animation: walkLeft 0.16s steps(2) infinite;
+/* ── HAT (red front, Ash style) ── */
+.spr-hat {
+  position: absolute;
+  width: 20px; height: 10px;
+  top: 1px; left: 6px;
+  background: #D82020;
+  border-radius: 55% 55% 0 0;
+  z-index: 4;
 }
-.player.walking .player-legs::after {
-  animation: walkRight 0.16s steps(2) infinite;
+/* Blue button on cap */
+.spr-hat::before {
+  content: '';
+  position: absolute;
+  width: 5px; height: 3px;
+  top: 0; left: 7px;
+  background: #3060D8;
+  border-radius: 50% 50% 0 0;
 }
-@keyframes walkLeft {
-  0%   { transform: translateY(0); }
-  50%  { transform: translateY(-3px); }
-  100% { transform: translateY(0); }
+/* White rear half of dome (visible for facing-up/side) */
+.spr-hat::after {
+  content: '';
+  position: absolute;
+  width: 10px; height: 10px;
+  top: 0; right: 0;
+  background: #F8F8F8;
+  border-radius: 0 55% 0 0;
+  display: none; /* shown only for specific directions */
 }
-@keyframes walkRight {
-  0%   { transform: translateY(-3px); }
-  50%  { transform: translateY(0); }
-  100% { transform: translateY(-3px); }
+/* Hat brim */
+.spr-brim {
+  position: absolute;
+  width: 24px; height: 4px;
+  top: 10px; left: 4px;
+  background: #181018;
+  z-index: 5;
+}
+/* ── HAIR (black, Ash-style spiky) ── */
+.spr-hair-l {
+  position: absolute;
+  width: 5px; height: 13px;
+  top: 12px; left: 3px;
+  background: #181018;
+  clip-path: polygon(0 0, 100% 15%, 100% 100%, 0 100%);
+  z-index: 3;
+}
+.spr-hair-r {
+  position: absolute;
+  width: 5px; height: 13px;
+  top: 12px; right: 3px;
+  background: #181018;
+  clip-path: polygon(0 15%, 100% 0, 100% 100%, 0 100%);
+  z-index: 3;
+}
+/* ── FACE (skin tone) ── */
+.spr-face {
+  position: absolute;
+  width: 14px; height: 11px;
+  top: 13px; left: 9px;
+  background: #F8C890;
+  z-index: 2;
+}
+/* ── EYES ── */
+.spr-eye-l {
+  position: absolute;
+  width: 3px; height: 3px;
+  top: 16px; left: 11px;
+  background: #181018;
+  z-index: 6;
+}
+.spr-eye-r {
+  position: absolute;
+  width: 3px; height: 3px;
+  top: 16px; right: 11px;
+  background: #181018;
+  z-index: 6;
+}
+/* ── JACKET (Ash blue) ── */
+.spr-jacket {
+  position: absolute;
+  width: 22px; height: 8px;
+  top: 22px; left: 5px;
+  background: #2050C8;
+  z-index: 3;
+}
+/* White shirt/collar strip showing */
+.spr-collar {
+  position: absolute;
+  width: 8px; height: 8px;
+  top: 22px; left: 12px;
+  background: #F0F0F0;
+  z-index: 4;
+}
+/* ── JEANS ── */
+.spr-leg-l {
+  position: absolute;
+  width: 9px; height: 5px;
+  top: 27px; left: 6px;
+  background: #283878;
+  z-index: 3;
+}
+.spr-leg-r {
+  position: absolute;
+  width: 9px; height: 5px;
+  top: 27px; right: 6px;
+  background: #283878;
+  z-index: 3;
 }
 
-/* Direction variants */
-.player.facing-left .player-head  { background: #F0B890; } /* side-profile tint */
-.player.facing-right .player-head { background: #F0B890; }
-.player.facing-up .player-head    { background: #C83018; } /* show back of hat */
-.player.facing-up .player-body    { background: #881010; }
+/* ── WALKING ANIMATION ── */
+.player.walking .spr-leg-l { animation: legBobL 0.32s steps(1) infinite; }
+.player.walking .spr-leg-r { animation: legBobR 0.32s steps(1) infinite; }
+.player.walking .pc        { animation: bodyBob 0.32s steps(2) infinite; }
+@keyframes legBobL {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-3px); }
+}
+@keyframes legBobR {
+  0%       { transform: translateY(-3px); }
+  50%, 100%{ transform: translateY(0); }
+}
+@keyframes bodyBob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-1px); }
+}
+
+/* ── DIRECTION VARIANTS ── */
+/* Facing UP — see back of hat (white), no face/eyes */
+.player.facing-up .spr-hat  { background: #F8F8F8; }
+.player.facing-up .spr-hat::after { display: block; right: auto; left: 0; background: #D82020; border-radius: 55% 0 0 0; }
+.player.facing-up .spr-face { background: #181018; } /* back of head = hair */
+.player.facing-up .spr-eye-l,
+.player.facing-up .spr-eye-r { display: none; }
+.player.facing-up .spr-collar { background: #2050C8; } /* back of jacket */
+
+/* Facing RIGHT — right profile */
+.player.facing-right .spr-hat  { width: 13px; left: 13px; background: linear-gradient(to right, #D82020 60%, #F8F8F8 40%); }
+.player.facing-right .spr-brim { width: 16px; left: 14px; }
+.player.facing-right .spr-hair-l { display: none; }
+.player.facing-right .spr-face { width: 10px; left: 17px; }
+.player.facing-right .spr-eye-l { display: none; }
+.player.facing-right .spr-eye-r { left: auto; right: 5px; }
+.player.facing-right .spr-jacket { width: 13px; left: 15px; }
+.player.facing-right .spr-collar { display: none; }
+.player.facing-right .spr-leg-r { display: none; }
+.player.facing-right .spr-leg-l { width: 12px; left: 15px; }
+
+/* Facing LEFT — mirror of right */
+.player.facing-left .pc { transform: scaleX(-1); }
 
 /* Exclamation mark above NPC */
 .npc-exclaim {
@@ -637,66 +706,179 @@ html, body {
 }
 
 /* ============================================================
-   NPC SPRITES
+   NPC SPRITES (Fire Red character types)
    ============================================================ */
 .npc {
   position: absolute;
-  width: 32px;
-  height: 32px;
+  width: 32px; height: 32px;
   z-index: 9;
   pointer-events: none;
 }
-
 .npc::before {
   content: '';
   position: absolute;
-  bottom: 0; left: 50%;
+  bottom: 1px; left: 50%;
   transform: translateX(-50%);
-  width: 18px; height: 5px;
-  background: rgba(0,0,0,0.2);
+  width: 18px; height: 4px;
+  background: rgba(0,0,0,0.18);
   border-radius: 50%;
 }
-
-/* Scientist NPC */
-.npc-scientist .npc-head { background: #F0D890; }
-.npc-scientist .npc-body { background: #E8E8F8; } /* white coat */
-
-/* Tourist NPC */
-.npc-tourist .npc-body { background: #F8A030; }
-
-/* Old Man NPC */
-.npc-oldman .npc-head { background: #E8C890; }
-.npc-oldman .npc-body { background: #808080; }
-
-/* Girl NPC */
-.npc-girl .npc-body { background: #F850A0; }
-
-/* Trainer NPC */
-.npc-trainer .npc-body { background: #3050C8; }
-
-.npc-head {
-  position: absolute;
-  top: 4px; left: 50%;
-  transform: translateX(-50%);
-  width: 14px; height: 12px;
-  background: #F8C8A0;
-  border: 1px solid rgba(0,0,0,0.2);
+/* Content wrapper — mirrored for facing-left */
+.nc {
+  position: relative;
+  width: 32px; height: 32px;
 }
-.npc-body {
+
+/* ── SHARED NPC BASE POSITIONS ── */
+.nc .spr-hat {
   position: absolute;
-  top: 16px; left: 50%;
-  transform: translateX(-50%);
-  width: 16px; height: 10px;
-  background: #4878F0;
-  border: 1px solid rgba(0,0,0,0.2);
+  width: 18px; height: 8px;
+  top: 2px; left: 7px;
+  border-radius: 50% 50% 0 0;
+  z-index: 4;
 }
-.npc-feet {
+.nc .spr-hair {
   position: absolute;
-  bottom: 2px; left: 50%;
-  transform: translateX(-50%);
-  width: 14px; height: 6px;
-  background: #202070;
+  width: 16px; height: 12px;
+  top: 8px; left: 8px;
+  z-index: 3;
 }
+.nc .spr-face {
+  position: absolute;
+  width: 14px; height: 10px;
+  top: 12px; left: 9px;
+  background: #F8C890;
+  z-index: 2;
+}
+.nc .spr-eye-l {
+  position: absolute;
+  width: 2px; height: 2px;
+  top: 15px; left: 11px;
+  background: #181018;
+  z-index: 6;
+}
+.nc .spr-eye-r {
+  position: absolute;
+  width: 2px; height: 2px;
+  top: 15px; right: 11px;
+  background: #181018;
+  z-index: 6;
+}
+.nc .spr-body {
+  position: absolute;
+  width: 20px; height: 8px;
+  top: 21px; left: 6px;
+  z-index: 3;
+}
+.nc .spr-leg-l {
+  position: absolute;
+  width: 8px; height: 5px;
+  top: 27px; left: 7px;
+  z-index: 3;
+}
+.nc .spr-leg-r {
+  position: absolute;
+  width: 8px; height: 5px;
+  top: 27px; right: 7px;
+  z-index: 3;
+}
+
+/* ── TRAINER (Rival Red — dark jacket, red cap) ── */
+.npc.trainer .nc .spr-hat  { background: #C82020; }
+.npc.trainer .nc .spr-hair { background: #181018; height: 4px; top: 8px; }
+.npc.trainer .nc .spr-body { background: #383838; }
+.npc.trainer .nc .spr-leg-l,
+.npc.trainer .nc .spr-leg-r { background: #181838; }
+
+/* ── TOURIST (Straw hat, orange shirt, khaki shorts) ── */
+.npc.tourist .nc .spr-hat {
+  background: #C89828;
+  width: 24px; left: 4px; height: 7px;
+  border-radius: 50%;
+}
+.npc.tourist .nc .spr-hat::after {
+  content: '';
+  position: absolute;
+  width: 28px; height: 3px;
+  top: 5px; left: -2px;
+  background: #A87820;
+}
+.npc.tourist .nc .spr-hair { background: #C07030; }
+.npc.tourist .nc .spr-body { background: #F87030; }
+.npc.tourist .nc .spr-leg-l,
+.npc.tourist .nc .spr-leg-r { background: #C8A040; height: 6px; }
+
+/* ── OLD MAN (no hat, gray hair, brown coat) ── */
+.npc.oldman .nc .spr-hat { display: none; }
+.npc.oldman .nc .spr-hair {
+  background: #C8C8C8;
+  width: 18px; left: 7px;
+  top: 4px; height: 14px;
+  border-radius: 50% 50% 0 0;
+}
+.npc.oldman .nc .spr-face { background: #E8B880; top: 13px; }
+.npc.oldman .nc .spr-body { background: #706048; width: 22px; left: 5px; height: 10px; }
+.npc.oldman .nc .spr-leg-l,
+.npc.oldman .nc .spr-leg-r { background: #303030; }
+
+/* ── SCIENTIST (white coat, glasses, gray hair) ── */
+.npc.scientist .nc .spr-hat { display: none; }
+.npc.scientist .nc .spr-hair {
+  background: #C0C0C0;
+  width: 18px; left: 7px;
+  top: 4px; height: 10px;
+  border-radius: 50% 50% 0 0;
+}
+.npc.scientist .nc .spr-face { position: relative; }
+/* Glasses bar */
+.npc.scientist .nc .spr-face::after {
+  content: '';
+  position: absolute;
+  width: 12px; height: 2px;
+  top: 3px; left: 1px;
+  background: #383038;
+}
+.npc.scientist .nc .spr-body { background: #F0F0F0; width: 24px; left: 4px; }
+.npc.scientist .nc .spr-leg-l,
+.npc.scientist .nc .spr-leg-r { background: #404060; }
+
+/* ── GIRL (Misty-style: orange hair, yellow top, orange shorts) ── */
+.npc.girl .nc .spr-hat { display: none; }
+.npc.girl .nc .spr-hair {
+  background: #D82820;
+  width: 20px; left: 6px;
+  top: 4px; height: 14px;
+  border-radius: 50% 50% 0 0;
+}
+/* Ponytail */
+.npc.girl .nc .spr-hair::after {
+  content: '';
+  position: absolute;
+  width: 5px; height: 10px;
+  top: 2px; right: -3px;
+  background: #D82820;
+  border-radius: 0 50% 50% 0;
+}
+.npc.girl .nc .spr-face { background: #F8D0A0; }
+.npc.girl .nc .spr-body { background: #F8D830; }
+.npc.girl .nc .spr-leg-l,
+.npc.girl .nc .spr-leg-r { background: #F87828; height: 6px; }
+
+/* ── NPC DIRECTION VARIANTS ── */
+.npc.facing-up .nc .spr-face { background: #181018; }
+.npc.facing-up .nc .spr-eye-l,
+.npc.facing-up .nc .spr-eye-r { display: none; }
+/* oldman facing-up: keep gray hair shown */
+.npc.oldman.facing-up .nc .spr-face { background: #C8C8C8; }
+
+.npc.facing-left .nc { transform: scaleX(-1); }
+
+.npc.facing-right .nc .spr-hat  { width: 12px; left: 14px; }
+.npc.facing-right .nc .spr-face { width: 10px; left: 16px; }
+.npc.facing-right .nc .spr-eye-l { display: none; }
+.npc.facing-right .nc .spr-body { width: 13px; left: 14px; }
+.npc.facing-right .nc .spr-leg-r { display: none; }
+.npc.facing-right .nc .spr-leg-l { width: 12px; left: 14px; }
 
 /* ============================================================
    DIALOG BOX
@@ -1099,6 +1281,335 @@ html, body {
 .exp-period  { font-size: 6px; color: var(--panel-sub);    letter-spacing: 0.08em; margin-bottom: 6px; }
 .exp-skills  { display: flex; flex-wrap: wrap; gap: 3px; }
 .exp-skill   { font-size: 5px; color: var(--panel-sub); border: 1px solid rgba(255,255,255,0.2); padding: 2px 4px; }
+
+/* ============================================================
+   FULL-SCREEN WRAPPER
+   ============================================================ */
+.game-fullscreen {
+  width: 100vw;
+  height: 100vh;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+/* game-container already has position:relative, overflow:hidden, 480×352 */
+.game-container {
+  transform-origin: center center;
+}
+
+/* [X] menu hint in corner */
+.hud-x-hint {
+  position: absolute;
+  bottom: 100px; right: 6px;
+  font-family: var(--font-game);
+  font-size: 5px;
+  color: rgba(248,248,248,0.6);
+  letter-spacing: 0.08em;
+  z-index: 30;
+}
+
+/* ============================================================
+   GAME MENU (Fire Red style — slides in from right)
+   ============================================================ */
+.game-menu {
+  position: absolute;
+  top: 8px; right: 8px;
+  width: 130px;
+  background: var(--dialog-bg);
+  border: 3px solid var(--dialog-border);
+  z-index: 60;
+  padding: 6px 0 8px;
+  box-shadow: 3px 3px 0 rgba(0,0,0,0.5);
+}
+.game-menu::before {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border: 1px solid var(--dialog-border);
+  pointer-events: none;
+}
+.gm-header {
+  font-family: var(--font-game);
+  font-size: 8px;
+  color: var(--dialog-name);
+  text-align: center;
+  padding: 4px 0 8px;
+  border-bottom: 2px solid var(--dialog-border);
+  letter-spacing: 0.12em;
+  margin-bottom: 4px;
+}
+.gm-item {
+  display: flex;
+  align-items: center;
+  padding: 4px 10px;
+  cursor: pointer;
+  gap: 4px;
+}
+.gm-item:hover,
+.gm-item:active { background: rgba(56,48,56,0.1); }
+.gm-arrow {
+  font-family: var(--font-game);
+  font-size: 7px;
+  color: var(--dialog-text);
+  width: 8px;
+  flex-shrink: 0;
+}
+.gm-label {
+  font-family: var(--font-game);
+  font-size: 6px;
+  color: var(--dialog-text);
+  letter-spacing: 0.06em;
+}
+.gm-selected .gm-label { color: var(--dialog-name); }
+
+/* ============================================================
+   TITLE SCREEN REDESIGN (Fire Red + Electronics theme)
+   ============================================================ */
+
+/* Intro "GVM PRESENTS" */
+.title-intro {
+  background: #000 !important;
+  animation: none !important;
+}
+.title-gvm-presents {
+  font-family: var(--font-game);
+  font-size: clamp(10px, 2vw, 16px);
+  color: #F8F8F8;
+  letter-spacing: 0.2em;
+  animation: fadeInOut 1.8s ease;
+}
+@keyframes fadeInOut {
+  0%   { opacity: 0; }
+  30%  { opacity: 1; }
+  70%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* Main title screen — fire red background + circuit trace overlay */
+.title-screen {
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,200,0,0.06) 39px, rgba(255,200,0,0.06) 40px),
+    repeating-linear-gradient(90deg, transparent, transparent 59px, rgba(255,200,0,0.06) 59px, rgba(255,200,0,0.06) 60px),
+    linear-gradient(160deg, #8B0000 0%, #C01818 40%, #A01010 100%);
+}
+
+/* Top badge */
+.title-badge {
+  font-family: var(--font-game);
+  font-size: clamp(7px, 1.2vw, 10px);
+  color: rgba(255,255,255,0.65);
+  letter-spacing: 0.22em;
+  margin-bottom: 8px;
+}
+
+/* Logo block */
+.title-logo-block {
+  text-align: center;
+  margin-bottom: 24px;
+}
+.title-logo-gvm {
+  font-family: var(--font-game);
+  font-size: clamp(32px, 7vw, 64px);
+  color: #F8D830;
+  text-shadow:
+    4px 4px 0 #8B6000,
+    -2px -2px 0 rgba(255,255,255,0.3),
+    6px 6px 0 rgba(0,0,0,0.4);
+  letter-spacing: 0.12em;
+  line-height: 1;
+}
+.title-logo-portfolio {
+  font-family: var(--font-game);
+  font-size: clamp(12px, 2.5vw, 22px);
+  color: #F8F8F8;
+  text-shadow: 2px 2px 0 rgba(0,0,0,0.5);
+  letter-spacing: 0.18em;
+  margin-top: 4px;
+}
+
+/* PCB Electronics scene */
+.title-pcb {
+  margin-bottom: 20px;
+}
+.pcb-board {
+  position: relative;
+  width: clamp(260px, 55vw, 290px);
+  height: 64px;
+  background: #1A3A20;
+  border: 2px solid #2A5A30;
+  border-radius: 3px;
+}
+.pcb-trace-h {
+  position: absolute;
+  height: 2px;
+  background: #D4A820;
+  opacity: 0.8;
+}
+.pcb-trace-v {
+  position: absolute;
+  width: 2px;
+  background: #D4A820;
+  opacity: 0.8;
+}
+.pcb-chip {
+  position: absolute;
+  background: #181018;
+  border: 1px solid #404040;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pcb-chip-label {
+  font-family: var(--font-game);
+  font-size: 4px;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 0.05em;
+}
+.pcb-pin {
+  position: absolute;
+  width: 3px; height: 3px;
+  background: #D4A820;
+}
+.pcb-pin-t { top: -3px; }
+.pcb-pin-b { bottom: -3px; }
+.pcb-cap {
+  position: absolute;
+  width: 8px; height: 14px;
+  background: #4050A0;
+  border: 1px solid #6070C0;
+  border-radius: 2px 2px 0 0;
+}
+.pcb-res {
+  position: absolute;
+  width: 14px; height: 6px;
+  background: #C0A830;
+  border: 1px solid #E0C840;
+  border-radius: 1px;
+}
+.pcb-led {
+  position: absolute;
+  width: 6px; height: 6px;
+  background: #F83030;
+  border-radius: 50%;
+  box-shadow: 0 0 4px #F83030;
+  animation: ledBlink 1.2s steps(1) infinite;
+}
+@keyframes ledBlink {
+  0%, 60% { opacity: 1; box-shadow: 0 0 6px #F83030, 0 0 12px rgba(248,48,48,0.4); }
+  61%, 100% { opacity: 0.2; box-shadow: none; }
+}
+
+/* Trainer silhouette */
+.title-trainer-wrap {
+  position: relative;
+  margin-bottom: 20px;
+}
+.title-trainer {
+  position: relative;
+  width: 44px; height: 80px;
+  margin: 0 auto;
+}
+.ts-hat {
+  position: absolute;
+  width: 22px; height: 12px;
+  top: 0; left: 11px;
+  background: #181018;
+  border-radius: 50% 50% 0 0;
+}
+.ts-brim {
+  position: absolute;
+  width: 28px; height: 4px;
+  top: 12px; left: 8px;
+  background: #181018;
+}
+.ts-hair-l {
+  position: absolute;
+  width: 5px; height: 14px;
+  top: 14px; left: 8px;
+  background: #181018;
+}
+.ts-head {
+  position: absolute;
+  width: 18px; height: 12px;
+  top: 16px; left: 13px;
+  background: #181018;
+}
+.ts-body {
+  position: absolute;
+  width: 22px; height: 20px;
+  top: 28px; left: 11px;
+  background: #181018;
+}
+.ts-arm {
+  position: absolute;
+  width: 14px; height: 6px;
+  top: 32px; right: 0;
+  background: #181018;
+  transform: rotate(-20deg);
+  transform-origin: left center;
+}
+.ts-leg-l {
+  position: absolute;
+  width: 9px; height: 30px;
+  top: 48px; left: 11px;
+  background: #181018;
+  transform: rotate(4deg);
+}
+.ts-leg-r {
+  position: absolute;
+  width: 9px; height: 32px;
+  top: 47px; right: 10px;
+  background: #181018;
+  transform: rotate(-6deg);
+}
+.title-trainer-shadow {
+  width: 38px; height: 8px;
+  background: rgba(0,0,0,0.3);
+  border-radius: 50%;
+  margin: 2px auto 0;
+}
+
+/* Press enter — override old */
+.title-press-enter {
+  font-family: var(--font-game) !important;
+  font-size: clamp(8px, 1.5vw, 13px) !important;
+  color: #F8F8F8 !important;
+  letter-spacing: 0.2em;
+  animation: titleBlink 0.8s steps(1) infinite;
+  margin-bottom: 16px;
+}
+.title-footer {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-family: var(--font-game);
+  font-size: clamp(5px, 0.9vw, 8px);
+  color: rgba(255,255,255,0.55);
+  letter-spacing: 0.12em;
+}
+.title-footer-dot { opacity: 0.4; }
+
+/* Map panel legend */
+.map-legend {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 5px;
+}
+.map-dot {
+  display: inline-block;
+  width: 8px; height: 8px;
+  flex-shrink: 0;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+.map-legend-text {
+  font-size: 6px;
+  color: var(--panel-sub);
+  letter-spacing: 0.06em;
+}
 
 /* ── Panel shared extras ─────────────────────────────────── */
 .panel-badge {

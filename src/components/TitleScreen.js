@@ -3,6 +3,13 @@ import React, { useEffect, useState } from 'react';
 const TitleScreen = ({ onStart }) => {
   const [fading, setFading] = useState(false);
   const [fadeOpacity, setFadeOpacity] = useState(0);
+  const [introPhase, setIntroPhase] = useState(0);
+  // 0 = "GVM PRESENTS" fade-in, 1 = title screen
+
+  useEffect(() => {
+    const t = setTimeout(() => setIntroPhase(1), 1800);
+    return () => clearTimeout(t);
+  }, []);
 
   useEffect(() => {
     const onKey = (e) => {
@@ -10,153 +17,127 @@ const TitleScreen = ({ onStart }) => {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fading]);
 
   const handleStart = () => {
-    if (fading) return;
+    if (fading || introPhase < 1) return;
     setFading(true);
-    // Animate fade to black
     let op = 0;
     const step = () => {
-      op += 0.06;
+      op += 0.05;
       setFadeOpacity(Math.min(op, 1));
       if (op < 1) requestAnimationFrame(step);
-      else setTimeout(onStart, 80);
+      else setTimeout(onStart, 100);
     };
     requestAnimationFrame(step);
   };
 
+  if (introPhase === 0) {
+    return (
+      <div className="title-screen title-intro">
+        <div className="title-gvm-presents">GVM PRESENTS</div>
+      </div>
+    );
+  }
+
   return (
     <div className="title-screen" onClick={handleStart} style={{ cursor: 'pointer' }}>
-      {/* Scanline overlay */}
-      <div className="title-logo">
-        GVM
-        <br />
-        PORTFOLIO
-      </div>
-      <div className="title-sub">PALLET TOWN EDITION</div>
 
-      {/* Pixel art town silhouette */}
-      <TitleScene />
+      {/* Top badge */}
+      <div className="title-badge">PALLET TOWN EDITION</div>
 
-      <div className="title-press-enter">PRESS ENTER OR CLICK</div>
-
-      <div className="title-version">VER. 2025</div>
-      <div className="title-copyright">
-        &copy; GONUGONDLA VEERA MANIKANTA &nbsp;&#8226;&nbsp; HYDERABAD, INDIA
+      {/* Main logo */}
+      <div className="title-logo-block">
+        <div className="title-logo-gvm">GVM</div>
+        <div className="title-logo-portfolio">PORTFOLIO</div>
       </div>
 
-      {/* Fade overlay */}
-      {fading && (
-        <div
-          className="title-fade"
-          style={{ opacity: fadeOpacity }}
-        />
-      )}
+      {/* PCB / electronics scene */}
+      <PCBScene />
+
+      {/* Trainer silhouette */}
+      <div className="title-trainer-wrap">
+        <TrainerSilhouette />
+        <div className="title-trainer-shadow" />
+      </div>
+
+      {/* Press enter */}
+      <div className="title-press-enter">PRESS ENTER</div>
+
+      {/* Footer */}
+      <div className="title-footer">
+        <span>GONUGONDLA VEERA MANIKANTA</span>
+        <span className="title-footer-dot">·</span>
+        <span>VER. 2025</span>
+      </div>
+
+      {fading && <div className="title-fade" style={{ opacity: fadeOpacity }} />}
     </div>
   );
 };
 
-/* CSS-drawn pixel art scene — 3 trees, player house, lab, rival house */
-const TitleScene = () => (
-  <div className="title-scene">
-    {/* Tree left */}
-    <div className="title-tree">
-      <div className="title-tree-top" style={{ width: 20, height: 28 }} />
-      <div className="title-tree-trunk" style={{ width: 6, height: 8 }} />
-    </div>
+/* ── PCB / Electronics scene ──────────────────────────────── */
+const PCBScene = () => (
+  <div className="title-pcb">
+    {/* PCB board */}
+    <div className="pcb-board">
+      {/* Trace lines */}
+      <div className="pcb-trace pcb-trace-h" style={{ top: 14, left: 0, width: '35%' }} />
+      <div className="pcb-trace pcb-trace-h" style={{ top: 14, right: 0, width: '20%' }} />
+      <div className="pcb-trace pcb-trace-h" style={{ top: 38, left: '20%', width: '60%' }} />
+      <div className="pcb-trace pcb-trace-v" style={{ top: 0, left: '35%', height: 38 }} />
+      <div className="pcb-trace pcb-trace-v" style={{ top: 14, right: '20%', height: 50 }} />
 
-    {/* Player's House */}
-    <div className="title-house" style={{ position: 'relative' }}>
-      {/* roof */}
-      <div className="title-house-roof" style={{ width: 44, height: 14 }} />
-      {/* wall */}
-      <div className="title-house-wall" style={{ width: 44, height: 22, position: 'relative' }}>
-        {/* window */}
-        <div style={{
-          position: 'absolute', top: 4, left: 4,
-          width: 10, height: 8,
-          background: 'var(--house-win)',
-          border: '2px solid rgba(0,0,0,0.25)'
-        }} />
-        {/* door */}
-        <div style={{
-          position: 'absolute', bottom: 0, right: 8,
-          width: 10, height: 14,
-          background: 'var(--house-door)',
-          border: '1px solid rgba(0,0,0,0.3)',
-          borderBottom: 'none',
-        }} />
+      {/* IC Chip — main processor */}
+      <div className="pcb-chip" style={{ left: 60, top: 4, width: 50, height: 22 }}>
+        <div className="pcb-chip-label">ESP32</div>
+        {[0,1,2,3].map(i => <div key={i} className="pcb-pin pcb-pin-t" style={{ left: 6 + i*11 }} />)}
+        {[0,1,2,3].map(i => <div key={i} className="pcb-pin pcb-pin-b" style={{ left: 6 + i*11 }} />)}
+      </div>
+
+      {/* IC Chip 2 — FPGA */}
+      <div className="pcb-chip" style={{ left: 160, top: 22, width: 44, height: 20 }}>
+        <div className="pcb-chip-label">FPGA</div>
+        {[0,1,2].map(i => <div key={i} className="pcb-pin pcb-pin-t" style={{ left: 8 + i*12 }} />)}
+        {[0,1,2].map(i => <div key={i} className="pcb-pin pcb-pin-b" style={{ left: 8 + i*12 }} />)}
+      </div>
+
+      {/* Capacitor */}
+      <div className="pcb-cap" style={{ left: 14, top: 20 }} />
+
+      {/* Resistors */}
+      <div className="pcb-res" style={{ left: 126, top: 36 }} />
+      <div className="pcb-res" style={{ left: 220, top: 12 }} />
+
+      {/* LED — blinks */}
+      <div className="pcb-led" style={{ left: 246, top: 38 }} />
+
+      {/* Microchip (small) */}
+      <div className="pcb-chip" style={{ left: 230, top: 2, width: 22, height: 10 }}>
+        {[0,1].map(i => <div key={i} className="pcb-pin pcb-pin-t" style={{ left: 4 + i*10 }} />)}
       </div>
     </div>
+  </div>
+);
 
-    {/* Tree middle */}
-    <div className="title-tree">
-      <div className="title-tree-top" style={{ width: 22, height: 32 }} />
-      <div className="title-tree-trunk" style={{ width: 8, height: 10 }} />
-    </div>
-
-    {/* Oak's Lab (wider, taller) */}
-    <div className="title-lab" style={{ position: 'relative' }}>
-      <div className="title-lab-roof" style={{ width: 72, height: 16 }} />
-      <div className="title-lab-wall" style={{ width: 72, height: 32, position: 'relative' }}>
-        {/* 2 windows */}
-        <div style={{
-          position: 'absolute', top: 5, left: 6,
-          width: 14, height: 10,
-          background: 'var(--house-win)',
-          border: '2px solid rgba(0,0,0,0.2)',
-        }} />
-        <div style={{
-          position: 'absolute', top: 5, right: 6,
-          width: 14, height: 10,
-          background: 'var(--house-win)',
-          border: '2px solid rgba(0,0,0,0.2)',
-        }} />
-        {/* door */}
-        <div style={{
-          position: 'absolute', bottom: 0, left: '50%',
-          transform: 'translateX(-50%)',
-          width: 14, height: 20,
-          background: 'var(--house-door)',
-          border: '1px solid rgba(0,0,0,0.3)',
-          borderBottom: 'none',
-        }} />
-      </div>
-    </div>
-
-    {/* Tree right */}
-    <div className="title-tree">
-      <div className="title-tree-top" style={{ width: 20, height: 26 }} />
-      <div className="title-tree-trunk" style={{ width: 6, height: 8 }} />
-    </div>
-
-    {/* Rival's House */}
-    <div className="title-house" style={{ position: 'relative' }}>
-      <div className="title-house-roof" style={{ width: 44, height: 14 }} />
-      <div className="title-house-wall" style={{ width: 44, height: 22, position: 'relative' }}>
-        <div style={{
-          position: 'absolute', top: 4, right: 4,
-          width: 10, height: 8,
-          background: 'var(--house-win)',
-          border: '2px solid rgba(0,0,0,0.25)'
-        }} />
-        <div style={{
-          position: 'absolute', bottom: 0, left: 8,
-          width: 10, height: 14,
-          background: 'var(--house-door)',
-          border: '1px solid rgba(0,0,0,0.3)',
-          borderBottom: 'none',
-        }} />
-      </div>
-    </div>
-
-    {/* Tree far right */}
-    <div className="title-tree">
-      <div className="title-tree-top" style={{ width: 20, height: 28 }} />
-      <div className="title-tree-trunk" style={{ width: 6, height: 8 }} />
-    </div>
+/* ── Trainer silhouette ───────────────────────────────────── */
+const TrainerSilhouette = () => (
+  <div className="title-trainer">
+    {/* Hat */}
+    <div className="ts-hat" />
+    <div className="ts-brim" />
+    {/* Hair */}
+    <div className="ts-hair-l" />
+    {/* Head */}
+    <div className="ts-head" />
+    {/* Body */}
+    <div className="ts-body" />
+    {/* Raised arm (pointing forward) */}
+    <div className="ts-arm" />
+    {/* Legs */}
+    <div className="ts-leg-l" />
+    <div className="ts-leg-r" />
   </div>
 );
 

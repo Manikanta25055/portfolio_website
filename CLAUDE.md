@@ -46,5 +46,11 @@ Primary accent: `#E27F5A` (orange). Used consistently for highlights, active sta
 
 ## Design theme
 
-i want you to design each and every button, page, box,  and everything to modern, apple ui style, minimalistic, theme. (glass theme, faded) so that    
+i want you to design each and every button, page, box,  and everything to modern, apple ui style, minimalistic, theme. (glass theme, faded) so that
 with the same color theme everything looks modern.
+
+## Workflow Rules
+
+- Push to GitHub PR after EVERY task, no exceptions. Even single-file edits must be committed and pushed immediately.
+- Do not batch changes across multiple tasks before pushing. Each completed task = one commit + push.
+- Do not take screenshots to verify changes. The user will check the output manually. Only take screenshots if explicitly asked.

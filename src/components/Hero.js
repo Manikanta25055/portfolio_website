@@ -1,171 +1,112 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React from 'react';
 
-const badges = [
-  {
-    href: '#about',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
-        <path d="M6 12v5c3 3 9 3 12 0v-5"/>
-      </svg>
-    ),
-    value: 'Dual Degree',
-    label: 'MIT 8.02 \u2022 IIT-M 7.33',
-  },
-  {
-    href: '#project-garuda',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <circle cx="12" cy="8" r="7"/>
-        <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>
-      </svg>
-    ),
-    value: '1st Place Winner',
-    label: 'Gadget Expo 2025, IIT Madras',
-  },
-  {
-    href: '#patient-collapse-detection',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-        <path d="M2 17l10 5 10-5"/>
-        <path d="M2 12l10 5 10-5"/>
-      </svg>
-    ),
-    value: 'Patent Filed',
-    label: 'Healthcare Innovation, MIT',
-  },
-];
+const BARS = [2,1,3,1,2,3,1,2,1,3,2,1,3,1,2,1,3,2,1,2,1,3,2,1,2,3,1,2,1,2];
 
-const Hero = () => {
-  const [activeBadge, setActiveBadge] = useState(0);
+const Hero = () => (
+  <div className="pass-doc">
+    {/* Airline header strip */}
+    <div className="pass-header">
+      <span className="pass-airline">GVM-001</span>
+      <span className="pass-type">BOARDING PASS</span>
+      <span className="pass-class">EEE</span>
+    </div>
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setActiveBadge(prev => (prev + 1) % badges.length);
-    }, 3200);
-    return () => clearInterval(timer);
-  }, []);
+    {/* Route row */}
+    <div className="pass-route">
+      <div className="pass-terminus">
+        <div className="pass-iata">MIT</div>
+        <div className="pass-city">MANIPAL</div>
+      </div>
+      <div className="pass-flight-info">
+        <svg className="pass-arrow-svg" viewBox="0 0 80 20" fill="none">
+          <path d="M2 10h76M62 3l14 7-14 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+        <div className="pass-flight-num">FL GVM-001</div>
+      </div>
+      <div className="pass-terminus pass-terminus--right">
+        <div className="pass-iata">IIT-M</div>
+        <div className="pass-city">MADRAS</div>
+      </div>
+    </div>
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.15, delayChildren: 0.3 }
-    }
-  };
+    {/* Passenger block */}
+    <div className="pass-passenger">
+      <div className="pass-label">PASSENGER NAME</div>
+      <div className="pass-name">VEERA MANIKANTA GONUGONDLA</div>
+    </div>
 
-  const itemVariants = {
-    hidden: { y: 40, opacity: 0 },
-    visible: {
-      y: 0, opacity: 1,
-      transition: { duration: 0.8, ease: [0.6, 0.05, 0.01, 0.9] }
-    }
-  };
+    {/* Field grid */}
+    <div className="pass-fields">
+      <div className="pass-field">
+        <div className="pass-label">ROLE</div>
+        <div className="pass-val">EEE ENGINEER</div>
+      </div>
+      <div className="pass-field">
+        <div className="pass-label">GATE</div>
+        <div className="pass-val">FPGA-7</div>
+      </div>
+      <div className="pass-field">
+        <div className="pass-label">CLASS</div>
+        <div className="pass-val">EMBEDDED</div>
+      </div>
+      <div className="pass-field">
+        <div className="pass-label">SEAT</div>
+        <div className="pass-val">01-A</div>
+      </div>
+      <div className="pass-field">
+        <div className="pass-label">BOARDING</div>
+        <div className="pass-val">HYDERABAD</div>
+      </div>
+      <div className="pass-field">
+        <div className="pass-label">DEPARTS</div>
+        <div className="pass-val">2023 &#8594; &#8734;</div>
+      </div>
+    </div>
 
-  return (
-    <section className="hero" id="home">
-      <motion.div
-        className="hero-container"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        <motion.div variants={itemVariants} className="hero-tag">
-          <span className="pulse-dot" />
-          <span>Boeing Intern 2026</span>
-        </motion.div>
+    {/* Achievement stamps */}
+    <div className="pass-stamps">
+      <div className="pass-stamp pass-stamp--gold">
+        <div className="pass-stamp-main">1ST PLACE</div>
+        <div className="pass-stamp-sub">GADGET EXPO · IIT-M 2025</div>
+      </div>
+      <div className="pass-stamp pass-stamp--blue">
+        <div className="pass-stamp-main">PATENT FILED</div>
+        <div className="pass-stamp-sub">BIOMEDICAL SYS · 2025</div>
+      </div>
+      <div className="pass-stamp pass-stamp--dim">
+        <div className="pass-stamp-main">INTERN</div>
+        <div className="pass-stamp-sub">APSIS SOLUTIONS · 2025</div>
+      </div>
+    </div>
 
-        <motion.h1 variants={itemVariants} className="hero-name">
-          <span className="name-line">Veera Manikanta</span>
-          <span className="name-line gradient-text">Gonugondla</span>
-        </motion.h1>
+    {/* Perforation */}
+    <div className="pass-perf">
+      <span className="pass-perf-label">TEAR HERE</span>
+    </div>
 
-        <motion.p variants={itemVariants} className="hero-role">
-          Electrical &amp; Electronics Engineer
-        </motion.p>
-
-        <motion.p variants={itemVariants} className="hero-description">
-          Building cool stuff where hardware meets software — basically making silicon think.
-          <br />
-          Deep into FPGAs, embedded systems, and throwing AI at everything electronic.
-        </motion.p>
-
-        {/* Desktop: 3 floating cards */}
-        <motion.div variants={itemVariants} className="hero-achievements">
-          {badges.map((b, i) => (
-            <motion.a
-              key={i}
-              href={b.href}
-              className="achievement-badge achievement-badge-link"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <div className="badge-icon">{b.icon}</div>
-              <div className="badge-content">
-                <span className="badge-value">{b.value}</span>
-                <span className="badge-label">{b.label}</span>
-              </div>
-            </motion.a>
-          ))}
-        </motion.div>
-
-        {/* Mobile: rotating single card */}
-        <motion.div variants={itemVariants} className="hero-badge-carousel">
-          <AnimatePresence mode="wait">
-            <motion.a
-              key={activeBadge}
-              href={badges[activeBadge].href}
-              className="achievement-badge achievement-badge-link hero-badge-solo"
-              initial={{ opacity: 0, scale: 0.88, y: 18 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.88, y: -18 }}
-              transition={{ duration: 0.38, ease: [0.4, 0, 0.2, 1] }}
-            >
-              <div className="badge-icon">{badges[activeBadge].icon}</div>
-              <div className="badge-content">
-                <span className="badge-value">{badges[activeBadge].value}</span>
-                <span className="badge-label">{badges[activeBadge].label}</span>
-              </div>
-            </motion.a>
-          </AnimatePresence>
-          <div className="badge-carousel-dots">
-            {badges.map((_, i) => (
-              <button
-                key={i}
-                className={`badge-carousel-dot ${i === activeBadge ? 'active' : ''}`}
-                onClick={() => setActiveBadge(i)}
-                aria-label={`Badge ${i + 1}`}
-              />
-            ))}
-          </div>
-        </motion.div>
-
-        <motion.div variants={itemVariants} className="hero-cta">
-          <motion.a
-            href="#projects"
-            className="cta-primary"
-            whileHover={{ scale: 1.05, x: 5 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            View Work
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-          </motion.a>
-        </motion.div>
-
-        <motion.div variants={itemVariants} className="hero-canvas-hint">
-          <span className="hero-canvas-hint-text">Pan to explore</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-            <path d="M5 9l-3 3 3 3M9 5l3-3 3 3M15 19l-3 3-3-3M19 9l3 3-3 3M12 12v.01"/>
-            <path d="M3 12h3m12 0h3M12 3v3m0 12v3"/>
-          </svg>
-        </motion.div>
-      </motion.div>
-    </section>
-  );
-};
+    {/* Stub */}
+    <div className="pass-stub">
+      <div className="pass-stub-info">
+        <div className="pass-stub-name">GONUGONDLA V.M.</div>
+        <div className="pass-stub-route">MIT  ›  IIT-M</div>
+        <div className="pass-stub-tagline">Hardware meets software — silicon that thinks</div>
+        <div className="pass-stub-links">
+          <a href="mailto:mgonugondlamanikanta@gmail.com" className="pass-stub-link">EMAIL</a>
+          <span className="pass-stub-sep">·</span>
+          <a href="https://github.com/Manikanta25055" target="_blank" rel="noreferrer" className="pass-stub-link">GITHUB</a>
+        </div>
+      </div>
+      <div className="pass-barcode">
+        {BARS.map((_, i) => (
+          <div
+            key={i}
+            className="pass-bar"
+            style={{ width: i % 3 === 0 ? '3px' : i % 2 === 0 ? '2px' : '1px', marginRight: '1px' }}
+          />
+        ))}
+      </div>
+    </div>
+  </div>
+);
 
 export default Hero;

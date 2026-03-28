@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 
 const GH_USER = 'Manikanta25055';
 const CACHE_KEY = 'gh_activity_v2';
-const CACHE_TTL = 30 * 60 * 1000; // 30 minutes
+const CACHE_TTL = 30 * 60 * 1000;
 
 function relativeTime(dateStr) {
   const d = Math.floor((Date.now() - new Date(dateStr)) / 86400000);
@@ -17,7 +16,7 @@ function relativeTime(dateStr) {
 const GitHubActivity = () => {
   const [profile, setProfile] = useState(null);
   const [events, setEvents] = useState([]);
-  const [status, setStatus] = useState('loading'); // loading | ok | error
+  const [status, setStatus] = useState('loading');
 
   useEffect(() => {
     try {
@@ -25,10 +24,7 @@ const GitHubActivity = () => {
       if (cached) {
         const { data, ts } = JSON.parse(cached);
         if (Date.now() - ts < CACHE_TTL) {
-          setProfile(data.profile);
-          setEvents(data.events);
-          setStatus('ok');
-          return;
+          setProfile(data.profile); setEvents(data.events); setStatus('ok'); return;
         }
       }
     } catch (_) {}
@@ -38,134 +34,104 @@ const GitHubActivity = () => {
       fetch(`https://api.github.com/users/${GH_USER}/events?per_page=30`).then(r => r.json()),
     ])
       .then(([prof, raw]) => {
-        // Group pushes by repo - show each repo once with commits underneath
         const grouped = new Map();
         if (Array.isArray(raw)) {
           raw.filter(e => e.type === 'PushEvent').forEach(e => {
             const repo = e.repo.name.split('/')[1];
-            if (!grouped.has(repo)) {
-              grouped.set(repo, { repo, commits: [], latestDate: e.created_at });
-            }
+            if (!grouped.has(repo)) grouped.set(repo, { repo, commits: [], latestDate: e.created_at });
             const g = grouped.get(repo);
             (e.payload.commits || []).forEach(c => {
-              g.commits.push({
-                message: (c.message || 'Pushed changes').split('\n')[0].slice(0, 60),
-                date: e.created_at,
-              });
+              g.commits.push({ message: (c.message || 'Pushed changes').split('\n')[0].slice(0, 55), date: e.created_at });
             });
           });
         }
         const pushes = Array.from(grouped.values()).slice(0, 5);
-
         const result = { profile: prof, events: pushes };
-        setProfile(prof);
-        setEvents(pushes);
-        setStatus('ok');
+        setProfile(prof); setEvents(pushes); setStatus('ok');
         try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({ data: result, ts: Date.now() })); } catch (_) {}
       })
       .catch(() => setStatus('error'));
   }, []);
 
-  if (status === 'error') return null;
-
   return (
-    <section className="gh-activity" id="github-activity">
-      <motion.div
-        className="section-container"
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.1 }}
-        transition={{ duration: 0.6 }}
-      >
-        <div className="gh-layout">
-          {/* Stats panel */}
-          <div className="gh-stats-panel">
-            <div className="gh-stats-header">
-              <svg className="gh-icon" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
-              </svg>
-              <div>
-                <p className="gh-username">@{GH_USER}</p>
-                <a
-                  href={`https://github.com/${GH_USER}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="gh-profile-link"
-                >
-                  View profile
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <path d="M7 17L17 7M17 7H7M17 7v10"/>
-                  </svg>
-                </a>
-              </div>
-            </div>
-
-            <div className="gh-stat-grid">
-              {status === 'loading' ? (
-                [1, 2, 3].map(i => <div key={i} className="gh-stat-item gh-skeleton" />)
-              ) : profile ? (
-                <>
-                  <div className="gh-stat-item">
-                    <span className="gh-stat-value">{profile.public_repos ?? '—'}</span>
-                    <span className="gh-stat-label">Repos</span>
-                  </div>
-                  <div className="gh-stat-item">
-                    <span className="gh-stat-value">{profile.followers ?? '—'}</span>
-                    <span className="gh-stat-label">Followers</span>
-                  </div>
-                  <div className="gh-stat-item">
-                    <span className="gh-stat-value">{profile.following ?? '—'}</span>
-                    <span className="gh-stat-label">Following</span>
-                  </div>
-                </>
-              ) : null}
-            </div>
-          </div>
-
-          {/* Recent commits */}
-          <div className="gh-feed">
-            <p className="gh-feed-title">Recent commits</p>
-            {status === 'loading' ? (
-              [1, 2, 3].map(i => (
-                <div key={i} className="gh-event gh-skeleton" style={{ height: '62px', marginBottom: '0.75rem' }} />
-              ))
-            ) : events.length > 0 ? (
-              events.map((group, i) => (
-                <motion.div
-                  key={group.repo}
-                  className="gh-repo-group"
-                  initial={{ opacity: 0, x: -12 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.08 }}
-                >
-                  <div className="gh-repo-header">
-                    <svg className="gh-repo-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M3 3h18v18H3z M9 9h6M9 13h6"/>
-                    </svg>
-                    <span className="gh-event-repo">{group.repo}</span>
-                    <span className="gh-event-time">{relativeTime(group.latestDate)}</span>
-                  </div>
-                  <div className="gh-commits-list">
-                    {group.commits.slice(0, 3).map((c, j) => (
-                      <div key={j} className="gh-commit-row">
-                        <div className="gh-event-dot" />
-                        <p className="gh-event-msg">{c.message}</p>
-                      </div>
-                    ))}
-                    {group.commits.length > 3 && (
-                      <p className="gh-more-commits">+{group.commits.length - 3} more commits</p>
-                    )}
-                  </div>
-                </motion.div>
-              ))
-            ) : (
-              <p className="gh-empty">No recent activity</p>
-            )}
-          </div>
+    <div className="telemetry-doc">
+      {/* Terminal header */}
+      <div className="telemetry-header">
+        <div className="telemetry-header-row">
+          <span className="telemetry-prompt">&#62;&#62;</span>
+          <span className="telemetry-title">GITHUB TELEMETRY FEED</span>
         </div>
-      </motion.div>
-    </section>
+        <div className="telemetry-meta">
+          <span className="telemetry-user">USER: @{GH_USER}</span>
+          <span className="telemetry-sep">|</span>
+          <span className="telemetry-ts">LIVE FEED</span>
+        </div>
+      </div>
+
+      <div className="telemetry-rule" />
+
+      {/* Stats row */}
+      <div className="telemetry-stats">
+        {status === 'loading' ? (
+          [1,2,3].map(i => <div key={i} className="telemetry-stat telemetry-skeleton" />)
+        ) : profile ? (
+          <>
+            <div className="telemetry-stat">
+              <div className="telemetry-stat-val">{profile.public_repos ?? '—'}</div>
+              <div className="telemetry-stat-label">REPOS</div>
+            </div>
+            <div className="telemetry-stat">
+              <div className="telemetry-stat-val">{profile.followers ?? '—'}</div>
+              <div className="telemetry-stat-label">FOLLOWERS</div>
+            </div>
+            <div className="telemetry-stat">
+              <div className="telemetry-stat-val">{profile.following ?? '—'}</div>
+              <div className="telemetry-stat-label">FOLLOWING</div>
+            </div>
+          </>
+        ) : null}
+      </div>
+
+      <div className="telemetry-rule" />
+
+      {/* Commit log */}
+      <div className="telemetry-log-label">PUSH LOG — RECENT COMMITS</div>
+      <div className="telemetry-log">
+        {status === 'loading' ? (
+          [1,2,3].map(i => <div key={i} className="telemetry-log-entry telemetry-skeleton" style={{ height: '52px', marginBottom: '0.5rem' }} />)
+        ) : events.length > 0 ? (
+          events.map((group) => (
+            <div key={group.repo} className="telemetry-repo-group">
+              <div className="telemetry-repo-line">
+                <span className="telemetry-prompt-sm">&#36;</span>
+                <span className="telemetry-repo-name">{group.repo}</span>
+                <span className="telemetry-repo-time">{relativeTime(group.latestDate)}</span>
+              </div>
+              {group.commits.slice(0, 3).map((c, j) => (
+                <div key={j} className="telemetry-commit-line">
+                  <span className="telemetry-commit-hash">{String(j + 1).padStart(3, '0')}</span>
+                  <span className="telemetry-commit-msg">{c.message}</span>
+                </div>
+              ))}
+              {group.commits.length > 3 && (
+                <div className="telemetry-commit-more">... +{group.commits.length - 3} commits</div>
+              )}
+            </div>
+          ))
+        ) : (
+          <div className="telemetry-empty">NO RECENT PUSH EVENTS FOUND</div>
+        )}
+      </div>
+
+      <div className="telemetry-rule" />
+
+      {/* Footer */}
+      <div className="telemetry-footer">
+        <a href={`https://github.com/${GH_USER}`} target="_blank" rel="noreferrer" className="telemetry-gh-link">
+          &#62; VIEW FULL PROFILE ON GITHUB
+        </a>
+      </div>
+    </div>
   );
 };
 

@@ -18,6 +18,8 @@ import SkillsPanel from './panels/SkillsPanel';
 import ContactPanel from './panels/ContactPanel';
 import ExperiencePanel from './panels/ExperiencePanel';
 import MapPanel from './panels/MapPanel';
+import TechPanel from './panels/TechPanel';
+import TouchControls from './TouchControls';
 
 const PANEL_MAP = {
   ABOUT: AboutPanel,
@@ -27,6 +29,7 @@ const PANEL_MAP = {
   CONTACT: ContactPanel,
   EXPERIENCE: ExperiencePanel,
   MAP: MapPanel,
+  TECH: TechPanel,
 };
 
 function delta(dir) {
@@ -209,6 +212,9 @@ const GameCanvas = () => {
 
         {PanelComp && <PanelComp onClose={() => setPanel(null)} />}
       </div>
+
+      {/* Mobile touch controls — only visible on touch/small screens via CSS */}
+      <TouchControls onAction={handleAction} keysRef={keysRef} />
     </div>
   );
 };

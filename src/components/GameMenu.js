@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 
 const ITEMS = [
-  { label: 'PROJECTS',   panel: 'PROJECTS' },
-  { label: 'SKILLS',     panel: 'SKILLS'   },
-  { label: 'BACKPACK',   panel: 'EXPERIENCE' },
-  { label: 'ABOUT ME',   panel: 'ABOUT'    },
-  { label: 'BLOG',       panel: 'BLOG'     },
-  { label: 'CONTACT',    panel: 'CONTACT'  },
-  { label: 'MAP',        panel: 'MAP'      },
-  { label: 'EXIT',       panel: null       },
+  { label: 'PROJECTS',   panel: 'PROJECTS'  },
+  { label: 'SKILLS',     panel: 'SKILLS'    },
+  { label: 'BACKPACK',   panel: 'EXPERIENCE'},
+  { label: 'ABOUT ME',   panel: 'ABOUT'     },
+  { label: 'BLOG',       panel: 'BLOG'      },
+  { label: 'CONTACT',    panel: 'CONTACT'   },
+  { label: 'MAP',        panel: 'MAP'       },
+  { label: 'TECH',       panel: 'TECH'      },
+  { label: 'EXIT',       panel: null        },
 ];
 
 const GameMenu = ({ onSelect, onClose }) => {

@@ -1724,3 +1724,371 @@ html, body {
 @media (max-height: 400px) {
   .game-container { transform: scale(0.85); transform-origin: center center; }
 }
+
+/* ============================================================
+   LOADING SCREEN  (peteroravec-inspired boot sequence)
+   ============================================================ */
+.loading-screen {
+  width: 100vw;
+  height: 100vh;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* CRT scanline overlay */
+.ls-crt {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,255,0,0.015) 2px,
+    rgba(0,255,0,0.015) 4px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ── Pixel avatar (scaled-up Ash sprite) ── */
+.ls-avatar-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  z-index: 2;
+}
+.ls-avatar-label {
+  font-family: var(--font-game);
+  font-size: 9px;
+  color: #F8D830;
+  letter-spacing: 0.14em;
+}
+
+/* Avatar shape reuses player sprite CSS at 2× */
+.lsa-wrap {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  transform: scale(2);
+  transform-origin: top center;
+  margin-bottom: 32px;
+}
+.lsa-hat {
+  position: absolute;
+  width: 20px; height: 10px;
+  top: 1px; left: 22px;
+  background: #D82020;
+  border-radius: 55% 55% 0 0;
+}
+.lsa-brim {
+  position: absolute;
+  width: 24px; height: 4px;
+  top: 10px; left: 20px;
+  background: #181018;
+}
+.lsa-hair-l {
+  position: absolute;
+  width: 5px; height: 13px;
+  top: 12px; left: 19px;
+  background: #181018;
+  clip-path: polygon(0 0, 100% 15%, 100% 100%, 0 100%);
+}
+.lsa-hair-r {
+  position: absolute;
+  width: 5px; height: 13px;
+  top: 12px; right: 19px;
+  background: #181018;
+  clip-path: polygon(0 15%, 100% 0, 100% 100%, 0 100%);
+}
+.lsa-face {
+  position: absolute;
+  width: 14px; height: 11px;
+  top: 13px; left: 25px;
+  background: #F8C890;
+}
+.lsa-eye-l {
+  position: absolute;
+  width: 3px; height: 3px;
+  top: 16px; left: 27px;
+  background: #181018;
+}
+.lsa-eye-r {
+  position: absolute;
+  width: 3px; height: 3px;
+  top: 16px; right: 27px;
+  background: #181018;
+}
+.lsa-jacket {
+  position: absolute;
+  width: 22px; height: 8px;
+  top: 22px; left: 21px;
+  background: #2050C8;
+}
+.lsa-collar {
+  position: absolute;
+  width: 8px; height: 8px;
+  top: 22px; left: 28px;
+  background: #F0F0F0;
+}
+.lsa-leg-l {
+  position: absolute;
+  width: 9px; height: 5px;
+  top: 27px; left: 22px;
+  background: #283878;
+}
+.lsa-leg-r {
+  position: absolute;
+  width: 9px; height: 5px;
+  top: 27px; right: 22px;
+  background: #283878;
+}
+@keyframes lsaWalk {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-2px); }
+}
+.lsa-leg-l { animation: lsaWalk 0.6s steps(2) infinite; }
+.lsa-leg-r { animation: lsaWalk 0.6s steps(2) infinite 0.3s; }
+
+/* ── Terminal window ── */
+.ls-terminal {
+  width: clamp(280px, 60vw, 440px);
+  background: #0A0F0A;
+  border: 2px solid #28502A;
+  border-radius: 4px;
+  overflow: hidden;
+  z-index: 2;
+  box-shadow: 0 0 20px rgba(0,180,0,0.15);
+}
+.ls-term-header {
+  background: #162018;
+  padding: 5px 10px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  border-bottom: 1px solid #28502A;
+}
+.ls-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.ls-dot-r { background: #F83030; }
+.ls-dot-y { background: #F8D830; }
+.ls-dot-g { background: #30D030; }
+.ls-term-title {
+  font-family: var(--font-game);
+  font-size: 6px;
+  color: rgba(255,255,255,0.35);
+  letter-spacing: 0.14em;
+  margin-left: 4px;
+}
+.ls-term-body {
+  padding: 10px 14px;
+  min-height: 90px;
+  max-height: 130px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.ls-line {
+  font-family: var(--font-game);
+  font-size: clamp(5px, 1.2vw, 7px);
+  color: #48D848;
+  letter-spacing: 0.04em;
+  line-height: 1.6;
+  animation: lsLineIn 0.15s ease-out;
+}
+@keyframes lsLineIn {
+  from { opacity: 0; transform: translateX(-4px); }
+  to   { opacity: 1; transform: translateX(0);    }
+}
+.ls-cursor {
+  font-family: var(--font-game);
+  font-size: 8px;
+  color: #48D848;
+  animation: lsCursorBlink 0.7s step-end infinite;
+}
+@keyframes lsCursorBlink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* ── Progress bar ── */
+.ls-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 2;
+  width: clamp(280px, 60vw, 440px);
+}
+.ls-bar-track {
+  flex: 1;
+  height: 12px;
+  background: #0A0F0A;
+  border: 2px solid #28502A;
+  overflow: hidden;
+  position: relative;
+}
+.ls-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #28A028, #F8D830);
+  transition: width 0.1s linear;
+}
+.ls-bar-pct {
+  font-family: var(--font-game);
+  font-size: 8px;
+  color: #F8D830;
+  min-width: 36px;
+  text-align: right;
+  letter-spacing: 0.06em;
+}
+.ls-ready {
+  font-family: var(--font-game);
+  font-size: clamp(7px, 1.4vw, 10px);
+  color: #F8F8F8;
+  letter-spacing: 0.16em;
+  animation: titleBlink 0.8s step-end infinite;
+  z-index: 2;
+}
+
+/* ============================================================
+   TITLE SCREEN — LinkedIn / GitHub quick links
+   ============================================================ */
+.title-links {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.title-link-btn {
+  font-family: var(--font-game);
+  font-size: clamp(6px, 1.1vw, 9px);
+  color: var(--panel-accent);
+  border: 2px solid var(--panel-accent);
+  padding: 5px 10px;
+  text-decoration: none;
+  letter-spacing: 0.1em;
+  transition: background 0.15s, color 0.15s;
+  cursor: pointer;
+}
+.title-link-btn:hover,
+.title-link-btn:active {
+  background: var(--panel-accent);
+  color: #181018;
+}
+
+/* ============================================================
+   TECH PANEL ("Under the Hood")
+   ============================================================ */
+.tech-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.tech-name {
+  font-family: var(--font-game);
+  font-size: 7px;
+  color: var(--panel-accent);
+  letter-spacing: 0.08em;
+}
+.tech-detail {
+  font-family: var(--font-game);
+  font-size: 5px;
+  color: var(--panel-sub);
+  letter-spacing: 0.03em;
+  line-height: 1.6;
+}
+
+/* ============================================================
+   MOBILE TOUCH CONTROLS
+   ============================================================ */
+.touch-controls {
+  display: none; /* hidden on desktop */
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 130px;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 0 20px 16px;
+  pointer-events: none;
+  z-index: 200;
+}
+
+/* Show only on touch/mobile */
+@media (max-width: 700px), (hover: none) and (pointer: coarse) {
+  .touch-controls { display: flex; }
+  .game-fullscreen { flex-direction: column; }
+}
+
+/* D-pad container */
+.dpad {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  pointer-events: all;
+}
+.dpad-btn {
+  position: absolute;
+  width: 34px; height: 34px;
+  background: rgba(248,248,248,0.15);
+  border: 2px solid rgba(248,248,248,0.3);
+  color: rgba(248,248,248,0.8);
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 4px;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+}
+.dpad-btn:active { background: rgba(248,216,48,0.3); border-color: var(--panel-accent); color: var(--panel-accent); }
+.dpad-up    { top: 0;   left: 33px; }
+.dpad-left  { top: 33px; left: 0; }
+.dpad-center {
+  position: absolute;
+  top: 33px; left: 33px;
+  width: 34px; height: 34px;
+  background: rgba(248,248,248,0.08);
+  border: 2px solid rgba(248,248,248,0.15);
+}
+.dpad-right { top: 33px; right: 0; }
+.dpad-down  { bottom: 0; left: 33px; }
+
+/* Action buttons */
+.act-cluster {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  pointer-events: all;
+}
+.act-btn {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  border: 2px solid rgba(248,248,248,0.4);
+  font-family: var(--font-game);
+  font-size: 9px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+}
+.act-a { background: rgba(248,48,48,0.25); color: #F83030; }
+.act-b { background: rgba(248,216,48,0.2); color: #F8D830; }
+.act-x { background: rgba(48,80,200,0.25); color: #90B0F8; }
+.act-btn:active { opacity: 0.6; transform: scale(0.92); }

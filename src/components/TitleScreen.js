@@ -63,7 +63,29 @@ const TitleScreen = ({ onStart }) => {
       </div>
 
       {/* Press enter */}
-      <div className="title-press-enter">PRESS ENTER</div>
+      <div className="title-press-enter">PRESS ENTER TO PLAY</div>
+
+      {/* Quick links row */}
+      <div className="title-links">
+        <a
+          className="title-link-btn"
+          href="https://www.linkedin.com/in/manikanta-gonugondla-349bb729a/"
+          target="_blank"
+          rel="noreferrer"
+          onClick={(e) => e.stopPropagation()}
+        >
+          LINKEDIN
+        </a>
+        <a
+          className="title-link-btn"
+          href="https://github.com/Manikanta25055"
+          target="_blank"
+          rel="noreferrer"
+          onClick={(e) => e.stopPropagation()}
+        >
+          GITHUB
+        </a>
+      </div>
 
       {/* Footer */}
       <div className="title-footer">

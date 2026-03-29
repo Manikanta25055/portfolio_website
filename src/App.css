@@ -11,40 +11,40 @@
 }
 
 :root {
-  /* Fire Red color palette */
-  --grass:        #78C840;
-  --grass-dark:   #48902C;
-  --grass-hi:     #98E058;
-  --path:         #D8B870;
-  --path-shadow:  #B89850;
-  --tree-top:     #305830;
-  --tree-hi:      #508040;
-  --tree-trunk:   #784820;
-  --house-wall:   #F0E8B0;
-  --house-roof:   #D82020;
-  --house-roof-hi:#F04030;
-  --house-door:   #884418;
-  --house-door-hi:#A85828;
-  --house-win:    #90C8F8;
-  --lab-wall:     #E8E0C8;
-  --lab-roof:     #C89830;
-  --lab-roof-hi:  #E8B840;
-  --water:        #3878F8;
-  --water-hi:     #A8C8F8;
-  --water-dark:   #1850C8;
-  --ledge:        #8B6914;
-  --ledge-shadow: #6A4E0A;
-  --flower-a:     #E82020;
-  --flower-b:     #E8C020;
-  --sign-post:    #A86820;
-  --sign-board:   #F0D880;
-  --fence:        #C0A858;
+  /* Fire Red color palette — pixel-accurate from GBA screenshots */
+  --grass:        #78C840;   /* bright tile grass — exact GBA value */
+  --grass-dark:   #508C28;   /* darker grass variant / tall grass */
+  --grass-hi:     #90D848;   /* subtle light highlight on grass */
+  --path:         #C8A060;   /* sandy tan dirt path — corrected from ref */
+  --path-shadow:  #A88848;   /* path edge shadow */
+  --tree-top:     #286028;   /* deep pine green for bush crown */
+  --tree-hi:      #50A038;   /* bright highlight on tree top */
+  --tree-trunk:   #784820;   /* brown trunk base */
+  --house-wall:   #E8E0B0;   /* warm cream house exterior */
+  --house-roof:   #D82020;   /* classic bright red roof */
+  --house-roof-hi:#F04030;   /* lighter orange-red roof highlight strip */
+  --house-door:   #784018;   /* deep warm brown door */
+  --house-door-hi:#9C5828;   /* door highlight */
+  --house-win:    #88C0F0;   /* light sky-blue window glass */
+  --lab-wall:     #E0D8C0;   /* lab cream-beige wall */
+  --lab-roof:     #C89830;   /* amber/gold lab roof */
+  --lab-roof-hi:  #E8B840;   /* bright gold highlight on lab roof */
+  --water:        #2870F8;   /* deep GBA ocean blue */
+  --water-hi:     #90C8F8;   /* water sparkle highlight */
+  --water-dark:   #1848C0;   /* water shadow */
+  --ledge:        #8B6914;   /* brown ledge tile */
+  --ledge-shadow: #6A4E0A;   /* ledge underside shadow */
+  --flower-a:     #E82020;   /* red flower petals */
+  --flower-b:     #F8D030;   /* yellow flower center */
+  --sign-post:    #A86820;   /* wooden sign post */
+  --sign-board:   #F0D880;   /* sign board face */
+  --fence:        #C0A858;   /* picket fence color */
 
-  /* UI */
-  --dialog-bg:    #F8F8F8;
-  --dialog-border:#383038;
-  --dialog-text:  #181018;
-  --dialog-name:  #282068;
+  /* UI — Fire Red menu/dialog exact colors */
+  --dialog-bg:    #F8F8F8;   /* white dialog background */
+  --dialog-border:#282840;   /* dark navy-charcoal border (corrected) */
+  --dialog-text:  #181018;   /* near-black dialog text */
+  --dialog-name:  #181850;   /* dark navy speaker name label */
   --hud-bg:       rgba(24, 16, 24, 0.88);
   --hud-text:     #F8F8F8;
   --title-bg:     #B01818;
@@ -278,80 +278,113 @@ html, body {
   position: relative;
 }
 
-/* ── GRASS ── */
+/* ── GRASS — authentic GBA 2-tone checkerboard ── */
 .tile-grass {
-  background: var(--grass);
-  border-right: 1px solid rgba(0,0,0,0.04);
-  border-bottom: 1px solid rgba(0,0,0,0.04);
+  /* Primary bright green with subtle darker-green tile pattern */
+  /* At 32px tile = 2× GBA 16px tile → inner 8px checks = 8px CSS each */
+  background-color: #78C840;
+  background-image:
+    linear-gradient(45deg, #68B030 25%, transparent 25%),
+    linear-gradient(-45deg, #68B030 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #68B030 75%),
+    linear-gradient(-45deg, transparent 75%, #68B030 75%);
+  background-size: 8px 8px;
+  background-position: 0 0, 0 4px, 4px -4px, -4px 0px;
 }
+/* Small bright highlight spec on every 3rd tile */
 .tile-grass::after {
   content: '';
   position: absolute;
-  top: 2px; left: 2px;
-  width: 4px; height: 4px;
-  background: var(--grass-hi);
-  opacity: 0.5;
+  top: 4px; left: 4px;
+  width: 3px; height: 2px;
+  background: #90D848;
+  opacity: 0.7;
 }
-.tile-grass:nth-child(3n+1)::after { top: 18px; left: 20px; }
-.tile-grass:nth-child(3n+2)::after { top: 8px; left: 14px; }
+.tile-grass:nth-child(3n+1)::after { top: 20px; left: 22px; }
+.tile-grass:nth-child(3n+2)::after { top: 10px; left: 16px; }
 
 .tile-grass2 {
-  background: var(--grass-dark);
+  background-color: #508C28;
+  background-image:
+    linear-gradient(45deg, #407820 25%, transparent 25%),
+    linear-gradient(-45deg, #407820 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #407820 75%),
+    linear-gradient(-45deg, transparent 75%, #407820 75%);
+  background-size: 8px 8px;
+  background-position: 0 0, 0 4px, 4px -4px, -4px 0px;
 }
 
-/* ── PATH ── */
+/* ── PATH — sandy tan with subtle grain ── */
 .tile-path {
-  background: var(--path);
-  border: 1px solid var(--path-shadow);
+  background-color: #C8A060;
+  /* Subtle stipple like the GBA sand texture */
+  background-image: radial-gradient(circle, #A88848 1px, transparent 1px);
+  background-size: 8px 8px;
+  background-position: 4px 4px;
+}
+.tile-path::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: rgba(168, 136, 72, 0.4);
 }
 .tile-path2 {
-  background: #C8A858;
-  border: 1px solid #A88840;
+  background-color: #B89050;
+  background-image: radial-gradient(circle, #987840 1px, transparent 1px);
+  background-size: 8px 8px;
+  background-position: 2px 2px;
 }
 
-/* ── TREE ── */
+/* ── TREE — rounded oval bush top (Fire Red style) ── */
 .tile-tree {
-  background: var(--tree-top);
-  border-top: 3px solid var(--tree-hi);
-  border-left: 3px solid var(--tree-hi);
-  border-right: 3px solid rgba(0,0,0,0.3);
-  border-bottom: 3px solid rgba(0,0,0,0.3);
+  background: #1A4018;  /* very dark base under the bush */
+  overflow: visible;
 }
+/* Round oval bush crown — positioned to overlap adjacent tiles slightly */
 .tile-tree::before {
+  content: '';
+  position: absolute;
+  top: -2px; left: -2px;
+  width: 36px; height: 28px;
+  background: #286028;
+  border-radius: 50% 50% 45% 45%;
+  border: 3px solid #1A4018;
+  z-index: 2;
+  box-shadow:
+    inset 4px 4px 0 #50A038,   /* highlight spot top-left */
+    inset 8px 6px 0 #50A038;
+}
+/* Trunk base at bottom */
+.tile-tree::after {
   content: '';
   position: absolute;
   bottom: 0; left: 50%;
   transform: translateX(-50%);
-  width: 10px; height: 8px;
-  background: var(--tree-trunk);
-}
-/* Tree top highlight dot */
-.tile-tree::after {
-  content: '';
-  position: absolute;
-  top: 4px; left: 4px;
-  width: 8px; height: 6px;
-  background: var(--tree-hi);
-  opacity: 0.5;
+  width: 12px; height: 10px;
+  background: #784820;
+  z-index: 1;
 }
 
-/* ── WATER ── */
+/* ── WATER — deep GBA blue with shimmer ── */
 .tile-water {
-  background: var(--water);
-  animation: waterShimmer 1.8s ease-in-out infinite;
+  background: #2870F8;
+  animation: waterShimmer 2s ease-in-out infinite;
 }
 @keyframes waterShimmer {
-  0%, 100% { background: var(--water); }
-  50%       { background: #4888FF; }
+  0%, 100% { background: #2870F8; }
+  50%       { background: #3880FF; }
 }
+/* Two sparkle lines like the real game */
 .tile-water::after {
   content: '';
   position: absolute;
-  top: 6px; left: 4px;
-  width: 16px; height: 3px;
-  background: var(--water-hi);
-  opacity: 0.6;
-  border-radius: 2px;
+  top: 8px; left: 4px;
+  width: 14px; height: 2px;
+  background: #90C8F8;
+  opacity: 0.7;
+  border-radius: 1px;
+  box-shadow: 0 10px 0 rgba(144,200,248,0.5);
 }
 
 /* ── HOUSE WALL ── */
@@ -614,35 +647,35 @@ html, body {
   background: #181018;
   z-index: 6;
 }
-/* ── JACKET (Ash blue) ── */
+/* ── JACKET (Ash Fire Red — dark navy blue jacket) ── */
 .spr-jacket {
   position: absolute;
   width: 22px; height: 8px;
   top: 22px; left: 5px;
-  background: #2050C8;
+  background: #1838A8;
   z-index: 3;
 }
-/* White shirt/collar strip showing */
+/* White shirt/collar strip down front */
 .spr-collar {
   position: absolute;
-  width: 8px; height: 8px;
-  top: 22px; left: 12px;
-  background: #F0F0F0;
+  width: 6px; height: 8px;
+  top: 22px; left: 13px;
+  background: #E8E8E8;
   z-index: 4;
 }
-/* ── JEANS ── */
+/* ── JEANS (dark blue denim) ── */
 .spr-leg-l {
   position: absolute;
-  width: 9px; height: 5px;
-  top: 27px; left: 6px;
-  background: #283878;
+  width: 9px; height: 6px;
+  top: 26px; left: 6px;
+  background: #1C2858;
   z-index: 3;
 }
 .spr-leg-r {
   position: absolute;
-  width: 9px; height: 5px;
-  top: 27px; right: 6px;
-  background: #283878;
+  width: 9px; height: 6px;
+  top: 26px; right: 6px;
+  background: #1C2858;
   z-index: 3;
 }
 
@@ -670,10 +703,10 @@ html, body {
 .player.facing-up .spr-face { background: #181018; } /* back of head = hair */
 .player.facing-up .spr-eye-l,
 .player.facing-up .spr-eye-r { display: none; }
-.player.facing-up .spr-collar { background: #2050C8; } /* back of jacket */
+.player.facing-up .spr-collar { background: #1838A8; } /* back of jacket */
 
 /* Facing RIGHT — right profile */
-.player.facing-right .spr-hat  { width: 13px; left: 13px; background: linear-gradient(to right, #D82020 60%, #F8F8F8 40%); }
+.player.facing-right .spr-hat  { width: 14px; left: 12px; background: linear-gradient(to right, #D82020 55%, #F0F0F0 45%); }
 .player.facing-right .spr-brim { width: 16px; left: 14px; }
 .player.facing-right .spr-hair-l { display: none; }
 .player.facing-right .spr-face { width: 10px; left: 17px; }
@@ -883,25 +916,28 @@ html, body {
 /* ============================================================
    DIALOG BOX
    ============================================================ */
+/* Authentic Fire Red dialog box — full rect, rounded, double border */
 .dialog-box {
   position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 96px;
+  bottom: 6px; left: 6px; right: 6px;
+  height: 88px;
   background: var(--dialog-bg);
-  border-top: 4px solid var(--dialog-border);
+  border: 4px solid var(--dialog-border);
+  border-radius: 8px;
   z-index: 50;
-  padding: 10px 14px 8px;
+  padding: 8px 14px 6px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 
-/* Double border effect (authentic FR style) */
+/* Inner double-border — exact Fire Red look */
 .dialog-box::before {
   content: '';
   position: absolute;
-  inset: 3px;
+  inset: 4px;
   border: 2px solid var(--dialog-border);
+  border-radius: 4px;
   pointer-events: none;
 }
 
@@ -925,16 +961,19 @@ html, body {
   word-break: break-word;
 }
 
+/* Solid dark ▼ triangle cursor — exact Fire Red style */
 .dialog-advance {
-  font-size: 10px;
-  color: var(--dialog-border);
+  width: 0; height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 8px solid var(--dialog-border);
   align-self: flex-end;
+  margin-right: 4px;
   animation: dialogCursor 0.5s step-end infinite;
-  line-height: 1;
 }
 @keyframes dialogCursor {
   0%, 100% { opacity: 1; transform: translateY(0); }
-  50%       { opacity: 0.2; transform: translateY(2px); }
+  50%       { opacity: 0.3; transform: translateY(3px); }
 }
 
 .dialog-hint {
@@ -1829,7 +1868,7 @@ html, body {
   position: absolute;
   width: 22px; height: 8px;
   top: 22px; left: 21px;
-  background: #2050C8;
+  background: #1838A8;
 }
 .lsa-collar {
   position: absolute;

@@ -1,78 +1,56 @@
 import React from 'react';
-import { MAP, MAP_COLS, MAP_ROWS } from '../../game/mapData';
 import { T } from '../../game/constants';
+import { MAP, MAP_COLS } from '../../game/mapData';
 
-// Tile → minimap color
 const MINI_COLOR = {
-  [T.GRASS]:   '#78C840',
-  [T.PATH]:    '#D8B870',
-  [T.TREE]:    '#305830',
-  [T.WATER]:   '#3878F8',
-  [T.HOUSE_W]: '#F0E8B0',
-  [T.HOUSE_R]: '#D82020',
-  [T.HOUSE_D]: '#884418',
-  [T.LEDGE]:   '#8B6914',
-  [T.FLOWER]:  '#78C840',
-  [T.SIGN]:    '#D8B870',
-  [T.LAB_W]:   '#E8E0C8',
-  [T.LAB_R]:   '#C89830',
-  [T.LAB_D]:   '#884418',
-  [T.GRASS2]:  '#50A030',
+  [T.GRASS]: '#73b84c',
+  [T.PATH]: '#d0b068',
+  [T.TREE]: '#2f6529',
+  [T.WATER]: '#4588e8',
+  [T.HOUSE_W]: '#f0e6bf',
+  [T.HOUSE_R]: '#d84830',
+  [T.HOUSE_D]: '#8e582c',
+  [T.LEDGE]: '#896020',
+  [T.FLOWER]: '#cb4f52',
+  [T.SIGN]: '#d4a65f',
+  [T.LAB_W]: '#ddd4ba',
+  [T.LAB_R]: '#cf9d3f',
+  [T.LAB_D]: '#8e582c',
+  [T.GRASS2]: '#599837',
 };
 
-const CELL = 8; // pixels per map tile in minimap
+const CELL = 8;
 
-const MapPanel = ({ onClose }) => (
+const MapPanel = () => (
   <div className="panel-overlay">
-    <div className="panel-window">
+    <div className="panel-window map-panel">
       <div className="panel-header">
-        <span className="panel-title">PALLET TOWN</span>
-        <span className="panel-close-hint">[ESC] CLOSE</span>
+        <span className="panel-title">TOWN MAP</span>
+        <span className="panel-close-hint">B BUTTON: CLOSE</span>
       </div>
-      <div className="panel-body" style={{ display: 'flex', justifyContent: 'center', paddingTop: 12 }}>
-        <div style={{ position: 'relative' }}>
-          {/* Minimap grid */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: `repeat(${MAP_COLS}, ${CELL}px)`,
-              gridTemplateRows:    `repeat(${MAP_ROWS}, ${CELL}px)`,
-              border: '3px solid var(--dialog-border)',
-              imageRendering: 'pixelated',
-            }}
-          >
-            {MAP.flat().map((tileId, i) => (
-              <div
-                key={i}
-                style={{
-                  width: CELL,
-                  height: CELL,
-                  background: MINI_COLOR[tileId] || '#305830',
-                }}
-              />
-            ))}
-          </div>
-
-          {/* Location labels */}
-          <div style={{ marginTop: 10 }}>
-            <div className="panel-section-title">LOCATIONS</div>
-            <div className="map-legend">
-              <span className="map-dot" style={{ background: '#D82020' }} />
-              <span className="map-legend-text">PLAYER'S HOUSE</span>
-            </div>
-            <div className="map-legend">
-              <span className="map-dot" style={{ background: '#C89830' }} />
-              <span className="map-legend-text">OAK'S LAB</span>
-            </div>
-            <div className="map-legend">
-              <span className="map-dot" style={{ background: '#F0E8B0' }} />
-              <span className="map-legend-text">RIVAL'S HOUSE</span>
-            </div>
-            <div className="map-legend">
-              <span className="map-dot" style={{ background: '#3878F8' }} />
-              <span className="map-legend-text">SOUTH OCEAN</span>
-            </div>
-          </div>
+      <div className="panel-body">
+        <div className="panel-section">
+          <div className="panel-section-title">PALLET TOWN</div>
+          <div className="panel-section-text">Trainer Ash starts here before heading north to bigger routes.</div>
+        </div>
+        <div className="town-map-grid">
+          {MAP.flat().map((tileId, i) => (
+            <div
+              key={i}
+              className="town-map-cell"
+              style={{
+                width: CELL,
+                height: CELL,
+                background: MINI_COLOR[tileId] || '#2f6529',
+                gridColumn: `${(i % MAP_COLS) + 1}`,
+                gridRow: `${Math.floor(i / MAP_COLS) + 1}`,
+              }}
+            />
+          ))}
+        </div>
+        <div className="panel-section">
+          <div className="panel-section-title">LANDMARKS</div>
+          <div className="panel-section-text">House: About | Lab: Projects | PC House: Blog | NPCs: Skills, Contact, Experience</div>
         </div>
       </div>
     </div>

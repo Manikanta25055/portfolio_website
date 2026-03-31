@@ -2,16 +2,15 @@ import React from 'react';
 
 const HUD = ({ location, showControls }) => (
   <div className="hud">
-    {location && (
-      <div className="hud-location" key={location}>
-        {location}
-      </div>
-    )}
+    <div className="hud-badge">
+      <div className="hud-badge-top">LOCATION</div>
+      <div className="hud-location">{location}</div>
+    </div>
     {showControls && (
-      <div className="hud-controls">
-        <span><b>[WASD]</b> MOVE</span>
-        <span><b>[SPACE]</b> TALK/OK</span>
-        <span><b>[ESC]</b> CLOSE</span>
+      <div className="hud-help">
+        <span>WASD MOVE</span>
+        <span>SPACE A</span>
+        <span>ESC B</span>
       </div>
     )}
   </div>

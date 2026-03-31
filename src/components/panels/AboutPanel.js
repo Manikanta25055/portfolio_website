@@ -1,68 +1,51 @@
 import React from 'react';
-import { PERSONAL, EDUCATION } from '../../data/portfolio';
+import { EDUCATION, PERSONAL } from '../../data/portfolio';
 
-const AboutPanel = ({ onClose }) => (
+const AboutPanel = () => (
   <div className="panel-overlay">
-    <div className="panel-window">
+    <div className="panel-window trainer-card">
       <div className="panel-header">
-        <span className="panel-title">PLAYER INFO</span>
-        <span className="panel-close-hint">[ESC] CLOSE</span>
+        <span className="panel-title">TRAINER CARD</span>
+        <span className="panel-close-hint">B BUTTON: CLOSE</span>
       </div>
       <div className="panel-body">
-        <div className="panel-section">
-          <div className="about-name">{PERSONAL.name}</div>
-          <div className="about-role">{PERSONAL.role}</div>
-          <div className="stat-row">
-            <div className="stat-box">
-              <div className="stat-box-label">MIT CGPA</div>
-              <div className="stat-box-val">{EDUCATION[0].cgpa}</div>
-            </div>
-            <div className="stat-box">
-              <div className="stat-box-label">IIT-M CGPA</div>
-              <div className="stat-box-val">{EDUCATION[1].cgpa}</div>
-            </div>
-            <div className="stat-box">
-              <div className="stat-box-label">PATENT</div>
-              <div className="stat-box-val" style={{ fontSize: 7 }}>FILED</div>
-            </div>
+        <div className="trainer-card-top">
+          <div className="trainer-portrait">
+            <div className="trainer-cap" />
+            <div className="trainer-face" />
+            <div className="trainer-jacket" />
+          </div>
+          <div className="trainer-meta">
+            <div className="trainer-name">ASH / {PERSONAL.shortName}</div>
+            <div className="trainer-role">{PERSONAL.role}</div>
+            <div className="trainer-region">HOME: {PERSONAL.location}</div>
+            <div className="trainer-region">CURRENT BASE: {PERSONAL.workLocation}</div>
           </div>
         </div>
 
         <div className="panel-section">
-          <div className="panel-section-title">BIO</div>
+          <div className="panel-section-title">TRAINER MEMO</div>
           <div className="panel-section-text">{PERSONAL.summary}</div>
         </div>
 
-        {EDUCATION.map(edu => (
+        {EDUCATION.map((edu) => (
           <div key={edu.shortName} className="panel-section">
-            <div className="panel-section-title">{edu.shortName}</div>
+            <div className="panel-section-title">{edu.shortName} BADGE DATA</div>
             <div className="panel-section-text">
-              <b>{edu.degree}</b><br />
-              CGPA: <b>{edu.cgpa}</b> / {edu.maxCgpa} &nbsp;|&nbsp; {edu.sem}<br />
-              {edu.minor && <>MINOR: <b>{edu.minor}</b><br /></>}
-              STATUS: <b style={{ color: 'var(--hp-green)' }}>{edu.status}</b>
+              {edu.degree}
+              <br />
+              CGPA {edu.cgpa}/{edu.maxCgpa} | {edu.sem}
+              <br />
+              STATUS: {edu.status}
+              {edu.minor ? <><br />MINOR: {edu.minor}</> : null}
             </div>
           </div>
         ))}
 
         <div className="panel-section">
-          <div className="panel-section-title">LOCATION</div>
-          <div className="panel-section-text">
-            <b>{PERSONAL.location}</b><br />
-            {PERSONAL.workLocation}
-          </div>
-        </div>
-
-        <div className="panel-section">
-          <div className="panel-section-title">LINKS</div>
-          <div className="contact-line">
-            <span className="contact-label">GITHUB</span>
-            <span className="contact-val">{PERSONAL.githubUser}</span>
-          </div>
-          <div className="contact-line">
-            <span className="contact-label">EMAIL</span>
-            <span className="contact-val">{PERSONAL.email}</span>
-          </div>
+          <div className="panel-section-title">POKeNAV LINKS</div>
+          <div className="panel-section-text">GITHUB: {PERSONAL.githubUser}</div>
+          <div className="panel-section-text">MAIL: {PERSONAL.email}</div>
         </div>
       </div>
     </div>

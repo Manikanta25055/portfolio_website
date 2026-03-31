@@ -1,65 +1,51 @@
 import React, { useState } from 'react';
 import { PROJECTS } from '../../data/portfolio';
 
-const ProjectsPanel = ({ onClose }) => {
+const ProjectsPanel = () => {
   const [selected, setSelected] = useState(null);
 
   if (selected !== null) {
-    const p = PROJECTS[selected];
+    const project = PROJECTS[selected];
     return (
       <div className="panel-overlay">
         <div className="panel-window">
           <div className="panel-header">
-            <span className="panel-title">{p.title}</span>
-            <span className="panel-close-hint">[ESC] BACK</span>
+            <span className="panel-title">POKeDEX ENTRY</span>
+            <span className="panel-close-hint">B BUTTON: BACK</span>
           </div>
           <div className="panel-body">
             <div className="panel-section">
-              <div className="panel-section-title">{p.subtitle}</div>
-              {p.achievement && (
-                <div className="panel-badge">{p.achievement}</div>
-              )}
+              <div className="panel-section-title">{project.title}</div>
+              <div className="panel-badge">{project.achievement || 'REGISTERED PROJECT'}</div>
             </div>
-
             <div className="panel-section">
-              <div className="panel-section-title">DESCRIPTION</div>
-              <div className="panel-section-text">{p.description}</div>
+              <div className="panel-section-title">CATEGORY</div>
+              <div className="panel-section-text">{project.subtitle}</div>
             </div>
-
             <div className="panel-section">
-              <div className="panel-section-title">ACHIEVEMENTS</div>
-              {p.achievements.map((a, i) => (
-                <div key={i} className="panel-section-text">
-                  &gt;&nbsp;{a}
-                </div>
+              <div className="panel-section-title">DEX DESCRIPTION</div>
+              <div className="panel-section-text">{project.description}</div>
+            </div>
+            <div className="panel-section">
+              <div className="panel-section-title">MOVES / RESULTS</div>
+              {project.achievements.map((achievement) => (
+                <div key={achievement} className="panel-section-text">{achievement}</div>
               ))}
             </div>
-
             <div className="panel-section">
-              <div className="panel-section-title">TECH STACK</div>
+              <div className="panel-section-title">TYPE MATCHUP</div>
               <div className="proj-tech-row">
-                {p.tech.map(t => (
-                  <span key={t} className="proj-tech-tag">{t}</span>
+                {project.tech.map((tech) => (
+                  <span key={tech} className="proj-tech-tag">{tech}</span>
                 ))}
               </div>
             </div>
-
-            {p.github && (
+            {project.github ? (
               <div className="panel-section">
-                <div className="panel-section-title">GITHUB</div>
-                <div className="panel-section-text">{p.github}</div>
+                <div className="panel-section-title">TRAINER PC</div>
+                <div className="panel-section-text">{project.github}</div>
               </div>
-            )}
-
-            <div className="panel-section">
-              <div className="panel-section-text" style={{ color: 'var(--panel-dim)' }}>
-                PERIOD: {p.period}
-              </div>
-            </div>
-
-            <div className="panel-nav-hint">
-              [SPACE / ESC] BACK TO LIST
-            </div>
+            ) : null}
           </div>
         </div>
       </div>
@@ -70,31 +56,28 @@ const ProjectsPanel = ({ onClose }) => {
     <div className="panel-overlay">
       <div className="panel-window">
         <div className="panel-header">
-          <span className="panel-title">OAK'S LAB — PROJECTS</span>
-          <span className="panel-close-hint">[ESC] CLOSE</span>
+          <span className="panel-title">PROF. OAK'S POKeDEX</span>
+          <span className="panel-close-hint">B BUTTON: CLOSE</span>
         </div>
         <div className="panel-body">
           <div className="panel-section">
-            <div className="panel-section-title">
-              CHOOSE A PROJECT — {PROJECTS.length} REGISTERED
-            </div>
+            <div className="panel-section-title">REGISTERED PROJECT MON</div>
+            <div className="panel-section-text">Every project is treated like a captured rare entry.</div>
           </div>
           <div className="proj-list">
-            {PROJECTS.map((p, i) => (
-              <div
-                key={p.id}
+            {PROJECTS.map((project, i) => (
+              <button
+                key={project.id}
                 className="proj-list-item"
                 onClick={() => setSelected(i)}
+                type="button"
               >
-                <span className="proj-list-num">{String(i + 1).padStart(2, '0')}</span>
-                <span className="proj-list-title">{p.title}</span>
-                {p.achievement && (
-                  <span className="proj-list-badge">★</span>
-                )}
-              </div>
+                <span className="proj-list-num">{String(i + 1).padStart(3, '0')}</span>
+                <span className="proj-list-title">{project.title}</span>
+                {project.achievement ? <span className="proj-list-badge">★</span> : null}
+              </button>
             ))}
           </div>
-          <div className="panel-nav-hint">[CLICK / ENTER] SELECT</div>
         </div>
       </div>
     </div>

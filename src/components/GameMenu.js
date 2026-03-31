@@ -1,39 +1,58 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 const ITEMS = [
-  { label: 'PROJECTS',   panel: 'PROJECTS'  },
-  { label: 'SKILLS',     panel: 'SKILLS'    },
-  { label: 'BACKPACK',   panel: 'EXPERIENCE'},
-  { label: 'ABOUT ME',   panel: 'ABOUT'     },
-  { label: 'BLOG',       panel: 'BLOG'      },
-  { label: 'CONTACT',    panel: 'CONTACT'   },
-  { label: 'MAP',        panel: 'MAP'       },
-  { label: 'TECH',       panel: 'TECH'      },
-  { label: 'EXIT',       panel: null        },
+  { label: 'POKeDEX', panel: 'PROJECTS' },
+  { label: 'POKeMON', panel: 'SKILLS' },
+  { label: 'BAG', panel: 'EXPERIENCE' },
+  { label: 'ASH', panel: 'ABOUT' },
+  { label: 'SAVE', panel: 'CONTACT' },
+  { label: 'OPTION', panel: 'TECH' },
+  { label: 'TOWN MAP', panel: 'MAP' },
+  { label: 'PC', panel: 'BLOG' },
 ];
 
 const GameMenu = ({ onSelect, onClose }) => {
   const [cursor, setCursor] = useState(0);
 
-  const handleClick = (item) => {
-    if (!item.panel) { onClose(); return; }
-    onSelect(item.panel);
-  };
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === 'Escape') {
+        onClose();
+        return;
+      }
+      if (e.key === 'ArrowUp') setCursor((current) => (current + ITEMS.length - 2) % ITEMS.length);
+      if (e.key === 'ArrowDown') setCursor((current) => (current + 2) % ITEMS.length);
+      if (e.key === 'ArrowLeft') setCursor((current) => (current % 2 === 0 ? current + 1 : current - 1));
+      if (e.key === 'ArrowRight') setCursor((current) => (current % 2 === 0 ? current + 1 : current - 1));
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        onSelect(ITEMS[cursor].panel);
+      }
+    };
+
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [cursor, onClose, onSelect]);
 
   return (
     <div className="game-menu">
-      <div className="gm-header">GVM</div>
-      {ITEMS.map((item, i) => (
-        <div
-          key={item.label}
-          className={`gm-item${cursor === i ? ' gm-selected' : ''}`}
-          onMouseEnter={() => setCursor(i)}
-          onClick={() => handleClick(item)}
-        >
-          <span className="gm-arrow">{cursor === i ? '>' : ' '}</span>
-          <span className="gm-label">{item.label}</span>
+      <div className="gm-window">
+        <div className="gm-grid">
+          {ITEMS.map((item, i) => (
+            <button
+              key={item.label}
+              className={`gm-item${cursor === i ? ' gm-selected' : ''}`}
+              onMouseEnter={() => setCursor(i)}
+              onClick={() => onSelect(item.panel)}
+              type="button"
+            >
+              <span className="gm-cursor">{cursor === i ? '▶' : ''}</span>
+              <span className="gm-label">{item.label}</span>
+            </button>
+          ))}
         </div>
-      ))}
+      </div>
+      <div className="gm-help">SELECT STARTING MENU COMMAND.</div>
     </div>
   );
 };

@@ -1,0 +1,2393 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Veera Manikanta Gonugondla — Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+/* ==========================================================
+   PORTFOLIO — Engineering Journal (default)
+   Themes: editorial (default) · glass · terminal
+   Toggle via [data-theme] on body
+   ========================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Kalam:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,800;1,9..144,400;1,9..144,500&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+*,*::before,*::after{box-sizing:border-box}
+html,body,#root{height:100%}
+body{margin:0;overflow-x:hidden;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+
+/* ──────────────── ENGINEERING JOURNAL (default) ──────────────── */
+body[data-theme="editorial"]{
+  --bg:#f3ede2;
+  --bg-2:#ebe4d6;
+  --ink:#0f0e0c;
+  --ink-mute:#4a4643;
+  --ink-dim:#8a837c;
+  --hairline:#cfc6b3;
+  --hairline-strong:#1a1a1a;
+  --glass:#ebe4d6;
+  --glass-strong:#e2d9c6;
+  --accent:#c1321f;
+  --accent-2:#0a5c3a;
+  --accent-3:#1a2d5c;
+  --accent-4:#a88032;
+  font-family:'Fraunces',Georgia,serif;
+  background:var(--bg);
+  color:var(--ink);
+}
+body[data-theme="editorial"]::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:
+    /* coarse paper fibers */
+    radial-gradient(ellipse 2px 1px at 20% 30%, rgba(90,70,40,.09), transparent),
+    radial-gradient(ellipse 1px 2px at 70% 65%, rgba(70,50,30,.08), transparent),
+    radial-gradient(ellipse 3px 1px at 45% 85%, rgba(100,80,50,.06), transparent),
+    /* crumple shading — soft creases */
+    radial-gradient(ellipse 600px 200px at 15% 25%, rgba(0,0,0,.035), transparent 60%),
+    radial-gradient(ellipse 500px 300px at 85% 70%, rgba(0,0,0,.04), transparent 60%),
+    radial-gradient(ellipse 400px 180px at 50% 95%, rgba(160,120,60,.05), transparent 60%),
+    /* dot grain */
+    radial-gradient(rgba(60,40,20,.07) 1px, transparent 1.2px);
+  background-size:
+    140px 90px,
+    170px 110px,
+    200px 130px,
+    100% 100%,
+    100% 100%,
+    100% 100%,
+    3px 3px;
+  background-position: 0 0, 50px 30px, 20px 80px, 0 0, 0 0, 0 0, 0 0;
+  mix-blend-mode:multiply;
+}
+body[data-theme="editorial"]::after{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    /* large crumple diagonals */
+    linear-gradient(118deg, transparent 46%, rgba(0,0,0,.04) 48%, transparent 52%),
+    linear-gradient(62deg, transparent 40%, rgba(255,255,255,.25) 42%, transparent 46%),
+    linear-gradient(152deg, transparent 55%, rgba(0,0,0,.03) 57%, transparent 62%),
+    linear-gradient(28deg, transparent 70%, rgba(255,255,255,.18) 72%, transparent 76%);
+  mix-blend-mode:overlay;
+  opacity:.6;
+}
+
+/* ──────────────── LIQUID GLASS ──────────────── */
+body[data-theme="glass"]{
+  --bg:#05060a;--ink:#f5f7ff;--ink-mute:rgba(245,247,255,.62);--ink-dim:rgba(245,247,255,.38);
+  --hairline:rgba(255,255,255,.1);--hairline-strong:rgba(255,255,255,.2);
+  --glass:rgba(255,255,255,.06);--glass-strong:rgba(255,255,255,.1);
+  --accent:#FF5A36;--accent-2:#22C1A6;--accent-3:#6366F1;--accent-4:#F5A524;
+  font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--ink);
+}
+body[data-theme="glass"]::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(60vw 60vw at 10% -10%, rgba(255,90,54,.35), transparent 60%),
+    radial-gradient(60vw 60vw at 110% 15%, rgba(99,102,241,.35), transparent 60%),
+    radial-gradient(70vw 50vw at 50% 110%, rgba(34,193,166,.3), transparent 60%);
+  filter:blur(40px) saturate(140%);
+}
+
+/* ──────────────── BRUTALIST TERMINAL ──────────────── */
+body[data-theme="terminal"]{
+  --bg:#0a0a0a;--ink:#e6ffe1;--ink-mute:#8bc67e;--ink-dim:#4a7d42;
+  --hairline:#1f3d1c;--hairline-strong:#39FF14;
+  --glass:transparent;--glass-strong:#0f1a0d;
+  --accent:#39FF14;--accent-2:#ff7700;--accent-3:#00e5ff;--accent-4:#ffe600;
+  font-family:'JetBrains Mono',ui-monospace,monospace;background:var(--bg);color:var(--ink);
+}
+body[data-theme="terminal"]::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    repeating-linear-gradient(0deg, rgba(57,255,20,.03) 0 1px, transparent 1px 3px);
+}
+
+/* ==========================================================
+   LAYOUT SHELL
+   ========================================================== */
+.page{position:relative;z-index:2;max-width:1280px;margin:0 auto;padding:32px 48px 160px}
+@media (max-width:720px){.page{padding:22px 24px 160px}}
+
+section{position:relative;padding:96px 0 24px;scroll-margin-top:24px}
+@media (max-width:720px){section{padding:64px 0 12px}}
+
+.eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-mute);font-weight:600;font-family:'Space Grotesk',sans-serif}
+body[data-theme="terminal"] .eyebrow{color:var(--accent);letter-spacing:.15em;font-family:'JetBrains Mono',mono}
+body[data-theme="terminal"] .eyebrow::before{content:"> "}
+
+h1,h2,h3,h4{margin:0;font-weight:500;letter-spacing:-0.02em;color:var(--ink);font-family:'Fraunces',serif;font-variation-settings:"opsz" 144}
+h1{font-size:clamp(40px,6.5vw,96px);line-height:.95;letter-spacing:-0.04em;font-weight:500;font-style:italic}
+h2{font-size:clamp(36px,5vw,68px);line-height:1;letter-spacing:-0.035em}
+h3{font-size:clamp(22px,2.4vw,30px);line-height:1.15;font-weight:600}
+p{margin:0;line-height:1.55;color:var(--ink-mute);font-family:'Space Grotesk',sans-serif}
+
+body[data-theme="glass"] h1,body[data-theme="glass"] h2,body[data-theme="glass"] h3{font-family:'Inter',sans-serif;font-weight:700;font-style:normal}
+body[data-theme="glass"] h1{font-style:normal;letter-spacing:-0.04em}
+body[data-theme="glass"] p{font-family:'Inter',sans-serif}
+body[data-theme="terminal"] h1,body[data-theme="terminal"] h2,body[data-theme="terminal"] h3{font-family:'JetBrains Mono',mono;font-weight:700;letter-spacing:0;text-transform:uppercase;font-style:normal}
+body[data-theme="terminal"] h1{font-size:clamp(38px,7vw,90px)}
+body[data-theme="terminal"] p{font-family:'JetBrains Mono',mono}
+
+a{color:inherit}
+
+/* ========== TOP BAR ========== */
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:36px;position:relative;z-index:3;flex-wrap:wrap;gap:8px}
+.top-mark{display:flex;align-items:center;gap:12px;font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;font-family:'Space Grotesk',sans-serif}
+body[data-theme="terminal"] .top-mark{font-family:'JetBrains Mono',mono}
+.top-mark-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent)}
+body[data-theme="terminal"] .top-mark-dot{border-radius:0;animation:blink 1.2s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.top-meta{font-size:11px;color:var(--ink-mute);letter-spacing:.12em;text-transform:uppercase;font-weight:500;font-family:'Space Grotesk',sans-serif}
+body[data-theme="terminal"] .top-meta{font-family:'JetBrains Mono',mono}
+
+/* ========== HERO ========== */
+.hero{padding-top:24px;padding-bottom:40px;min-height:90vh;display:flex;flex-direction:column;justify-content:center;position:relative}
+.hero-eyebrow{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+.hero-eyebrow-bar{width:48px;height:1px;background:var(--ink)}
+body[data-theme="terminal"] .hero-eyebrow-bar{height:2px;background:var(--accent)}
+
+.hero-name{
+  font-size:clamp(13px,1.4vw,16px);font-weight:500;letter-spacing:.22em;text-transform:uppercase;
+  font-family:'Space Grotesk',sans-serif;margin-bottom:32px;color:var(--ink);
+}
+body[data-theme="terminal"] .hero-name{font-family:'JetBrains Mono',mono;color:var(--accent)}
+body[data-theme="terminal"] .hero-name::before{content:"$ whoami → "}
+
+.hero h1{max-width:18ch}
+.hero h1 .accent-word{color:var(--accent);font-style:italic}
+body[data-theme="glass"] .hero h1 .accent-word{font-style:normal;background:linear-gradient(135deg,var(--accent),var(--accent-3));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+
+.hero-sub{margin-top:32px;font-size:clamp(16px,1.4vw,19px);max-width:62ch;color:var(--ink-mute);line-height:1.6}
+
+/* ── Tilted notepad near the hero title ── */
+.hero-left{position:relative}
+.hero-title-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:clamp(20px, 3vw, 56px);
+  align-items:center;
+  width:100%;
+}
+.hero-title-row h1{margin:0;min-width:0;width:100%}
+
+/* notepad column — container query driven so it scales with its own width */
+.notepad-float-wrap{
+  width:100%;min-width:0;
+  container-type:inline-size;
+  container-name:pad;
+  display:flex;justify-content:center;
+}
+
+.notepad{
+  --s: 1; /* fallback scale if container queries unsupported */
+  position:relative;
+  width:100%;
+  max-width:100%;
+  aspect-ratio: 5 / 6;
+  padding: 7cqi 7cqi 6cqi 10cqi;
+  background:
+    repeating-linear-gradient(
+      transparent 0 calc(6.5cqi - 1px),
+      rgba(20,40,90,.14) calc(6.5cqi - 1px) 6.5cqi
+    ),
+    #fff8d0;
+  background-position: 0 8cqi;
+  color:#1a1f2e;
+  font-family:'Caveat','Kalam','Fraunces',cursive;
+  border-radius: 1px 3px 12px 2px;
+  transform: rotate(-1.6deg);
+  transition: transform .55s cubic-bezier(.22,1,.36,1), box-shadow .55s;
+  box-shadow:
+    0 2cqi 6cqi rgba(0,0,0,.18),
+    0 .6cqi 2cqi rgba(0,0,0,.12),
+    inset 0 -6cqi 0 rgba(120,90,10,.04);
+  isolation:isolate;
+}
+.notepad:hover{
+  transform: rotate(-.4deg) translateY(-4px);
+  box-shadow:
+    0 4cqi 10cqi rgba(0,0,0,.24),
+    0 1cqi 3cqi rgba(0,0,0,.14);
+}
+
+/* red left-margin rule */
+.notepad::before{
+  content:"";position:absolute;
+  left: 8cqi; top:0; bottom:0;
+  width:1px;
+  background:rgba(200,30,30,.55);
+  z-index:1;
+}
+
+/* masking tape at top */
+.notepad::after{
+  content:"";position:absolute;
+  top: -3cqi; left: 18%;
+  width: 28%; height: 6cqi;
+  background:
+    linear-gradient(180deg, rgba(255,235,130,.82), rgba(255,220,100,.65));
+  border-left:1px dashed rgba(0,0,0,.1);
+  border-right:1px dashed rgba(0,0,0,.1);
+  box-shadow: 0 .6cqi 1.6cqi rgba(0,0,0,.1);
+  transform: rotate(-4deg);
+  z-index:2;
+}
+
+/* binding rings along top edge */
+.np-rings{
+  position:absolute;top: -2cqi; left:0; right:0;
+  display:flex; justify-content:space-around;
+  padding: 0 12%;
+  pointer-events:none; z-index:3;
+}
+.np-ring{
+  width: 4.5cqi; height: 4.5cqi; border-radius:50%;
+  background:radial-gradient(circle at 35% 35%, #e9ecef 0%, #9aa0a6 55%, #5a5e66 100%);
+  box-shadow: 0 .3cqi .6cqi rgba(0,0,0,.3), inset 0 -.3cqi 0 rgba(0,0,0,.2);
+  position:relative;
+}
+.np-ring::after{
+  content:"";position:absolute;inset:25%;border-radius:50%;
+  background:#fff8d0;
+  box-shadow:inset 0 .2cqi .4cqi rgba(0,0,0,.28);
+}
+
+/* torn-paper bottom edge */
+.np-tear{
+  position:absolute;left:0;right:0;bottom: -1.6cqi;
+  height: 1.8cqi;
+  background:
+    radial-gradient(circle at 2cqi 0, transparent 1.6cqi, #fff8d0 1.7cqi) 0 0/4cqi 1.8cqi repeat-x;
+  filter: drop-shadow(0 .4cqi .6cqi rgba(0,0,0,.1));
+  z-index:0;
+}
+
+/* content */
+.np-inner{position:relative; z-index:2}
+.np-brand{
+  font-family:'Fraunces',serif;font-style:italic;font-weight:700;
+  font-size: 6cqi; color:#7a1212;
+  text-align:right; line-height:1;
+  padding-bottom: 2cqi;
+  border-bottom: 1px solid rgba(122,18,18,.25);
+  margin-bottom: 2.5cqi;
+  letter-spacing:.02em;
+}
+.np-head{
+  display:flex; align-items:center; gap: 2cqi;
+  margin-bottom: 3cqi;
+  font-family:'Space Grotesk',sans-serif;
+  font-size: 3cqi;
+  letter-spacing: .2em; text-transform:uppercase;
+  color:#c1321f; font-weight:700;
+  white-space:nowrap;
+}
+.np-dot{
+  width: 2.2cqi; height: 2.2cqi; border-radius:50%;
+  background:#c1321f;
+  box-shadow: 0 0 0 1.2cqi rgba(193,50,31,.15);
+  animation: np-pulse 2s infinite;
+  flex:none;
+}
+@keyframes np-pulse{
+  0%,100%{box-shadow: 0 0 0 1.2cqi rgba(193,50,31,.15)}
+  50%    {box-shadow: 0 0 0 2.4cqi rgba(193,50,31,.04)}
+}
+.np-date{color:#6a6258; font-weight:500; letter-spacing:.08em}
+
+.np-line{
+  font-size: 5.4cqi;
+  line-height: 6.5cqi;
+  color:#1a1f2e;
+  margin: 0;
+}
+.np-line b{
+  font-weight:700;color:#7a1212;
+  text-decoration:underline wavy rgba(122,18,18,.5);
+  text-underline-offset: .8cqi;
+}
+.np-line i{font-style:italic}
+.np-sub{font-size: 4.6cqi; color:#3a3a4a}
+
+.np-sign{
+  display:flex; align-items:center; gap: 2.5cqi;
+  margin-top: 3cqi;
+}
+.np-sig-line{flex:1; height:1px; background:rgba(20,40,90,.25)}
+.np-sig-name{
+  font-size: 5.4cqi; color:#2a3a6a;
+  letter-spacing:.04em;
+}
+
+/* container-query-based absolute minimums for tiny columns */
+@container pad (max-width: 180px){
+  .notepad{padding: 10cqi 8cqi 8cqi 12cqi}
+  .np-brand{font-size: 8cqi}
+  .np-head{font-size: 4cqi}
+  .np-line{font-size: 7cqi; line-height: 8cqi}
+  .np-sub{font-size: 6cqi}
+  .np-sig-name{font-size: 7cqi}
+}
+
+/* stack on very narrow viewport so layout stays readable */
+@media (max-width:640px){
+  .hero-title-row{grid-template-columns:1fr;gap:24px}
+  .notepad-float-wrap{max-width:300px;margin:8px auto 0}
+}
+
+/* terminal variant */
+body[data-theme="terminal"] .notepad{
+  background:#0f2a0f;color:#e6ffe1;font-family:'JetBrains Mono',monospace;
+  box-shadow: 4px 4px 0 var(--accent);
+  border:1px solid var(--accent);
+}
+body[data-theme="terminal"] .notepad::before{display:none}
+body[data-theme="terminal"] .notepad::after{background:var(--accent);border:0}
+body[data-theme="terminal"] .np-rings{display:none}
+body[data-theme="terminal"] .np-line{font-size: 4.6cqi; line-height: 6cqi}
+body[data-theme="terminal"] .np-sub{font-size: 4cqi; color:#8bc67e}
+body[data-theme="terminal"] .np-line b{color:var(--accent);text-decoration:none}
+body[data-theme="terminal"] .np-sig-name{color:var(--accent);font-family:'JetBrains Mono',monospace}
+
+body[data-theme="glass"] .notepad{
+  background:rgba(255,249,214,.92);backdrop-filter:blur(4px);
+}
+
+/* upcoming role tag — Boeing intern (editorial, on-theme) */
+.upcoming-tag{
+  display:inline-flex;align-items:center;gap:0;margin-top:26px;
+  padding:0;background:transparent;border:0;box-shadow:none;
+  font-family:'Space Grotesk',sans-serif;position:relative;
+  max-width:100%;
+}
+.upcoming-tag::before{
+  /* pencil-ruled left bracket */
+  content:"";width:10px;height:44px;
+  border-left:2px solid var(--ink);
+  border-top:2px solid var(--ink);
+  border-bottom:2px solid var(--ink);
+  margin-right:12px;flex:none;
+}
+.upcoming-tag::after{
+  content:"";width:10px;height:44px;
+  border-right:2px solid var(--ink);
+  border-top:2px solid var(--ink);
+  border-bottom:2px solid var(--ink);
+  margin-left:12px;flex:none;
+}
+.up-stack{display:flex;flex-direction:column;gap:2px;align-items:flex-start}
+.up-meta{display:flex;align-items:center;gap:8px}
+.upcoming-tag .up-dot{
+  width:7px;height:7px;border-radius:50%;
+  background:#0a7a3a;
+  box-shadow:0 0 0 3px rgba(10,122,58,.14);
+  animation:up-pulse 2.2s ease-in-out infinite;flex:none;
+}
+@keyframes up-pulse{
+  0%,100%{box-shadow:0 0 0 3px rgba(10,122,58,.14)}
+  50%{box-shadow:0 0 0 7px rgba(10,122,58,.04)}
+}
+.upcoming-tag .up-eyebrow{
+  font-size:10px;letter-spacing:.26em;text-transform:uppercase;
+  color:var(--ink-dim);font-weight:700;
+  font-family:'Space Grotesk',sans-serif;
+}
+.upcoming-tag .up-role-row{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+}
+.upcoming-tag .up-role{
+  font-family:'Fraunces',serif;font-style:italic;font-weight:500;
+  font-size:19px;color:var(--ink);letter-spacing:-.01em;line-height:1.1;
+}
+.upcoming-tag .up-at{font-family:'Fraunces',serif;font-style:italic;color:var(--ink-mute);font-size:17px;margin:0 -2px}
+.upcoming-tag .up-logo{
+  height:20px;width:auto;max-width:92px;object-fit:contain;display:block;
+  filter:grayscale(1) contrast(1.15);
+  opacity:.88;
+}
+body[data-theme="terminal"] .upcoming-tag::before,
+body[data-theme="terminal"] .upcoming-tag::after{border-color:var(--accent)}
+body[data-theme="terminal"] .upcoming-tag .up-role{font-family:'JetBrains Mono',monospace;font-style:normal;text-transform:uppercase;font-size:14px}
+body[data-theme="terminal"] .upcoming-tag .up-logo{filter:grayscale(1) brightness(1.8) contrast(1.3)}
+body[data-theme="glass"] .upcoming-tag::before,
+body[data-theme="glass"] .upcoming-tag::after{border-color:var(--ink-mute)}
+body[data-theme="glass"] .upcoming-tag .up-role{font-family:'Inter',sans-serif;font-style:normal;font-weight:500}
+body[data-theme="glass"] .upcoming-tag .up-logo{filter:invert(1) brightness(1.5);opacity:.85}
+
+@media (max-width:720px){
+  .upcoming-tag::before,.upcoming-tag::after{display:none}
+  .upcoming-tag{padding:10px 14px;border:1px solid var(--hairline);border-left:3px solid var(--accent);background:rgba(255,255,255,.4)}
+  .notepad{transform:rotate(-2deg) scale(.95);margin:20px 0 8px;width:100%;max-width:360px}
+  .notepad-line{font-size:19px;line-height:24px}
+  .notepad-sub{font-size:17px}
+}
+
+.hero-cta-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:36px}
+.btn{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:14px 22px;border-radius:2px;border:1px solid var(--ink);
+  font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;color:var(--ink);
+  background:transparent;transition:all .2s;text-decoration:none;font-family:'Space Grotesk',sans-serif;
+}
+.btn:hover{transform:translateY(-1px);background:var(--ink);color:var(--bg)}
+.btn-primary{background:var(--ink);color:var(--bg);box-shadow:3px 3px 0 var(--accent)}
+.btn-primary:hover{box-shadow:5px 5px 0 var(--accent);background:var(--ink)}
+body[data-theme="glass"] .btn{border-radius:999px;font-family:'Inter',sans-serif;letter-spacing:.02em;text-transform:none;font-size:13px;border-color:var(--hairline);background:var(--glass);backdrop-filter:blur(14px)}
+body[data-theme="glass"] .btn-primary{background:var(--accent);color:#fff;border-color:transparent;box-shadow:0 8px 24px color-mix(in oklab, var(--accent) 50%, transparent)}
+body[data-theme="terminal"] .btn{border-radius:0;font-family:'JetBrains Mono',mono;background:transparent;border:1px solid var(--accent);color:var(--accent)}
+body[data-theme="terminal"] .btn-primary{background:var(--accent);color:#0a0a0a;box-shadow:4px 4px 0 var(--ink)}
+body[data-theme="terminal"] .btn::before{content:"["}
+body[data-theme="terminal"] .btn::after{content:"]"}
+
+/* hero layout */
+.hero-grid{display:grid;grid-template-columns:1fr 380px;gap:56px;align-items:end}
+@media (max-width:960px){.hero-grid{grid-template-columns:1fr;gap:32px}}
+
+.hero-card{
+  padding:24px;border-radius:4px;border:1px solid var(--hairline);
+  background:var(--glass);box-shadow:0 2px 0 var(--hairline);
+  position:relative;
+}
+body[data-theme="glass"] .hero-card{border-radius:24px;backdrop-filter:blur(24px) saturate(160%);box-shadow:none}
+body[data-theme="terminal"] .hero-card{border-radius:0;background:rgba(10,20,8,.6);border-color:var(--ink-dim);box-shadow:none}
+
+.hero-card-h{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-mute);margin-bottom:18px;display:flex;justify-content:space-between;font-family:'Space Grotesk',sans-serif}
+.hero-card-h::after{content:"AVAILABLE";color:var(--accent-2);font-weight:700}
+body[data-theme="terminal"] .hero-card-h::after{content:"● ACTIVE"}
+body[data-theme="terminal"] .hero-card-h{font-family:'JetBrains Mono',mono}
+
+.hero-card-row{display:flex;justify-content:space-between;gap:16px;align-items:baseline;padding:11px 0;border-top:1px dashed var(--hairline);font-size:13px;font-family:'Space Grotesk',sans-serif}
+.hero-card-row:first-of-type{border-top:0;padding-top:0}
+.hero-card-row strong{color:var(--ink);font-weight:600;text-align:right}
+.hero-card-row span{color:var(--ink-mute);flex:none}
+body[data-theme="terminal"] .hero-card-row{font-family:'JetBrains Mono',mono}
+body[data-theme="terminal"] .hero-card-row strong{color:var(--accent)}
+
+/* in-progress block */
+.inprog{margin-top:28px;border-top:1px solid var(--ink);padding-top:24px}
+body[data-theme="glass"] .inprog{border-color:var(--hairline)}
+.inprog-h{font-size:11px;color:var(--ink-mute);letter-spacing:.18em;text-transform:uppercase;font-family:'Space Grotesk',sans-serif;margin-bottom:14px;display:flex;align-items:center;gap:10px}
+body[data-theme="terminal"] .inprog-h{font-family:'JetBrains Mono',mono}
+.inprog-pulse{width:8px;height:8px;border-radius:50%;background:var(--accent);position:relative}
+.inprog-pulse::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:1px solid var(--accent);animation:ping 1.6s ease-out infinite}
+@keyframes ping{0%{transform:scale(.6);opacity:1}100%{transform:scale(1.8);opacity:0}}
+.inprog-list{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media (max-width:720px){.inprog-list{grid-template-columns:1fr}}
+.inprog-item{padding:16px;border:1px solid var(--hairline);border-radius:4px;background:var(--bg-2,transparent)}
+body[data-theme="glass"] .inprog-item{border-radius:16px;background:var(--glass);backdrop-filter:blur(14px)}
+body[data-theme="terminal"] .inprog-item{border-radius:0}
+.inprog-kind{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-family:'Space Grotesk',sans-serif;font-weight:700;margin-bottom:6px}
+body[data-theme="terminal"] .inprog-kind{font-family:'JetBrains Mono',mono}
+.inprog-title{font-size:17px;font-weight:600;font-family:'Fraunces',serif;font-style:italic;margin-bottom:6px}
+body[data-theme="glass"] .inprog-title{font-family:'Inter',sans-serif;font-style:normal}
+body[data-theme="terminal"] .inprog-title{font-family:'JetBrains Mono',mono;font-style:normal;text-transform:uppercase}
+.inprog-note{font-size:13px;color:var(--ink-mute);font-family:'Space Grotesk',sans-serif;line-height:1.5}
+body[data-theme="terminal"] .inprog-note{font-family:'JetBrains Mono',mono}
+
+/* ========== CIRCUIT ANIMATION (hero bg) ========== */
+.circuit{
+  position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.4;
+  overflow:hidden;
+}
+body[data-theme="terminal"] .circuit{opacity:.6}
+body[data-theme="glass"] .circuit{opacity:.5}
+.circuit svg{width:100%;height:100%;display:block}
+.circuit-trace{
+  fill:none;
+  stroke:var(--accent);
+  stroke-width:1.2;
+  stroke-linecap:square;
+  stroke-dasharray:4 6;
+  opacity:.35;
+}
+.circuit-pad{fill:var(--accent);opacity:.5}
+.circuit-via{fill:none;stroke:var(--accent);stroke-width:1;opacity:.4}
+.circuit-pulse{
+  fill:var(--accent);
+  filter:drop-shadow(0 0 6px var(--accent));
+}
+
+/* ========== STATS STRIP ========== */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);margin-top:48px}
+body[data-theme="glass"] .stats{border-color:var(--hairline)}
+body[data-theme="terminal"] .stats{border-color:var(--ink-dim)}
+@media (max-width:720px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{padding:24px 18px;border-right:1px solid var(--hairline)}
+.stats .stat:last-child{border-right:0}
+@media (max-width:720px){.stat:nth-child(2){border-right:0}.stat:nth-child(-n+2){border-bottom:1px solid var(--hairline)}}
+.stat-k{font-size:clamp(34px,3.6vw,52px);font-weight:500;letter-spacing:-0.03em;line-height:1;color:var(--ink);font-family:'Fraunces',serif;font-style:italic}
+body[data-theme="glass"] .stat-k{font-family:'Inter',sans-serif;font-style:normal;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent-3));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+body[data-theme="terminal"] .stat-k{font-family:'JetBrains Mono',mono;font-style:normal;color:var(--accent)}
+.stat-v{margin-top:8px;font-size:11px;color:var(--ink-mute);letter-spacing:.1em;text-transform:uppercase;font-family:'Space Grotesk',sans-serif}
+body[data-theme="terminal"] .stat-v{font-family:'JetBrains Mono',mono}
+
+/* ========== SECTION HEAD ========== */
+.sh{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:48px;flex-wrap:wrap;border-bottom:1px solid var(--ink);padding-bottom:24px}
+body[data-theme="glass"] .sh{border-color:var(--hairline)}
+body[data-theme="terminal"] .sh{border-color:var(--ink-dim)}
+.sh-l{display:flex;flex-direction:column;gap:12px;flex:1;min-width:280px}
+.sh-counter{font-size:11px;color:var(--ink-mute);letter-spacing:.2em;text-transform:uppercase;font-weight:600;font-family:'Space Grotesk',sans-serif}
+body[data-theme="terminal"] .sh-counter{font-family:'JetBrains Mono',mono;color:var(--accent)}
+.sh-r{font-size:13px;color:var(--ink-mute);max-width:36ch;text-align:right;font-family:'Space Grotesk',sans-serif;line-height:1.5}
+@media (max-width:720px){.sh-r{text-align:left}}
+body[data-theme="terminal"] .sh-r{font-family:'JetBrains Mono',mono}
+
+/* ========== PROJECTS — UNIFIED, NO PER-CARD COLOR ========== */
+.proj-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:0;border-top:1px solid var(--ink)}
+body[data-theme="glass"] .proj-grid{border-color:var(--hairline)}
+body[data-theme="terminal"] .proj-grid{border-color:var(--ink-dim)}
+@media (max-width:760px){.proj-grid{grid-template-columns:1fr}}
+
+.proj{
+  position:relative;padding:32px 28px;
+  border-right:1px solid var(--hairline);
+  border-bottom:1px solid var(--hairline);
+  cursor:pointer;
+  transition:background .25s,padding .25s;
+  display:flex;flex-direction:column;
+  background:transparent;
+}
+.proj:nth-child(2n){border-right:0}
+@media (max-width:760px){.proj{border-right:0}}
+.proj:hover{background:var(--bg-2)}
+body[data-theme="glass"] .proj{background:var(--glass);backdrop-filter:blur(16px)}
+body[data-theme="glass"] .proj:hover{background:var(--glass-strong)}
+body[data-theme="terminal"] .proj:hover{background:rgba(57,255,20,.03)}
+
+.proj-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:18px}
+.proj-num{
+  font-size:11px;color:var(--ink-mute);font-weight:600;letter-spacing:.14em;
+  font-family:'Space Grotesk',sans-serif;font-variant-numeric:tabular-nums;
+}
+body[data-theme="terminal"] .proj-num{font-family:'JetBrains Mono',mono;color:var(--accent)}
+.proj-badge{
+  font-size:9px;font-weight:700;letter-spacing:.14em;
+  padding:5px 9px;border:1px solid var(--ink);border-radius:2px;
+  background:var(--ink);color:var(--bg);white-space:nowrap;font-family:'Space Grotesk',sans-serif;
+}
+body[data-theme="glass"] .proj-badge{background:var(--ink);color:var(--bg);border-color:transparent;border-radius:999px}
+body[data-theme="terminal"] .proj-badge{border-radius:0;background:transparent;border:1px solid var(--accent);color:var(--accent);font-family:'JetBrains Mono',mono}
+
+.proj h3{margin-bottom:6px;font-size:26px}
+body[data-theme="editorial"] .proj h3{font-family:'Fraunces',serif;font-style:italic;font-weight:500}
+.proj-sub{font-size:13px;color:var(--ink-mute);margin-bottom:18px;font-family:'Space Grotesk',sans-serif}
+body[data-theme="terminal"] .proj-sub{font-family:'JetBrains Mono',mono}
+
+.proj-blurb{font-size:14px;color:var(--ink);line-height:1.55;font-family:'Space Grotesk',sans-serif;margin-bottom:20px;flex:1}
+body[data-theme="terminal"] .proj-blurb{font-family:'JetBrains Mono',mono;color:var(--ink-mute)}
+
+.proj-meta{display:flex;flex-wrap:wrap;gap:16px 24px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-mute);font-family:'Space Grotesk',sans-serif;margin-bottom:18px;font-weight:500}
+.proj-meta b{color:var(--ink);font-weight:600;letter-spacing:.04em;text-transform:none}
+body[data-theme="terminal"] .proj-meta{font-family:'JetBrains Mono',mono}
+
+.proj-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;padding-top:16px;border-top:1px dashed var(--hairline)}
+@media (max-width:560px){.proj-metrics{grid-template-columns:repeat(2,1fr)}}
+.proj-metric{display:flex;flex-direction:column;gap:4px}
+.proj-metric-k{font-size:18px;font-weight:600;color:var(--ink);letter-spacing:-0.01em;font-variant-numeric:tabular-nums;font-family:'Fraunces',serif;font-style:italic}
+body[data-theme="glass"] .proj-metric-k{font-family:'Inter',sans-serif;font-style:normal;font-weight:700}
+body[data-theme="terminal"] .proj-metric-k{font-family:'JetBrains Mono',mono;font-style:normal;color:var(--accent)}
+.proj-metric-v{font-size:10px;color:var(--ink-dim);letter-spacing:.1em;text-transform:uppercase;font-family:'Space Grotesk',sans-serif}
+body[data-theme="terminal"] .proj-metric-v{font-family:'JetBrains Mono',mono}
+
+.proj-tech{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:10px;padding:4px 10px;border-radius:2px;background:transparent;border:1px solid var(--hairline);color:var(--ink);letter-spacing:.06em;font-family:'Space Grotesk',sans-serif;text-transform:uppercase;font-weight:500}
+body[data-theme="glass"] .chip{border-radius:999px;border-color:var(--hairline);color:var(--ink-mute);font-family:'Inter',sans-serif;text-transform:none;letter-spacing:.04em}
+body[data-theme="terminal"] .chip{border-radius:0;border-color:var(--ink-dim);color:var(--ink-mute);font-family:'JetBrains Mono',mono}
+body[data-theme="terminal"] .chip::before{content:"#"}
+
+.proj-cta{margin-top:20px;font-size:11px;color:var(--ink-mute);letter-spacing:.16em;text-transform:uppercase;font-family:'Space Grotesk',sans-serif;display:flex;align-items:center;gap:8px;font-weight:600}
+.proj-cta::after{content:"→";transition:transform .25s}
+.proj:hover .proj-cta::after{transform:translateX(6px)}
+body[data-theme="terminal"] .proj-cta{font-family:'JetBrains Mono',mono;color:var(--accent)}
+
+/* ========== MODAL ========== */
+.modal-bg{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.45);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:24px;animation:fadein .25s}
+@keyframes fadein{from{opacity:0}}
+.modal{
+  max-width:860px;width:100%;max-height:88vh;overflow:auto;
+  border-radius:4px;padding:40px;background:var(--bg);border:1px solid var(--ink);box-shadow:8px 8px 0 var(--ink);position:relative;
+}
+body[data-theme="glass"] .modal{border-radius:24px;background:rgba(18,20,28,.92);backdrop-filter:blur(30px);border-color:var(--hairline);box-shadow:none}
+body[data-theme="terminal"] .modal{border-radius:0;background:#0a0a0a;border-color:var(--accent);box-shadow:8px 8px 0 var(--accent)}
+.modal-x{position:absolute;top:18px;right:18px;width:36px;height:36px;border-radius:50%;border:1px solid var(--ink);background:var(--bg);color:var(--ink);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif}
+body[data-theme="glass"] .modal-x{border-color:var(--hairline);background:var(--glass);color:var(--ink)}
+body[data-theme="terminal"] .modal-x{border-radius:0;border-color:var(--accent);color:var(--accent)}
+.modal h2{margin-bottom:6px;font-size:clamp(28px,4vw,46px)}
+.modal-period{font-size:11px;color:var(--ink-mute);letter-spacing:.14em;text-transform:uppercase;margin-bottom:24px;font-family:'Space Grotesk',sans-serif}
+.modal-section{margin-bottom:24px}
+.modal-section-h{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-mute);margin-bottom:8px;font-family:'Space Grotesk',sans-serif;font-weight:700}
+.modal-section p{font-size:15px;line-height:1.6;color:var(--ink);font-family:'Space Grotesk',sans-serif}
+
+/* ========== TIMELINE ========== */
+.timeline{display:flex;flex-direction:column;gap:0}
+.tl-row{display:grid;grid-template-columns:160px 1fr;gap:40px;padding:32px 0;border-top:1px solid var(--hairline);position:relative}
+.tl-row:last-child{border-bottom:1px solid var(--hairline)}
+@media (max-width:720px){.tl-row{grid-template-columns:1fr;gap:8px;padding:22px 0}}
+.tl-period{font-size:12px;color:var(--ink-mute);letter-spacing:.08em;font-variant-numeric:tabular-nums;padding-top:6px;font-family:'Space Grotesk',sans-serif;text-transform:uppercase;font-weight:500}
+body[data-theme="terminal"] .tl-period{font-family:'JetBrains Mono',mono}
+.tl-main h3{font-size:24px;margin-bottom:6px}
+body[data-theme="editorial"] .tl-main h3{font-style:italic}
+.tl-co{font-size:14px;color:var(--ink-mute);margin-bottom:14px;font-family:'Space Grotesk',sans-serif}
+.tl-co strong{color:var(--ink);font-weight:600}
+body[data-theme="terminal"] .tl-co{font-family:'JetBrains Mono',mono}
+.tl-bullets{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.tl-bullet{font-size:14px;color:var(--ink-mute);line-height:1.55;padding-left:18px;position:relative;font-family:'Space Grotesk',sans-serif}
+.tl-bullet::before{content:"";position:absolute;left:0;top:10px;width:8px;height:1px;background:var(--ink)}
+body[data-theme="terminal"] .tl-bullet{font-family:'JetBrains Mono',mono}
+body[data-theme="terminal"] .tl-bullet::before{content:"→";background:transparent;top:0;width:auto;color:var(--accent)}
+
+/* ========== SKILLS ========== */
+.skill-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid var(--ink)}
+body[data-theme="glass"] .skill-grid{border-color:var(--hairline)}
+@media (max-width:900px){.skill-grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:500px){.skill-grid{grid-template-columns:1fr}}
+.skill-card{padding:24px;border-right:1px solid var(--hairline);border-bottom:1px solid var(--hairline)}
+.skill-grid .skill-card:nth-child(4n){border-right:0}
+@media (max-width:900px){.skill-grid .skill-card:nth-child(2n){border-right:0}.skill-grid .skill-card:nth-child(4n){border-right:1px solid var(--hairline)}}
+.skill-g{font-size:10px;color:var(--ink-mute);letter-spacing:.2em;text-transform:uppercase;margin-bottom:18px;font-weight:700;font-family:'Space Grotesk',sans-serif}
+body[data-theme="terminal"] .skill-g{font-family:'JetBrains Mono',mono;color:var(--accent)}
+.skill-items{display:flex;flex-direction:column;gap:0}
+.skill-item{font-size:14px;color:var(--ink);padding:10px 0;border-top:1px dashed var(--hairline);font-family:'Space Grotesk',sans-serif}
+.skill-item:first-child{border-top:0;padding-top:0}
+body[data-theme="terminal"] .skill-item{font-family:'JetBrains Mono',mono}
+body[data-theme="terminal"] .skill-item::before{content:"✦ ";color:var(--accent)}
+
+/* ========== WRITING ========== */
+.writing{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--ink)}
+body[data-theme="glass"] .writing{border-color:var(--hairline)}
+@media (max-width:900px){.writing{grid-template-columns:1fr}}
+.write-card{padding:28px;border-right:1px solid var(--hairline);border-bottom:1px solid var(--hairline);display:flex;flex-direction:column;gap:14px;min-height:240px;cursor:pointer;transition:background .25s}
+.writing .write-card:nth-child(3n){border-right:0}
+@media (max-width:900px){.writing .write-card{border-right:0}}
+.write-card:hover{background:var(--bg-2)}
+body[data-theme="terminal"] .write-card:hover{background:rgba(57,255,20,.03)}
+.write-meta{display:flex;justify-content:space-between;font-size:11px;color:var(--ink-mute);letter-spacing:.1em;text-transform:uppercase;font-family:'Space Grotesk',sans-serif;font-weight:500}
+body[data-theme="terminal"] .write-meta{font-family:'JetBrains Mono',mono}
+.write-card h3{font-size:21px;line-height:1.2;font-style:italic;font-weight:500;font-family:'Fraunces',serif}
+body[data-theme="glass"] .write-card h3{font-family:'Inter',sans-serif;font-style:normal;font-weight:700}
+body[data-theme="terminal"] .write-card h3{font-family:'JetBrains Mono',mono;font-style:normal;text-transform:uppercase}
+.write-excerpt{font-size:13px;color:var(--ink-mute);line-height:1.6;flex:1;font-family:'Space Grotesk',sans-serif}
+.write-tags{display:flex;gap:6px;flex-wrap:wrap}
+
+/* ========== CONTACT ========== */
+.contact{padding:80px 0 0}
+.contact-big{font-size:clamp(40px,7vw,108px);font-weight:500;letter-spacing:-0.045em;line-height:1;max-width:14ch;margin:24px 0 40px;font-family:'Fraunces',serif;font-style:italic}
+body[data-theme="glass"] .contact-big{font-family:'Inter',sans-serif;font-style:normal;font-weight:700}
+body[data-theme="terminal"] .contact-big{font-family:'JetBrains Mono',mono;text-transform:uppercase;font-style:normal;font-weight:700}
+.contact-big .accent-word{color:var(--accent)}
+.contact-links{display:grid;grid-template-columns:repeat(2,1fr);gap:0;border-top:1px solid var(--ink);margin-top:24px}
+body[data-theme="glass"] .contact-links{border-color:var(--hairline)}
+@media (max-width:640px){.contact-links{grid-template-columns:1fr}}
+.clink{display:flex;align-items:center;justify-content:space-between;padding:24px 6px;border-bottom:1px solid var(--hairline);text-decoration:none;color:var(--ink);font-size:18px;transition:padding .25s,color .25s;font-family:'Fraunces',serif;font-style:italic}
+body[data-theme="glass"] .clink{font-family:'Inter',sans-serif;font-style:normal}
+body[data-theme="terminal"] .clink{font-family:'JetBrains Mono',mono;font-style:normal}
+.clink:hover{padding-left:14px;color:var(--accent)}
+.clink-label{font-size:10px;color:var(--ink-dim);letter-spacing:.18em;text-transform:uppercase;display:block;margin-bottom:6px;font-family:'Space Grotesk',sans-serif;font-style:normal;font-weight:700}
+.clink-arrow{font-size:22px;color:var(--ink-mute);transition:transform .25s}
+.clink:hover .clink-arrow{transform:translateX(8px);color:var(--accent)}
+
+/* ========== LINKEDIN SPECIAL CARD ========== */
+.li-special{
+  position:relative;overflow:hidden;
+  display:flex;flex-direction:column;justify-content:space-between;
+  padding:26px 24px 20px;text-decoration:none;
+  background:var(--accent-3);color:#fff;
+  border-bottom:1px solid var(--hairline);
+  transition:background .3s;
+}
+.li-special:hover{background:color-mix(in oklab,var(--accent-3) 82%,#fff)}
+body[data-theme="glass"] .li-special{background:rgba(99,102,241,.18);backdrop-filter:blur(16px);border:1px solid rgba(99,102,241,.3);border-radius:16px;margin:8px}
+body[data-theme="terminal"] .li-special{background:rgba(0,229,255,.07);border:1px solid var(--accent-3);border-radius:0}
+.li-inner{display:flex;align-items:center;gap:16px}
+.li-logo{
+  width:42px;height:42px;border-radius:6px;
+  background:#0a66c2;color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:21px;font-weight:900;font-family:'Space Grotesk',sans-serif;
+  flex:none;letter-spacing:-0.03em;
+  box-shadow:0 2px 8px rgba(0,0,0,.3);
+}
+body[data-theme="terminal"] .li-logo{border-radius:0;background:transparent;border:2px solid var(--accent-3);color:var(--accent-3);font-size:16px}
+.li-body{display:flex;flex-direction:column;gap:3px;flex:1;min-width:0}
+.li-label{font-size:9px;letter-spacing:.24em;text-transform:uppercase;font-family:'Space Grotesk',sans-serif;font-weight:700;opacity:.6}
+body[data-theme="terminal"] .li-label{font-family:'JetBrains Mono',mono}
+.li-handle{font-size:14px;font-family:'JetBrains Mono',monospace;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.li-roles{font-size:11px;opacity:.55;font-family:'Space Grotesk',sans-serif;letter-spacing:.04em;margin-top:1px}
+body[data-theme="terminal"] .li-roles{font-family:'JetBrains Mono',mono}
+.li-arrow{font-size:20px;opacity:.65;transition:transform .25s,opacity .25s;flex:none}
+.li-special:hover .li-arrow{transform:translate(4px,-4px);opacity:1}
+.li-bar{
+  height:2px;margin-top:18px;border-radius:1px;
+  background:linear-gradient(90deg,#0a66c2,var(--accent));
+  transform-origin:left;transform:scaleX(0);
+  transition:transform .45s cubic-bezier(0.22,1,0.36,1);
+}
+.li-special:hover .li-bar{transform:scaleX(1)}
+
+/* ========== FOOTER ========== */
+.foot{margin-top:80px;padding-top:24px;border-top:1px solid var(--hairline);display:flex;justify-content:space-between;font-size:11px;color:var(--ink-dim);letter-spacing:.14em;text-transform:uppercase;flex-wrap:wrap;gap:12px;font-family:'Space Grotesk',sans-serif;font-weight:500}
+body[data-theme="terminal"] .foot{font-family:'JetBrains Mono',mono}
+
+/* ========== JOURNAL-STYLE CONTACT (Vol. 26, Field Notes) ========== */
+.jr-contact{padding:64px 0 40px;scroll-margin-top:24px}
+.jr-masthead{
+  display:flex;justify-content:space-between;align-items:baseline;gap:24px;flex-wrap:wrap;
+  border-top:2px solid var(--ink);border-bottom:1px solid var(--ink);
+  padding:10px 0;margin-bottom:28px;
+}
+.jr-mast-l{font-family:'Space Grotesk',sans-serif;font-size:10px;letter-spacing:.28em;text-transform:uppercase;font-weight:700;color:var(--ink)}
+.jr-mast-r{font-family:'Space Grotesk',sans-serif;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-mute);font-weight:600}
+body[data-theme="terminal"] .jr-masthead{border-color:var(--accent)}
+body[data-theme="terminal"] .jr-mast-l,body[data-theme="terminal"] .jr-mast-r{font-family:'JetBrains Mono',mono}
+
+.jr-title-row{display:grid;grid-template-columns:1.2fr .8fr;gap:48px;align-items:end;margin-bottom:40px}
+@media (max-width:860px){.jr-title-row{grid-template-columns:1fr;gap:18px}}
+.jr-eyebrow{
+  font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:700;
+  letter-spacing:.28em;text-transform:uppercase;color:var(--ink-mute);
+  margin-bottom:10px;display:flex;align-items:center;gap:10px;
+}
+.jr-eyebrow::before{content:"";width:22px;height:1px;background:currentColor;opacity:.5}
+.jr-title{
+  font-family:'Fraunces',serif;font-style:italic;font-weight:500;
+  font-size:clamp(42px,6vw,76px);line-height:.98;letter-spacing:-0.035em;
+  color:var(--ink);
+}
+.jr-title .accent-word{color:var(--accent)}
+body[data-theme="glass"] .jr-title{font-family:'Inter',sans-serif;font-style:normal;font-weight:700}
+body[data-theme="terminal"] .jr-title{font-family:'JetBrains Mono',mono;font-style:normal;text-transform:uppercase;font-weight:700}
+.jr-lede{
+  font-family:'Fraunces',serif;font-style:italic;font-size:18px;line-height:1.45;
+  color:var(--ink-mute);max-width:38ch;
+}
+body[data-theme="glass"] .jr-lede,body[data-theme="terminal"] .jr-lede{font-family:'Space Grotesk',sans-serif;font-style:normal}
+
+/* Two-column journal layout: ledger (links) + form */
+.jr-grid{
+  display:grid;grid-template-columns:1fr 1.15fr;gap:36px;align-items:stretch;
+}
+@media (max-width:860px){.jr-grid{grid-template-columns:1fr}}
+
+/* Shared paper-sheet styling — same vocabulary as the education books */
+.jr-sheet{
+  position:relative;
+  background:#fdf8ee;color:#0f0e0c;
+  background-image:repeating-linear-gradient(
+    transparent 0,transparent 26px,
+    rgba(0,0,0,.055) 26px,rgba(0,0,0,.055) 27px
+  );
+  background-position:0 38px;
+  border-radius:3px 8px 8px 3px;
+  box-shadow:
+    3px 5px 18px rgba(0,0,0,.14),
+    inset -3px 0 10px rgba(0,0,0,.07),
+    inset 22px 0 0 #7a1212,
+    inset 23px 0 0 rgba(0,0,0,.18);
+  padding:28px 28px 28px 54px;
+  display:flex;flex-direction:column;
+}
+body[data-theme="glass"] .jr-sheet{background:rgba(253,248,238,.07);color:var(--ink);backdrop-filter:blur(14px);border:1px solid var(--hairline);box-shadow:none;background-image:repeating-linear-gradient(transparent 0,transparent 26px,rgba(255,255,255,.07) 26px,rgba(255,255,255,.07) 27px);background-position:0 38px}
+body[data-theme="glass"] .jr-sheet{box-shadow:inset 22px 0 0 var(--accent-3),inset 23px 0 0 rgba(255,255,255,.1)}
+body[data-theme="terminal"] .jr-sheet{background:rgba(14,26,12,.6);color:var(--ink);background-image:repeating-linear-gradient(transparent 0,transparent 26px,rgba(57,255,20,.08) 26px,rgba(57,255,20,.08) 27px);background-position:0 38px;border:1px solid var(--accent);box-shadow:4px 4px 0 var(--accent),inset 22px 0 0 var(--accent),inset 23px 0 0 rgba(0,0,0,.6);border-radius:0}
+
+.jr-stamp{
+  position:absolute;top:18px;right:-6px;
+  font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:9px;
+  letter-spacing:.22em;text-transform:uppercase;
+  border:1.5px solid var(--accent);color:var(--accent);
+  padding:5px 9px;transform:rotate(6deg);opacity:.72;
+  background:rgba(253,248,238,.5);
+  pointer-events:none;
+}
+body[data-theme="glass"] .jr-stamp{background:transparent}
+body[data-theme="terminal"] .jr-stamp{background:transparent;border-color:var(--accent);font-family:'JetBrains Mono',mono}
+
+.jr-heading{
+  font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:700;
+  letter-spacing:.26em;text-transform:uppercase;color:var(--accent);
+  margin-bottom:18px;
+}
+body[data-theme="glass"] .jr-heading{font-family:'Inter',sans-serif}
+body[data-theme="terminal"] .jr-heading{font-family:'JetBrains Mono',mono}
+
+/* Ledger rows (contact links in book-page style) */
+.jr-ledger{display:flex;flex-direction:column;flex:1}
+.jr-row{
+  display:flex;align-items:baseline;justify-content:space-between;gap:16px;
+  padding:10px 0 8px;border-bottom:1px dashed rgba(0,0,0,.18);
+  text-decoration:none;color:inherit;transition:padding .2s,color .2s;
+}
+body[data-theme="glass"] .jr-row,body[data-theme="terminal"] .jr-row{border-bottom-color:var(--hairline)}
+.jr-row:hover{padding-left:6px;color:var(--accent)}
+.jr-row:last-child{border-bottom:none}
+.jr-row-label{
+  font-family:'Space Grotesk',sans-serif;font-size:9px;font-weight:700;
+  letter-spacing:.22em;text-transform:uppercase;color:#8a837c;
+  flex:0 0 88px;
+}
+body[data-theme="glass"] .jr-row-label,body[data-theme="terminal"] .jr-row-label{color:var(--ink-dim)}
+.jr-row-val{
+  font-family:'Fraunces',serif;font-style:italic;font-size:17px;font-weight:500;
+  line-height:1.2;flex:1;word-break:break-word;
+}
+body[data-theme="glass"] .jr-row-val{font-family:'Inter',sans-serif;font-style:normal;font-weight:500}
+body[data-theme="terminal"] .jr-row-val{font-family:'JetBrains Mono',mono;font-style:normal}
+.jr-row-arrow{
+  font-family:'Space Grotesk',sans-serif;font-size:16px;color:#8a837c;
+  transition:transform .2s,color .2s;
+}
+.jr-row:hover .jr-row-arrow{transform:translateX(4px);color:var(--accent)}
+
+.jr-margin-note{
+  margin-top:22px;padding-top:14px;border-top:1px solid rgba(0,0,0,.14);
+  font-family:'Fraunces',serif;font-style:italic;font-size:13px;line-height:1.5;color:#5b5550;
+}
+body[data-theme="glass"] .jr-margin-note,body[data-theme="terminal"] .jr-margin-note{color:var(--ink-mute);border-top-color:var(--hairline);font-family:'Space Grotesk',sans-serif;font-style:normal}
+.jr-margin-note b{color:#0f0e0c;font-weight:600}
+body[data-theme="glass"] .jr-margin-note b,body[data-theme="terminal"] .jr-margin-note b{color:var(--ink)}
+
+/* Form fields — echo the bp-field from books */
+.jr-form{display:flex;flex-direction:column;gap:0}
+.jr-field{padding:10px 0 8px;border-bottom:1px dashed rgba(0,0,0,.18)}
+body[data-theme="glass"] .jr-field,body[data-theme="terminal"] .jr-field{border-bottom-color:var(--hairline)}
+.jr-field-label{
+  font-family:'Space Grotesk',sans-serif;font-size:9px;font-weight:700;
+  letter-spacing:.22em;text-transform:uppercase;color:#8a837c;
+  margin-bottom:2px;display:flex;justify-content:space-between;
+}
+body[data-theme="glass"] .jr-field-label,body[data-theme="terminal"] .jr-field-label{color:var(--ink-dim)}
+.jr-field-hint{font-size:8.5px;font-weight:600;letter-spacing:.16em;opacity:.65;text-transform:uppercase}
+.jr-input,.jr-textarea{
+  width:100%;background:transparent;border:0;outline:0;padding:4px 0 6px;
+  font-family:'Fraunces',serif;font-style:italic;font-size:16px;font-weight:500;
+  color:#0f0e0c;line-height:1.35;resize:none;
+}
+body[data-theme="glass"] .jr-input,body[data-theme="glass"] .jr-textarea{font-family:'Inter',sans-serif;font-style:normal;color:var(--ink)}
+body[data-theme="terminal"] .jr-input,body[data-theme="terminal"] .jr-textarea{font-family:'JetBrains Mono',mono;font-style:normal;color:var(--ink)}
+.jr-input::placeholder,.jr-textarea::placeholder{color:#c2b8a4;font-style:italic;opacity:.9}
+body[data-theme="glass"] .jr-input::placeholder,body[data-theme="glass"] .jr-textarea::placeholder,body[data-theme="terminal"] .jr-input::placeholder,body[data-theme="terminal"] .jr-textarea::placeholder{color:var(--ink-dim);font-style:normal}
+.jr-textarea{min-height:84px;padding-top:6px}
+.jr-field-row-2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+@media (max-width:500px){.jr-field-row-2{grid-template-columns:1fr;gap:0}}
+
+.jr-topic-row{padding:12px 0 10px;border-bottom:1px dashed rgba(0,0,0,.18)}
+body[data-theme="glass"] .jr-topic-row,body[data-theme="terminal"] .jr-topic-row{border-bottom-color:var(--hairline)}
+.jr-topics{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.jr-topic{
+  font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:600;
+  letter-spacing:.14em;text-transform:uppercase;
+  padding:5px 10px;border:1px solid rgba(0,0,0,.28);color:#0f0e0c;
+  background:transparent;cursor:pointer;border-radius:2px;transition:all .18s;
+}
+body[data-theme="glass"] .jr-topic,body[data-theme="terminal"] .jr-topic{border-color:var(--hairline);color:var(--ink)}
+body[data-theme="terminal"] .jr-topic{font-family:'JetBrains Mono',mono;border-radius:0}
+.jr-topic:hover{border-color:var(--accent);color:var(--accent)}
+.jr-topic.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+body[data-theme="terminal"] .jr-topic.on{color:#0a0a0a}
+
+.jr-submit-row{
+  margin-top:22px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;
+}
+.jr-sig-line{
+  flex:1;min-width:120px;font-family:'Fraunces',serif;font-style:italic;font-size:13px;color:#5b5550;
+}
+body[data-theme="glass"] .jr-sig-line,body[data-theme="terminal"] .jr-sig-line{color:var(--ink-mute);font-family:'Space Grotesk',sans-serif;font-style:normal}
+.jr-submit{
+  font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;
+  letter-spacing:.18em;text-transform:uppercase;
+  padding:12px 22px;background:var(--ink);color:var(--bg);
+  border:1.5px solid var(--ink);cursor:pointer;border-radius:2px;
+  box-shadow:4px 4px 0 var(--accent);
+  transition:box-shadow .2s,transform .2s;
+}
+.jr-submit:hover{box-shadow:6px 6px 0 var(--accent);transform:translate(-1px,-1px)}
+body[data-theme="glass"] .jr-submit{border-radius:999px;box-shadow:none;background:var(--accent);border-color:var(--accent);font-family:'Inter',sans-serif}
+body[data-theme="terminal"] .jr-submit{font-family:'JetBrains Mono',mono;background:var(--accent);color:#0a0a0a;border-color:var(--accent);border-radius:0;box-shadow:4px 4px 0 var(--ink)}
+
+.jr-ok{
+  margin-top:18px;padding:12px 14px;border-left:3px solid var(--accent);
+  background:rgba(0,0,0,.04);
+  font-family:'Fraunces',serif;font-style:italic;font-size:14px;color:#0f0e0c;
+}
+.jr-err{border-left-color:#8a0f0f;background:rgba(138,15,15,.06)}
+.jr-submit:disabled{opacity:.55;cursor:not-allowed}
+body[data-theme="glass"] .jr-ok,body[data-theme="terminal"] .jr-ok{background:rgba(255,255,255,.04);color:var(--ink);font-family:'Space Grotesk',sans-serif;font-style:normal}
+
+/* Colophon / bottom bar */
+.jr-colophon{
+  margin-top:40px;padding:14px 0;
+  border-top:2px solid var(--ink);border-bottom:1px solid var(--ink);
+  display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;align-items:baseline;
+  font-family:'Space Grotesk',sans-serif;
+}
+@media (max-width:720px){.jr-colophon{grid-template-columns:1fr;gap:8px;text-align:left}}
+body[data-theme="terminal"] .jr-colophon{border-color:var(--accent);font-family:'JetBrains Mono',mono}
+.jr-col{display:flex;flex-direction:column;gap:3px}
+.jr-col-k{font-size:9px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:var(--ink-mute)}
+.jr-col-v{font-size:12px;font-weight:500;letter-spacing:.06em;color:var(--ink);font-variant-numeric:tabular-nums}
+.jr-col-mid{text-align:center}
+.jr-col-r{text-align:right}
+@media (max-width:720px){.jr-col-mid,.jr-col-r{text-align:left}}
+.jr-col-mark{
+  font-family:'Fraunces',serif;font-style:italic;font-weight:500;font-size:15px;letter-spacing:-0.01em;color:var(--ink);
+}
+body[data-theme="glass"] .jr-col-mark{font-family:'Inter',sans-serif;font-style:normal;font-weight:600}
+body[data-theme="terminal"] .jr-col-mark{font-family:'JetBrains Mono',mono;font-style:normal;text-transform:uppercase}
+
+/* ========== NAV — DRAGGABLE PILL OVER GLASS BAR ========== */
+.nav{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+  z-index:50;display:flex;align-items:center;
+  padding:6px;border-radius:999px;
+  background:rgba(253,248,238,.45);
+  backdrop-filter:blur(24px) saturate(180%);
+  -webkit-backdrop-filter:blur(24px) saturate(180%);
+  border:1px solid rgba(15,14,12,.25);
+  box-shadow:
+    0 10px 32px rgba(0,0,0,.18),
+    0 1px 0 rgba(255,255,255,.5) inset,
+    0 -1px 0 rgba(0,0,0,.05) inset;
+  user-select:none;touch-action:none;
+}
+body[data-theme="glass"] .nav{background:rgba(20,22,32,.55);border-color:var(--hairline);box-shadow:0 10px 40px rgba(0,0,0,.4)}
+body[data-theme="terminal"] .nav{border-radius:0;background:rgba(14,26,12,.92);border:1px solid var(--accent);box-shadow:4px 4px 0 var(--accent)}
+
+.nav-item{
+  position:relative;z-index:2;padding:11px 18px;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink);cursor:pointer;border-radius:999px;background:transparent;border:0;
+  transition:color .2s;font-family:'Space Grotesk',sans-serif;
+}
+body[data-theme="glass"] .nav-item{color:var(--ink-mute)}
+body[data-theme="terminal"] .nav-item{border-radius:0;font-family:'JetBrains Mono',mono;color:var(--ink-mute)}
+.nav-item:hover{color:var(--accent)}
+.nav-item.active{color:var(--bg)}
+body[data-theme="terminal"] .nav-item.active{color:#0a0a0a}
+
+.nav-pill{
+  position:absolute;top:6px;left:0;height:calc(100% - 12px);
+  background:var(--ink);border-radius:999px;z-index:1;
+  transition:transform .6s cubic-bezier(0.22,1,0.36,1), width .5s cubic-bezier(0.22,1,0.36,1), box-shadow .3s, filter .3s;
+  cursor:grab;
+  will-change:transform,width;
+  box-shadow:0 4px 14px rgba(0,0,0,.25), 0 1px 0 rgba(255,255,255,.1) inset;
+}
+.nav-pill.active-pulse{
+  animation:pill-pop .5s ease-out;
+}
+@keyframes pill-pop{
+  0%{filter:brightness(1)}
+  30%{filter:brightness(1.3)}
+  100%{filter:brightness(1)}
+}
+.nav.dragging .nav-pill{transition:none;cursor:grabbing;box-shadow:0 10px 28px rgba(0,0,0,.35), 0 0 0 3px rgba(255,90,54,.28)}
+body[data-theme="glass"] .nav-pill{background:var(--accent);box-shadow:0 4px 14px color-mix(in oklab, var(--accent) 60%, transparent)}
+body[data-theme="terminal"] .nav-pill{background:var(--accent);border-radius:0}
+
+@media (max-width:760px){
+  .nav{
+    bottom:12px;padding:4px;
+    max-width:calc(100vw - 20px);
+    overflow-x:auto;overflow-y:hidden;
+    scrollbar-width:none;-ms-overflow-style:none;
+    scroll-snap-type:x mandatory;
+  }
+  .nav::-webkit-scrollbar{display:none}
+  .nav-item{padding:8px 12px;font-size:10px;letter-spacing:.09em;flex:none;scroll-snap-align:center}
+  .nav-pill{display:none}
+  .nav-item.active{background:var(--ink);color:var(--bg);border-radius:999px}
+  body[data-theme="terminal"] .nav-item.active{background:var(--accent);color:#0a0a0a}
+  body[data-theme="glass"] .nav-item.active{background:var(--accent);color:#fff}
+}
+
+/* ========== TWEAKS PANEL ========== */
+.tw{
+  position:fixed;right:22px;bottom:96px;z-index:200;
+  width:280px;padding:18px;border-radius:8px;
+  background:var(--bg);color:var(--ink);font-family:'Space Grotesk',sans-serif;
+  border:1px solid var(--ink);box-shadow:6px 6px 0 var(--ink);
+}
+.tw-h{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-mute);margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;font-weight:700}
+.tw-x{background:transparent;border:0;color:var(--ink);cursor:pointer;font-size:18px;padding:0;width:20px;height:20px}
+.tw-opts{display:flex;flex-direction:column;gap:6px}
+.tw-opt{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:4px;border:1px solid var(--hairline);background:transparent;cursor:pointer;transition:all .15s;text-align:left;color:var(--ink);font-family:inherit}
+.tw-opt:hover{background:var(--bg-2)}
+.tw-opt.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tw-opt-dot{width:10px;height:10px;border-radius:50%;margin-top:4px;flex:none;background:var(--hairline)}
+.tw-opt.on .tw-opt-dot{background:var(--accent);box-shadow:0 0 8px var(--accent)}
+.tw-opt-body{display:flex;flex-direction:column;gap:2px}
+.tw-opt-title{font-size:13px;font-weight:600}
+.tw-opt-desc{font-size:11px;opacity:.7;line-height:1.3}
+@media (max-width:640px){.tw{left:12px;right:12px;width:auto;bottom:80px}}
+
+/* ========== PAPER GRAIN OVERLAY ========== */
+.paper-grain-svg{
+  position:fixed;inset:0;width:100%;height:100%;
+  z-index:1;pointer-events:none;
+  opacity:1;transition:opacity .3s;
+}
+body:not([data-theme="editorial"]) .paper-grain-svg{opacity:0}
+
+/* Extra crumple shadow layer for editorial */
+body[data-theme="editorial"]::after{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 55% 35% at 18% 22%, rgba(0,0,0,.028) 0%, transparent 100%),
+    radial-gradient(ellipse 40% 50% at 82% 60%, rgba(0,0,0,.024) 0%, transparent 100%),
+    radial-gradient(ellipse 60% 30% at 50% 85%, rgba(0,0,0,.018) 0%, transparent 100%),
+    radial-gradient(ellipse 35% 40% at 70% 15%, rgba(255,255,255,.035) 0%, transparent 100%),
+    radial-gradient(ellipse 50% 25% at 10% 72%, rgba(255,255,255,.025) 0%, transparent 100%),
+    linear-gradient(127deg, rgba(255,255,255,.018) 0%, transparent 45%),
+    linear-gradient(310deg, rgba(0,0,0,.014) 15%, transparent 55%),
+    linear-gradient(58deg, rgba(255,255,255,.012) 30%, transparent 70%);
+}
+
+/* ========== WELCOME DIALOG ========== */
+.wdlg-bg{
+  position:fixed;inset:0;z-index:600;
+  background:rgba(10,9,7,.82);backdrop-filter:blur(4px);
+  display:flex;align-items:center;justify-content:center;
+  padding:24px;animation:fadein .6s ease;
+}
+.wdlg{
+  max-width:560px;width:100%;
+  background:var(--bg);border:1px solid var(--ink);
+  box-shadow:10px 10px 0 var(--ink);position:relative;overflow:hidden;
+}
+body[data-theme="glass"] .wdlg{border-radius:24px;background:rgba(18,20,28,.94);border-color:var(--hairline);box-shadow:none}
+body[data-theme="terminal"] .wdlg{border-radius:0;background:#0a0a0a;border-color:var(--accent);box-shadow:8px 8px 0 var(--accent)}
+.wdlg-top{
+  background:var(--ink);color:var(--bg);padding:11px 24px;
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:10px;letter-spacing:.22em;text-transform:uppercase;
+  font-family:'Space Grotesk',sans-serif;font-weight:700;
+}
+body[data-theme="terminal"] .wdlg-top{background:var(--accent);color:#0a0a0a;font-family:'JetBrains Mono',mono}
+.wdlg-stamp{
+  position:absolute;top:52px;right:28px;
+  border:2px solid var(--accent);color:var(--accent);
+  font-size:9px;font-family:'Space Grotesk',sans-serif;font-weight:700;
+  letter-spacing:.2em;padding:5px 9px;text-transform:uppercase;
+  transform:rotate(8deg);opacity:.6;pointer-events:none;
+}
+body[data-theme="terminal"] .wdlg-stamp{border-color:var(--accent-2);color:var(--accent-2)}
+.wdlg-ruled{
+  padding:36px 40px 40px;
+  background-image:repeating-linear-gradient(
+    transparent 0,transparent 27px,
+    rgba(0,0,0,.07) 27px,rgba(0,0,0,.07) 28px
+  );
+  background-position:0 58px;
+}
+body[data-theme="glass"] .wdlg-ruled{background-image:none}
+body[data-theme="terminal"] .wdlg-ruled{background-image:none}
+@media (max-width:500px){.wdlg-ruled{padding:28px 24px 32px}}
+.wdlg-title{
+  font-family:'Fraunces',serif;font-size:clamp(28px,5vw,38px);font-style:italic;font-weight:500;
+  color:var(--ink);line-height:1.1;letter-spacing:-0.025em;margin-bottom:20px;
+}
+body[data-theme="glass"] .wdlg-title{font-family:'Inter',sans-serif;font-style:normal;font-weight:700}
+body[data-theme="terminal"] .wdlg-title{font-family:'JetBrains Mono',mono;font-style:normal;text-transform:uppercase;font-size:clamp(20px,3vw,26px);color:var(--accent)}
+.wdlg-body{
+  font-family:'Space Grotesk',sans-serif;font-size:14px;line-height:1.7;
+  color:var(--ink-mute);margin-bottom:28px;min-height:76px;
+}
+body[data-theme="terminal"] .wdlg-body{font-family:'JetBrains Mono',mono;font-size:13px}
+.wdlg-cursor{
+  display:inline-block;width:2px;height:1em;background:var(--ink);
+  vertical-align:text-bottom;margin-left:1px;animation:blink 1s steps(1) infinite;
+}
+body[data-theme="terminal"] .wdlg-cursor{background:var(--accent)}
+.wdlg-rule{height:1px;background:var(--ink);margin:20px 0}
+body[data-theme="glass"] .wdlg-rule{background:var(--hairline)}
+body[data-theme="terminal"] .wdlg-rule{background:var(--ink-dim)}
+.wdlg-sig{
+  font-family:'Fraunces',serif;font-style:italic;font-size:30px;font-weight:600;
+  color:var(--ink);letter-spacing:-0.02em;margin-bottom:22px;display:block;
+}
+body[data-theme="glass"] .wdlg-sig{font-family:'Inter',sans-serif;font-style:normal}
+body[data-theme="terminal"] .wdlg-sig{font-family:'JetBrains Mono',mono;font-style:normal;color:var(--accent)}
+.wdlg-footer{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.wdlg-date{font-size:10px;color:var(--ink-dim);letter-spacing:.16em;text-transform:uppercase;font-family:'Space Grotesk',sans-serif}
+body[data-theme="terminal"] .wdlg-date{font-family:'JetBrains Mono',mono}
+.wdlg-btn{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:13px 26px;background:var(--ink);color:var(--bg);border:0;cursor:pointer;
+  font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  font-family:'Space Grotesk',sans-serif;
+  box-shadow:4px 4px 0 var(--accent);transition:box-shadow .2s,transform .2s;
+}
+.wdlg-btn:hover{box-shadow:6px 6px 0 var(--accent);transform:translate(-1px,-1px)}
+body[data-theme="glass"] .wdlg-btn{border-radius:999px;box-shadow:none;background:var(--accent);font-family:'Inter',sans-serif}
+body[data-theme="terminal"] .wdlg-btn{border-radius:0;background:var(--accent);color:#0a0a0a;font-family:'JetBrains Mono',mono;box-shadow:4px 4px 0 var(--ink)}
+
+/* ========== EDUCATION BOOKS ========== */
+.edu-section{padding:80px 0 24px;scroll-margin-top:24px}
+.edu-books-wrap{display:flex;gap:80px;justify-content:center;flex-wrap:wrap;padding:40px 0 72px}
+
+.book-scene{perspective:1400px;display:flex;flex-direction:column;align-items:center;gap:20px;clip-path:inset(-8px -160px -8px -8px)}
+.book-container{
+  width:300px;height:400px;position:relative;
+  transform-style:preserve-3d;cursor:pointer;
+  transition:filter .3s;
+}
+.book-container:hover{filter:drop-shadow(0 16px 28px rgba(0,0,0,.18))}
+
+/* Pages (behind cover, always visible) — journal ledger feel */
+.book-pages-bg{
+  position:absolute;inset:0;border-radius:3px 10px 10px 3px;
+  background:#fdf8ee;
+  box-shadow:
+    0 30px 50px -20px rgba(30,20,10,.28),
+    0 12px 24px -12px rgba(30,20,10,.18),
+    0 2px 4px rgba(30,20,10,.08),
+    0 0 0 1px rgba(0,0,0,.06),
+    inset 0 0 40px rgba(0,0,0,.04),
+    inset 14px 0 0 #7a1212,
+    inset 15px 0 0 rgba(0,0,0,.22);
+  padding:22px 24px 22px 32px;
+  display:flex;flex-direction:column;overflow:hidden;
+}
+
+/* Cover panel that rotates open */
+.book-cover-panel{
+  position:absolute;inset:0;
+  transform-origin:left center;transform-style:preserve-3d;
+  transition:transform 1.1s cubic-bezier(0.22,1,0.36,1);z-index:3;
+}
+.book-open .book-cover-panel{transform:rotateY(-162deg)}
+
+.book-cover-front{
+  position:absolute;inset:0;backface-visibility:hidden;
+  border-radius:3px 10px 10px 3px;padding:30px 26px 28px 34px;
+  display:flex;flex-direction:column;justify-content:space-between;
+  box-shadow:
+    0 28px 44px -16px rgba(0,0,0,.32),
+    0 10px 20px -10px rgba(0,0,0,.22),
+    0 2px 4px rgba(0,0,0,.10),
+    inset -1px 0 6px rgba(0,0,0,.18),
+    inset 14px 0 0 rgba(0,0,0,.22),
+    inset 15px 0 0 rgba(255,255,255,.08);
+}
+.book-cover-front::before{
+  content:"";position:absolute;inset:12px 14px 12px 24px;
+  border:1px solid currentColor;opacity:.22;border-radius:2px;pointer-events:none;
+}
+.book-cover-back-face{
+  position:absolute;inset:0;transform:rotateY(180deg);backface-visibility:hidden;
+  background:#d4c9a8;border-radius:3px 10px 10px 3px;
+  box-shadow:inset 3px 0 10px rgba(0,0,0,.15);
+}
+
+/* Cover text */
+.bc-eyebrow{font-size:9px;letter-spacing:.3em;text-transform:uppercase;font-family:'Space Grotesk',sans-serif;font-weight:700;opacity:.65;margin-bottom:6px}
+.bc-title{font-family:'Fraunces',serif;font-style:italic;font-weight:600;font-size:28px;line-height:1.15;letter-spacing:-0.015em;margin-bottom:9px}
+.bc-sub{font-size:11px;opacity:.68;line-height:1.5;font-family:'Space Grotesk',sans-serif;letter-spacing:.02em}
+.bc-rule{height:1px;background:currentColor;opacity:.26;margin:16px 0}
+.bc-year{font-size:10px;letter-spacing:.24em;text-transform:uppercase;font-family:'Space Grotesk',sans-serif;font-weight:600;opacity:.55}
+.bc-seal{
+  width:54px;height:54px;border-radius:50%;border:1.5px solid currentColor;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:800;letter-spacing:.06em;font-family:'Space Grotesk',sans-serif;
+  opacity:.38;text-align:center;line-height:1.2;align-self:flex-end;
+}
+
+/* Page content */
+.bp-heading{font-size:10px;letter-spacing:.26em;text-transform:uppercase;font-family:'Space Grotesk',sans-serif;color:var(--accent);font-weight:700;margin-bottom:10px;margin-top:0}
+.bp-logo-slot{
+  position:absolute;right:18px;bottom:16px;width:64px;height:64px;
+  display:flex;align-items:center;justify-content:center;
+  opacity:.88;
+}
+.bp-logo-slot img{width:100%;height:100%;object-fit:contain;object-position:center}
+.bp-body{flex:1;padding-right:64px}
+.bp-field{padding:8px 0;border-bottom:1px dashed rgba(0,0,0,.1)}
+.bp-label{font-size:9px;letter-spacing:.2em;text-transform:uppercase;font-family:'Space Grotesk',sans-serif;color:#8a837c;font-weight:600;margin-bottom:2px}
+.bp-val{font-size:14px;font-weight:500;font-family:'Fraunces',serif;font-style:italic;color:#0f0e0c;line-height:1.35}
+.bp-cgpa-row{margin-top:14px;display:flex;align-items:baseline;gap:5px}
+.bp-cgpa-n{font-size:42px;font-weight:600;font-family:'Fraunces',serif;font-style:italic;color:#0f0e0c;line-height:1}
+.bp-cgpa-d{font-size:14px;color:#8a837c;font-family:'Space Grotesk',sans-serif}
+.bp-cgpa-label{font-size:9px;letter-spacing:.18em;text-transform:uppercase;font-family:'Space Grotesk',sans-serif;color:#8a837c;font-weight:600;margin-top:2px;display:block}
+
+.book-label{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;font-family:'Space Grotesk',sans-serif;color:var(--ink-mute);text-align:center}
+.book-hint{font-size:10px;color:var(--ink-dim);letter-spacing:.14em;text-transform:uppercase;font-family:'Space Grotesk',sans-serif;text-align:center;transition:color .2s;padding:3px 0}
+.book-hint:hover{color:var(--accent)}
+
+body[data-theme="terminal"] .bp-val{font-family:'JetBrains Mono',mono;font-style:normal}
+body[data-theme="terminal"] .bp-heading{font-family:'JetBrains Mono',mono}
+body[data-theme="glass"] .bp-val{font-family:'Inter',sans-serif;font-style:normal}
+
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script>
+// Portfolio data — Veera Manikanta Gonugondla
+window.PORTFOLIO_DATA = {
+  personal: {
+    name: 'Veera Manikanta Gonugondla',
+    initials: 'GVM',
+    tagline: 'Building where hardware meets software',
+    sub: 'Silicon that thinks. Edge AI, FPGAs, embedded systems.',
+    email: 'mgonugondlamanikanta@gmail.com',
+    github: 'github.com/Manikanta25055',
+    linkedin: 'linkedin.com/in/manikanta-gonugondla-349bb729a',
+    location: 'Hyderabad, IN',
+    role: 'Electrical & Electronics Engineer',
+    summary: 'Dual-degree at MIT Manipal + IIT Madras. Patent filed. 1st place, IIT-M Gadget Expo 2025.',
+  },
+  inProgress: [
+    { title: 'Garuda — IEEE Access', kind: 'Journal in writing', note: 'Sub-100ms edge AI security on Pi 5 + Hailo 8L.' },
+    { title: 'bREADth — IEEE Sensors Journal', kind: 'Journal in writing', note: 'Hardware project on multi-modal sensor fusion.' },
+  ],
+  stats: [
+    { k: '9',    v: 'Shipped projects' },
+    { k: '2',    v: 'IEEE journals in writing' },
+    { k: '1',    v: 'Patent filed' },
+    { k: '<100', v: 'ms inference latency' },
+  ],
+  education: [
+    { inst: 'MIT Manipal', deg: 'BTech, Electrical & Electronics', cgpa: '8.02', sem: 'Sem 6 of 8', minor: 'Computational Intelligence', years: '2023 — 2027' },
+    { inst: 'IIT Madras', deg: 'BS, Electronic Systems (Online)', cgpa: '7.33', sem: 'Diploma Phase', minor: null, years: '2023 — 2027' },
+  ],
+  experience: [
+    { role: 'Project Intern', co: 'Apsis Solutions', loc: 'Bangalore', period: 'Jul — Sep 2025', bullets: ['IoT solutions across FMCG, banking, supply chain, telecom.', 'Led integration across cross-vendor sensor stacks.'], skills: ['IoT', 'Industry', 'Leadership'] },
+    { role: 'Project Intern', co: 'Mindenious Edutech', loc: 'Bangalore', period: 'Jul — Sep 2025', bullets: ['VLSI — RTL, verification, synthesis, ASIC flow.', 'Authored test benches for functional coverage.'], skills: ['RTL', 'Verif', 'ASIC'] },
+    { role: 'Summer School', co: 'IIIT Hyderabad', loc: 'Hyderabad', period: 'Jun — Jul 2024', bullets: ['Product Development Management — concept to product lifecycle.'], skills: ['PDM', 'Strategy'] },
+  ],
+  projects: [
+    {
+      id: 'garuda', title: 'Garuda', subtitle: 'Real-time AI security on edge hardware',
+      badge: '1ST — IIT-M GADGET EXPO 2025', period: 'Jan — Apr 2025',
+      blurb: 'A standalone, no-cloud security system that detects intruders in under 100 ms on a Raspberry Pi 5 augmented with a Hailo 8L NPU. YOLOv8 backbone runs on the accelerator; decode and NMS run on ARM cores.',
+      problem: 'Existing home-security cameras either depend on the cloud or are too slow on edge hardware to trigger usable alerts.',
+      approach: 'Split YOLOv8 at the backbone — feature extraction on Hailo 8L, post-processing on Pi. Zero-copy GStreamer pipeline from camera to inference. Vosk-based offline voice assistant ("Narada") + multi-user OTP gate.',
+      tech: ['Python','YOLOv8','Hailo 8L','Raspberry Pi 5','GStreamer','OpenCV','Vosk'],
+      metrics: [{k:'<100 ms',v:'detection latency'},{k:'30',v:'FPS sustained'},{k:'13 TOPS',v:'edge NPU compute'},{k:'0',v:'cloud calls'}],
+      role: 'System architect + firmware', team: 'Solo build, 4 months',
+      link: 'github.com/Manikanta25055/Garuda',
+    },
+    {
+      id: 'patent', title: 'Patient Collapse Detection', subtitle: 'Wearable vital-signs anomaly system',
+      badge: 'PATENT FILED — FEB 2025', period: 'Nov 2024 — Feb 2025',
+      blurb: 'Non-invasive wearable that fuses heart rate, respiration, and motion data to flag patient collapse before bystanders notice. Targeted at elderly home-care and rehab wards.',
+      problem: 'Falls and sudden cardiac events in elderly patients lose critical minutes between event and intervention.',
+      approach: 'MEMS accelerometer + PPG + respiration sensor on a single low-power MCU. ML anomaly detector runs on-device; LoRa fallback uplink for caregiver alert. Patent filed Feb 2025.',
+      tech: ['Biomed sensors','PPG','MEMS','Wearable','Edge ML','DSP','LoRa'],
+      metrics: [{k:'95%+',v:'detection accuracy'},{k:'<2 s',v:'alert response'},{k:'48 h',v:'battery life'},{k:'Filed',v:'Feb 2025'}],
+      role: 'Hardware + ML pipeline', team: '2-person team',
+      link: null,
+    },
+    {
+      id: 'battery', title: 'Active Battery Equalization', subtitle: 'Flyback converter BMS for EV packs',
+      badge: '+20–30% PACK LIFESPAN', period: 'Aug — Nov 2024',
+      blurb: 'A bidirectional active cell-balancer for lithium-ion packs. Replaces wasteful resistive balancing with energy-recycling flyback topology — measured 85%+ transfer efficiency in simulation.',
+      problem: 'Passive balancing burns excess cell charge as heat. On EV packs that costs you both range and pack life.',
+      approach: 'Single-transformer flyback per cell pair. Magnetization → demagnetization phases move energy from high-SoC to low-SoC cells. Modeled in LTSpice with realistic transformer parasitics.',
+      tech: ['Power Electronics','BMS','LTSpice','EV Systems','Flyback Topology'],
+      metrics: [{k:'+25%',v:'lifespan gain'},{k:'85%+',v:'transfer efficiency'},{k:'4S1P',v:'topology tested'},{k:'100 kHz',v:'switching freq'}],
+      role: 'Circuit design + simulation', team: 'Solo coursework',
+      link: 'github.com/Manikanta25055/Active_Battery_cell_Equalisation',
+    },
+    {
+      id: 'suspension', title: 'Active Suspension System', subtitle: 'PID-controlled real-time damping',
+      badge: '−15.24 dB VIBRATION', period: 'Mar — Jun 2024',
+      blurb: 'Closed-loop PID controller for an automotive suspension model. Accelerometer feedback adjusts damping force to attenuate road vibration in real time.',
+      problem: 'Passive shocks cannot adapt to road conditions; classical control textbooks rarely demonstrate full closed-loop tuning.',
+      approach: 'Quarter-car model in MATLAB/Simulink, PID gains tuned via Ziegler-Nichols then refined with frequency-response analysis. Tested across step, sinusoidal and random road profiles.',
+      tech: ['Control Systems','PID','MATLAB','Simulink','State-space modeling'],
+      metrics: [{k:'−15.24 dB',v:'vibration cut'},{k:'60%',v:'faster settling'},{k:'<5%',v:'SS error'},{k:'4',v:'road profiles'}],
+      role: 'Modeling + control design', team: 'Solo coursework',
+      link: 'github.com/Manikanta25055/Active_Suspension_system',
+    },
+    {
+      id: 'comms', title: 'Secure Comms (DSSS)', subtitle: 'Spread-spectrum + XOR encryption',
+      badge: '14.91 dB PROCESSING GAIN', period: 'Nov 2024',
+      blurb: 'A jam-resistant baseband chain combining 31-chip DSSS spreading with XOR keystream encryption. Tested across AWGN and narrowband jamming environments.',
+      problem: 'Naive baseband links fall over under jamming; teaching DSSS without a working pipeline leaves it abstract.',
+      approach: 'Generated PN sequence with maximum-length LFSR. Correlation-based despreader. Swept SNR across 4 BER scenarios; isolated processing-gain contribution from encryption layer.',
+      tech: ['MATLAB','DSSS','Digital Comm','LFSR','Encryption'],
+      metrics: [{k:'14.91 dB',v:'processing gain'},{k:'10 dB',v:'jam suppression'},{k:'31',v:'chip length'},{k:'4',v:'BER scenarios'}],
+      role: 'Sim + analysis', team: 'Solo coursework',
+      link: 'github.com/Manikanta25055/Secure_Communication_System',
+    },
+    {
+      id: 'denoise', title: 'Speech Denoising', subtitle: 'Spectral subtraction, overlap-add',
+      badge: '5–10 dB SNR GAIN', period: 'Oct 2024',
+      blurb: 'Frame-based speech denoiser using N-point FFT spectral subtraction with adaptive noise estimation and spectral floor protection.',
+      problem: 'Spectral subtraction in textbooks is single-frame; real speech needs windowing, overlap-add, and a floor to avoid musical noise.',
+      approach: 'Hamming windowing, 50% overlap, adaptive noise floor updated during pauses. Compared multiple flooring schemes against PESQ scores.',
+      tech: ['MATLAB','FFT','Spectral Analysis','Audio DSP'],
+      metrics: [{k:'+5–10 dB',v:'SNR'},{k:'>0.85',v:'correlation'},{k:'3.0',v:'PESQ score'},{k:'50%',v:'overlap-add'}],
+      role: 'DSP pipeline', team: 'Solo coursework',
+      link: 'github.com/Manikanta25055/Speech_Denoising_Using_Spectral_Subtraction',
+    },
+    {
+      id: 'thermal', title: '4-Channel Thermal Profiling', subtitle: 'Industrial MODBUS RTU over RS485',
+      badge: 'INDUSTRIAL PROTOCOL STACK', period: 'Jan — Feb 2026',
+      blurb: 'Industrial-grade temperature monitor: 8 DS18B20 sensors on a 1-Wire bus → ESP32-S3 MODBUS RTU slave → Python SCADA master over RS485. Real-time 2D heatmap and CSV logging.',
+      problem: 'Off-the-shelf thermal monitors either do consumer-grade USB or are locked to vendor SCADA stacks.',
+      approach: 'Hand-rolled MODBUS RTU slave on ESP32-S3 with 27 holding registers. RS485 transceiver with proper biasing. PyQt5 master with hotspot detection and CSV export.',
+      tech: ['ESP32-S3','DS18B20','MODBUS RTU','RS485','PyQt5','Python'],
+      metrics: [{k:'±0.5 °C',v:'accuracy'},{k:'2 Hz',v:'update rate'},{k:'8',v:'sensors'},{k:'27',v:'registers'}],
+      role: 'Firmware + SCADA', team: 'Solo build',
+      link: 'github.com/Manikanta25055/Thermal_Profiling',
+    },
+    {
+      id: 'power', title: 'Power Quality Analysis', subtitle: 'DTFS harmonic analysis, IEEE 519',
+      badge: 'IEEE 519 COMPLIANT', period: 'Oct 2024',
+      blurb: 'Power-quality analyzer using DTFS to compute THD and K-factor, then designs corrective harmonic filters. Validated against LED, motor-drive, and data-center load profiles.',
+      problem: 'IEEE 519 compliance is everywhere in industrial spec sheets but rarely demonstrated end-to-end on student lab data.',
+      approach: 'DTFS-based spectral decomposition. Compute THD per IEEE 519. Filter design loop iterates LC topology to bring THD under 5%.',
+      tech: ['MATLAB','DTFS','Power Systems','IEEE 519','Filter Design'],
+      metrics: [{k:'<5%',v:'THD post-filter'},{k:'3',v:'load scenarios'},{k:'519',v:'compliant'},{k:'LC',v:'filter topology'}],
+      role: 'Analysis + filter design', team: 'Solo coursework',
+      link: 'github.com/Manikanta25055/Power_Quality_Analysis_Using_DTFS',
+    },
+    {
+      id: 'mak8', title: 'MAK-8 / MAK8u', subtitle: '8-bit CPU + dual-core extension on Nexys A7',
+      badge: 'CUSTOM SILICON', period: 'Ongoing',
+      blurb: 'A from-scratch 8-bit CPU built in Verilog and synthesized to a Xilinx Artix-7 FPGA, plus a dual-core extension (MAK8u) sharing memory through arbitration logic.',
+      problem: 'Most "build your own CPU" projects stop at single-core hello-world; multicore arbitration is where the real complexity hides.',
+      approach: 'Designed ISA, hand-wrote assembler, then implemented control unit, ALU, register file, and memory bus in Verilog. MAK8u adds a second core with bus arbitration.',
+      tech: ['Verilog','FPGA','Xilinx Vivado','Nexys A7','ISA Design','Assembler'],
+      metrics: [{k:'2',v:'cores'},{k:'8-bit',v:'ISA'},{k:'Artix-7',v:'target'},{k:'~50 MHz',v:'fmax'}],
+      role: 'ISA + RTL + assembler', team: 'Solo build',
+      link: 'github.com/Manikanta25055/MAK-8',
+    },
+  ],
+  skills: [
+    { g: 'Hardware',     items: ['FPGA / Verilog','RTL design','ASIC flow','Power electronics','PCB design','Embedded C'] },
+    { g: 'Software',     items: ['Python','MATLAB / Simulink','C / C++','GStreamer','OpenCV','PyQt5'] },
+    { g: 'Signals & AI', items: ['YOLOv8','Hailo AI','DSP','Spectral analysis','Control systems','Edge inference'] },
+    { g: 'Protocols',    items: ['MODBUS RTU','RS485','1-Wire','I2C / SPI','UART','IoT stacks'] },
+  ],
+  writing: [
+    { title: 'Building Garuda: sub-100ms AI on Pi 5', date: 'Apr 2025', read: '6 min', tags: ['Hailo 8L','YOLOv8','GStreamer'], excerpt: 'Splitting YOLOv8 at the backbone, zero-copy GStreamer pipelines, and why cloud dependency was never on the table.' },
+    { title: 'MODBUS RTU from scratch on ESP32-S3', date: 'Feb 2026', read: '5 min', tags: ['ESP32','RS485','Industrial'], excerpt: 'A 1979 protocol still running half the world\'s industrial equipment. Here is how you implement a full RTU slave.' },
+    { title: 'Active cell balancing: passive is not enough', date: 'Nov 2024', read: '4 min', tags: ['Power','BMS','LTSpice'], excerpt: 'Passive balancing burns charge as heat. Flyback recycles it — and gives you 20–30% more pack life.' },
+  ],
+};
+
+</script>
+<script>
+window.THEMES = {
+  editorial: { label: 'Engineering Journal', desc: 'Typographic, serious, editorial' },
+  glass:     { label: 'Liquid Glass',        desc: 'iOS 26, frosted, colorful' },
+  terminal:  { label: 'Brutalist Terminal',  desc: 'Mono, scanlines, hacker' },
+};
+</script>
+</head>
+<body data-theme="editorial">
+<div id="root"></div>
+<script type="text/babel">
+/* global React */
+const { useEffect: cuEffect, useRef: cuRef } = React;
+
+// Animated PCB-style circuit background — traces, vias, pulses
+function Circuit() {
+  const ref = cuRef(null);
+  cuEffect(() => {
+    const svg = ref.current;
+    if (!svg) return;
+    const pulses = svg.querySelectorAll('.circuit-pulse');
+    pulses.forEach((p, i) => {
+      const dur = 4 + (i % 3);
+      p.animate(
+        [{ offsetDistance: '0%' }, { offsetDistance: '100%' }],
+        { duration: dur * 1000, iterations: Infinity, delay: i * 700, easing: 'linear' }
+      );
+    });
+  }, []);
+  return (
+    <div className="circuit" aria-hidden>
+      <svg ref={ref} viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+            <path d="M 32 0 L 0 0 0 32" fill="none" stroke="currentColor" strokeWidth=".3" opacity=".15"/>
+          </pattern>
+        </defs>
+        <rect width="1200" height="700" fill="url(#grid)" color="var(--ink)" />
+
+        {/* PCB traces */}
+        <path className="circuit-trace" id="t1" d="M 50 120 L 280 120 L 280 240 L 540 240 L 540 80 L 820 80 L 820 200 L 1150 200" />
+        <path className="circuit-trace" id="t2" d="M 80 580 L 320 580 L 320 460 L 600 460 L 600 620 L 900 620 L 900 500 L 1140 500" />
+        <path className="circuit-trace" id="t3" d="M 50 360 L 200 360 L 200 300 L 460 300 L 460 400 L 720 400 L 720 360 L 1100 360" />
+        <path className="circuit-trace" id="t4" d="M 200 80 L 200 180 L 360 180 L 360 360" />
+        <path className="circuit-trace" id="t5" d="M 700 80 L 700 200 L 880 200 L 880 320" />
+        <path className="circuit-trace" id="t6" d="M 1000 580 L 1000 480 L 800 480 L 800 360" />
+
+        {/* Vias / pads */}
+        <circle className="circuit-via" cx="280" cy="120" r="4"/>
+        <circle className="circuit-via" cx="540" cy="240" r="4"/>
+        <circle className="circuit-via" cx="820" cy="80"  r="4"/>
+        <circle className="circuit-via" cx="320" cy="580" r="4"/>
+        <circle className="circuit-via" cx="600" cy="460" r="4"/>
+        <circle className="circuit-via" cx="900" cy="620" r="4"/>
+        <circle className="circuit-via" cx="200" cy="360" r="4"/>
+        <circle className="circuit-via" cx="460" cy="300" r="4"/>
+        <circle className="circuit-via" cx="720" cy="400" r="4"/>
+
+        {/* Chip outlines */}
+        <g opacity=".55">
+          <rect x="380" y="180" width="120" height="80" fill="none" stroke="currentColor" strokeWidth="1"/>
+          <text x="440" y="225" fill="currentColor" fontSize="9" textAnchor="middle" fontFamily="monospace" opacity=".6">FPGA</text>
+          {Array.from({length:6}).map((_,i)=>(
+            <line key={'p'+i} x1={395+i*18} y1="178" x2={395+i*18} y2="170" stroke="currentColor" strokeWidth=".8"/>
+          ))}
+          {Array.from({length:6}).map((_,i)=>(
+            <line key={'q'+i} x1={395+i*18} y1="262" x2={395+i*18} y2="270" stroke="currentColor" strokeWidth=".8"/>
+          ))}
+        </g>
+        <g opacity=".55">
+          <rect x="780" y="290" width="100" height="60" fill="none" stroke="currentColor" strokeWidth="1"/>
+          <text x="830" y="325" fill="currentColor" fontSize="9" textAnchor="middle" fontFamily="monospace" opacity=".6">MCU</text>
+        </g>
+        <g opacity=".55">
+          <rect x="160" y="500" width="80" height="50" fill="none" stroke="currentColor" strokeWidth="1"/>
+          <text x="200" y="530" fill="currentColor" fontSize="9" textAnchor="middle" fontFamily="monospace" opacity=".6">DSP</text>
+        </g>
+
+        {/* Pulses moving along traces */}
+        <circle className="circuit-pulse" r="3" style={{offsetPath:"path('M 50 120 L 280 120 L 280 240 L 540 240 L 540 80 L 820 80 L 820 200 L 1150 200')"}} />
+        <circle className="circuit-pulse" r="3" style={{offsetPath:"path('M 80 580 L 320 580 L 320 460 L 600 460 L 600 620 L 900 620 L 900 500 L 1140 500')"}} />
+        <circle className="circuit-pulse" r="3" style={{offsetPath:"path('M 50 360 L 200 360 L 200 300 L 460 300 L 460 400 L 720 400 L 720 360 L 1100 360')"}} />
+        <circle className="circuit-pulse" r="2" style={{offsetPath:"path('M 200 80 L 200 180 L 360 180 L 360 360')"}} />
+        <circle className="circuit-pulse" r="2" style={{offsetPath:"path('M 700 80 L 700 200 L 880 200 L 880 320')"}} />
+      </svg>
+    </div>
+  );
+}
+
+window.Circuit = Circuit;
+
+// Paper grain SVG overlay — subtle crumpled paper texture
+function PaperGrain() {
+  return (
+    <svg className="paper-grain-svg" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+      <filter id="pg-fine" x="0%" y="0%" width="100%" height="100%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.72 0.54" numOctaves="4" seed="7"/>
+        <feColorMatrix type="saturate" values="0"/>
+      </filter>
+      <filter id="pg-coarse" x="0%" y="0%" width="100%" height="100%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.09 0.07" numOctaves="3" seed="3"/>
+        <feColorMatrix type="saturate" values="0"/>
+        <feComponentTransfer>
+          <feFuncR type="linear" slope="0.35" intercept="0.58"/>
+          <feFuncG type="linear" slope="0.35" intercept="0.58"/>
+          <feFuncB type="linear" slope="0.35" intercept="0.58"/>
+        </feComponentTransfer>
+      </filter>
+      <rect width="100%" height="100%" filter="url(#pg-fine)" opacity="0.048"/>
+      <rect width="100%" height="100%" filter="url(#pg-coarse)" opacity="0.07" style={{mixBlendMode:'multiply'}}/>
+    </svg>
+  );
+}
+
+window.PaperGrain = PaperGrain;
+
+</script>
+<script type="text/babel">
+/* global React, PORTFOLIO_DATA, THEMES, Circuit */
+const { useState, useEffect, useRef } = React;
+
+const NAV_ITEMS = [
+  { id: 'home',      label: 'Home' },
+  { id: 'education', label: 'Education' },
+  { id: 'work',      label: 'Work' },
+  { id: 'projects',label: 'Projects' },
+  { id: 'skills',  label: 'Skills' },
+  { id: 'writing', label: 'Writing' },
+  { id: 'contact', label: 'Contact' },
+];
+
+// Draggable nav pill
+function Nav({ active, setActive }) {
+  const wrapRef = useRef(null);
+  const pillRef = useRef(null);
+  const [pill, setPill] = useState({ left: 0, width: 0 });
+  const dragRef = useRef({ on: false, startX: 0, startLeft: 0, moved: 0 });
+  const [dragging, setDragging] = useState(false);
+  const [pulse, setPulse] = useState(0);
+
+  const measure = (id) => {
+    const wrap = wrapRef.current; if (!wrap) return null;
+    const el = wrap.querySelector(`[data-nav="${id}"]`);
+    if (!el) return null;
+    const wr = wrap.getBoundingClientRect();
+    const er = el.getBoundingClientRect();
+    return { left: er.left - wr.left, width: er.width };
+  };
+
+  useEffect(() => {
+    if (dragRef.current.on) return;
+    const m = measure(active); if (m) setPill(m);
+    // trigger pop via className toggle (avoid remounting the node)
+    const el = pillRef.current;
+    if (el) {
+      el.classList.remove('active-pulse');
+      // force reflow then re-add
+      // eslint-disable-next-line no-unused-expressions
+      el.offsetWidth;
+      el.classList.add('active-pulse');
+    }
+  }, [active]);
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      const m = measure(active); if (m) setPill(m);
+    }, 60);
+    const onResize = () => { const m = measure(active); if (m) setPill(m); };
+    window.addEventListener('resize', onResize);
+    return () => { clearTimeout(t); window.removeEventListener('resize', onResize); };
+  }, []);
+
+  const jump = (id) => {
+    window.__navLockUntil = Date.now() + 900;
+    setActive(id);
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const items = () => Array.from(wrapRef.current?.querySelectorAll('.nav-item') || []);
+
+  const closestId = (centerX) => {
+    const wrap = wrapRef.current; if (!wrap) return active;
+    let best = NAV_ITEMS[0].id, dist = Infinity;
+    items().forEach(el => {
+      const r = el.getBoundingClientRect();
+      const wr = wrapRef.current.getBoundingClientRect();
+      const c = (r.left - wr.left) + r.width / 2;
+      const d = Math.abs(c - centerX);
+      if (d < dist) { dist = d; best = el.dataset.nav; }
+    });
+    return best;
+  };
+
+  const onPointerDown = (e) => {
+    e.preventDefault();
+    const x = e.clientX ?? e.touches?.[0]?.clientX;
+    dragRef.current = { on: true, startX: x, startLeft: pill.left, moved: 0 };
+    setDragging(true);
+    window.addEventListener('pointermove', onPointerMove);
+    window.addEventListener('pointerup', onPointerUp);
+  };
+
+  const onPointerMove = (e) => {
+    if (!dragRef.current.on) return;
+    const x = e.clientX;
+    const dx = x - dragRef.current.startX;
+    dragRef.current.moved = Math.abs(dx);
+    const wrap = wrapRef.current; if (!wrap) return;
+    const wr = wrap.getBoundingClientRect();
+    const minL = 6;
+    const maxL = wr.width - pill.width - 6;
+    let nextLeft = Math.max(minL, Math.min(maxL, dragRef.current.startLeft + dx));
+    if (pillRef.current) {
+      pillRef.current.style.transition = 'none';
+      pillRef.current.style.transform = `translateX(${nextLeft}px) scale(1.06)`;
+    }
+    const centerX = nextLeft + pill.width / 2;
+    const id = closestId(centerX);
+    if (id !== active) setActive(id);
+    setPill(p => ({ ...p, left: nextLeft }));
+  };
+
+  const onPointerUp = () => {
+    if (!dragRef.current.on) return;
+    dragRef.current.on = false;
+    setDragging(false);
+    // clear inline overrides so React's style-based transform + CSS transition take over
+    if (pillRef.current) {
+      pillRef.current.style.transition = '';
+      pillRef.current.style.transform = '';
+    }
+    window.removeEventListener('pointermove', onPointerMove);
+    window.removeEventListener('pointerup', onPointerUp);
+    const wrap = wrapRef.current;
+    if (wrap && dragRef.current.moved > 2) {
+      const centerX = pill.left + pill.width / 2;
+      const id = closestId(centerX);
+      jump(id);
+    }
+  };
+
+  return (
+    <nav className={`nav ${dragging ? 'dragging' : ''}`} ref={wrapRef}>
+      <span
+        ref={pillRef}
+        key={pulse}
+        className="nav-pill active-pulse"
+        style={{ transform: `translateX(${pill.left}px)`, width: pill.width, '--pill-x': pill.left + 'px' }}
+        onPointerDown={onPointerDown}
+      />
+      {NAV_ITEMS.map(n => (
+        <button
+          key={n.id}
+          data-nav={n.id}
+          className={`nav-item ${active === n.id ? 'active' : ''}`}
+          onClick={() => jump(n.id)}
+        >
+          {n.label}
+        </button>
+      ))}
+    </nav>
+  );
+}
+
+function Top({ theme }) {
+  const { personal } = PORTFOLIO_DATA;
+  return (
+    <div className="top">
+      <div className="top-mark">
+        <span className="top-mark-dot" />
+        <span>{personal.initials} · {personal.location}</span>
+      </div>
+      <div className="top-meta">{THEMES[theme].label} · v26</div>
+    </div>
+  );
+}
+
+// Tilted notepad with handwritten "currently working" note near the hero title
+function NotepadCurrent() {
+  const wk = Math.ceil((((new Date()-new Date(new Date().getFullYear(),0,1))/86400000)+1)/7);
+  return (
+    <div className="notepad" aria-label="Currently working on">
+      <div className="np-rings" aria-hidden="true">
+        <span className="np-ring"/><span className="np-ring"/><span className="np-ring"/>
+      </div>
+      <span className="np-tear" aria-hidden="true"/>
+      <div className="np-inner">
+        <div className="np-brand">GVM</div>
+        <div className="np-head">
+          <span className="np-dot"/>
+          <span>Currently</span>
+          <span className="np-date">· wk {wk} ·</span>
+        </div>
+        <p className="np-line">Building <b>Project Breadth</b> —</p>
+        <p className="np-line np-sub">a wearable respiratory-rate &amp; effort sensor.</p>
+        <p className="np-line">Drafting the <i>IEEE Sensors Journal</i> paper</p>
+        <p className="np-line np-sub">on the signal-chain &amp; validation results.</p>
+        <div className="np-sign">
+          <span className="np-sig-line"/>
+          <span className="np-sig-name">— GVM</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Hero() {
+  const { personal, inProgress } = PORTFOLIO_DATA;
+  return (
+    <section id="home" className="hero" data-screen-label="01 Home">
+      <div className="hero-eyebrow">
+        <span className="hero-eyebrow-bar" />
+        <span className="eyebrow">Electrical &amp; Electronics Engineer · Hyderabad</span>
+      </div>
+      <div className="hero-name">{personal.name}</div>
+      <div className="hero-grid">
+        <div className="hero-left">
+          <div className="hero-title-row">
+            <h1>Building where hardware meets <span className="accent-word">software.</span></h1>
+            <div className="notepad-float-wrap"><NotepadCurrent/></div>
+          </div>
+          <p className="hero-sub">
+            Dual-degree at MIT Manipal &amp; IIT Madras. Deep in FPGAs, embedded
+            systems, and AI on the edge — from sub-100ms vision on a Pi 5 to a
+            full MODBUS RTU stack on an ESP32-S3.
+          </p>
+          <div className="upcoming-tag" aria-label="Upcoming Systems Engineer Intern at Boeing">
+            <div className="up-stack">
+              <div className="up-meta">
+                <span className="up-dot" />
+                <span className="up-eyebrow">Upcoming · Summer 2026</span>
+              </div>
+              <div className="up-role-row">
+                <span className="up-role">Systems Engineer Intern</span>
+                <span className="up-at">at</span>
+                <img className="up-logo" src="logos/boeing.png" alt="Boeing" />
+              </div>
+            </div>
+          </div>
+          <div className="hero-cta-row">
+            <a className="btn btn-primary" href={`mailto:${personal.email}`}>Get in touch →</a>
+            <a className="btn" href={`https://${personal.github}`} target="_blank" rel="noreferrer">View GitHub</a>
+          </div>
+          <div className="inprog">
+            <div className="inprog-h"><span className="inprog-pulse" /> Currently writing</div>
+            <div className="inprog-list">
+              {inProgress.map((w, i) => (
+                <div className="inprog-item" key={i}>
+                  <div className="inprog-kind">{w.kind}</div>
+                  <div className="inprog-title">{w.title}</div>
+                  <div className="inprog-note">{w.note}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        <aside className="hero-card">
+          <div className="hero-card-h"><span>Status</span></div>
+          <div className="hero-card-row"><span>Role</span><strong>{personal.role}</strong></div>
+          <div className="hero-card-row"><span>Based</span><strong>{personal.location}</strong></div>
+          <div className="hero-card-row"><span>Open to</span><strong>Hardware · Embedded · Silicon</strong></div>
+          <div className="hero-card-row"><span>Notable</span><strong>Patent filed · IIT-M 1st place</strong></div>
+          <div className="hero-card-row"><span>Available</span><strong>Summer 2026</strong></div>
+        </aside>
+      </div>
+      <div className="stats">
+        {PORTFOLIO_DATA.stats.map((s, i) => (
+          <div className="stat" key={i}>
+            <div className="stat-k">{s.k}</div>
+            <div className="stat-v">{s.v}</div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function SH({ num, eyebrow, title, right }) {
+  return (
+    <header className="sh">
+      <div className="sh-l">
+        <span className="sh-counter">{num} · {eyebrow}</span>
+        <h2>{title}</h2>
+      </div>
+      {right && <div className="sh-r">{right}</div>}
+    </header>
+  );
+}
+
+window.UI = { Nav, Top, Hero, SH, NAV_ITEMS };
+
+</script>
+<script type="text/babel">
+/* global React, PORTFOLIO_DATA */
+const { useState: useStateEdu } = React;
+
+function BookCard({ edu, coverColor, spineColor, logo }) {
+  const [open, setOpen] = useStateEdu(false);
+  return (
+    <div className="book-scene">
+      <div
+        className={`book-container ${open ? 'book-open' : ''}`}
+        onClick={() => setOpen(o => !o)}
+        role="button"
+        aria-label={`${open ? 'Close' : 'Open'} ${edu.inst} book`}
+      >
+        {/* Pages layer (always behind) */}
+        <div className="book-pages-bg">
+          <div className="bp-heading">Academic Record</div>
+          <div className="bp-body">
+            <div className="bp-field">
+              <div className="bp-label">Programme</div>
+              <div className="bp-val">{edu.deg}</div>
+            </div>
+            <div className="bp-field">
+              <div className="bp-label">Stage</div>
+              <div className="bp-val">{edu.sem}</div>
+            </div>
+            {edu.minor && (
+              <div className="bp-field">
+                <div className="bp-label">Minor / Specialisation</div>
+                <div className="bp-val">{edu.minor}</div>
+              </div>
+            )}
+            <div className="bp-field">
+              <div className="bp-label">Period</div>
+              <div className="bp-val">{edu.years}</div>
+            </div>
+            <div className="bp-cgpa-row">
+              <div className="bp-cgpa-n">{edu.cgpa}</div>
+              <div className="bp-cgpa-d"> /10</div>
+            </div>
+            <span className="bp-cgpa-label">CGPA</span>
+          </div>
+          {logo && (
+            <div className="bp-logo-slot" aria-hidden="true">
+              <img src={logo} alt="" />
+            </div>
+          )}
+        </div>
+
+        {/* Cover (rotates away on open) */}
+        <div className="book-cover-panel">
+          <div className="book-cover-front" style={{ background: coverColor, color: '#fff' }}>
+            <div>
+              <div className="bc-eyebrow">Academic Record</div>
+              <div className="bc-rule"/>
+              <div className="bc-title">{edu.inst}</div>
+              <div className="bc-sub">{edu.deg}</div>
+            </div>
+            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-end' }}>
+              <div className="bc-year">{edu.years}</div>
+              <div className="bc-seal">
+                {edu.inst.split(' ').map(w => w[0]).join('')}
+              </div>
+            </div>
+          </div>
+          <div className="book-cover-back-face"/>
+        </div>
+      </div>
+
+      <div className="book-label">{edu.inst}</div>
+      <div className="book-hint" onClick={() => setOpen(o => !o)}>
+        {open ? '← Close' : 'Tap to open →'}
+      </div>
+    </div>
+  );
+}
+
+function Education() {
+  const { education } = PORTFOLIO_DATA;
+  // MIT Manipal = maroon, IIT Madras = navy
+  const palette = [
+    { cover: '#7a1212', spine: '#4a0a0a', logo: 'logos/manipal.png' },
+    { cover: '#162348', spine: '#0a1228', logo: 'logos/iitm.png' },
+  ];
+  return (
+    <section id="education" className="edu-section" data-screen-label="02 Education">
+      <header className="sh">
+        <div className="sh-l">
+          <span className="sh-counter">02 · Dual Degree</span>
+          <h2>Two institutions.<br/>One engineer.</h2>
+        </div>
+        <div className="sh-r">
+          Concurrent programmes at MIT Manipal and IIT Madras — two curricula, two campuses, parallel coursework since 2023.
+        </div>
+      </header>
+      <div className="edu-books-wrap">
+        {education.map((e, i) => (
+          <BookCard
+            key={i}
+            edu={e}
+            coverColor={palette[i].cover}
+            spineColor={palette[i].spine}
+            logo={palette[i].logo}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+window.Education = Education;
+
+</script>
+<script type="text/babel">
+/* global React, PORTFOLIO_DATA, UI */
+const { useState: useState2 } = React;
+
+function Work() {
+  const { experience, education } = PORTFOLIO_DATA;
+  return (
+    <section id="work" data-screen-label="03 Work">
+      <UI.SH num="03" eyebrow="Experience" title="What I've shipped, and where I've trained."
+        right="Three roles in IoT, VLSI, and product development — alongside concurrent dual-degree coursework." />
+      <div className="timeline">
+        {experience.map((e, i) => (
+          <div className="tl-row" key={i}>
+            <div className="tl-period">{e.period}</div>
+            <div className="tl-main">
+              <h3>{e.role}</h3>
+              <div className="tl-co"><strong>{e.co}</strong> · {e.loc}</div>
+              <div className="tl-bullets">
+                {e.bullets.map((b, j) => <div className="tl-bullet" key={j}>{b}</div>)}
+              </div>
+              <div className="proj-tech">
+                {e.skills.map(s => <span className="chip" key={s}>{s}</span>)}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function Projects() {
+  const { projects } = PORTFOLIO_DATA;
+  const [open, setOpen] = useState2(null);
+  return (
+    <section id="projects" data-screen-label="04 Projects">
+      <UI.SH num="04" eyebrow="Selected projects" title="Nine systems. One patent. A first place."
+        right="Each card carries the problem, approach, role, team, and measured numbers. Tap for the full entry." />
+      <div className="proj-grid">
+        {projects.map((p, i) => (
+          <article key={p.id} className="proj" onClick={() => setOpen(i)}>
+            <div className="proj-head">
+              <span className="proj-num">P/{String(i+1).padStart(2,'0')} · {p.period}</span>
+              {p.badge && <span className="proj-badge">{p.badge}</span>}
+            </div>
+            <h3>{p.title}</h3>
+            <div className="proj-sub">{p.subtitle}</div>
+            <div className="proj-blurb">{p.blurb}</div>
+            <div className="proj-meta">
+              <div><b>Role</b> &nbsp;{p.role}</div>
+              <div><b>Team</b> &nbsp;{p.team}</div>
+            </div>
+            <div className="proj-metrics">
+              {p.metrics.map((m,j) => (
+                <div className="proj-metric" key={j}>
+                  <div className="proj-metric-k">{m.k}</div>
+                  <div className="proj-metric-v">{m.v}</div>
+                </div>
+              ))}
+            </div>
+            <div className="proj-tech">
+              {p.tech.slice(0,7).map(t => <span className="chip" key={t}>{t}</span>)}
+            </div>
+            <div className="proj-cta">Full entry</div>
+          </article>
+        ))}
+      </div>
+      {open !== null && (
+        <div className="modal-bg" onClick={() => setOpen(null)}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <button className="modal-x" onClick={() => setOpen(null)}>×</button>
+            <div className="eyebrow" style={{marginBottom:12}}>{projects[open].badge || 'PROJECT'}</div>
+            <h2>{projects[open].title}</h2>
+            <div className="modal-period">{projects[open].subtitle} · {projects[open].period}</div>
+            <div className="modal-section">
+              <div className="modal-section-h">Overview</div>
+              <p>{projects[open].blurb}</p>
+            </div>
+            <div className="modal-section">
+              <div className="modal-section-h">Problem</div>
+              <p>{projects[open].problem}</p>
+            </div>
+            <div className="modal-section">
+              <div className="modal-section-h">Approach</div>
+              <p>{projects[open].approach}</p>
+            </div>
+            <div className="stats" style={{marginTop:24, marginBottom:24}}>
+              {projects[open].metrics.map((m,j) => (
+                <div className="stat" key={j}>
+                  <div className="stat-k">{m.k}</div>
+                  <div className="stat-v">{m.v}</div>
+                </div>
+              ))}
+            </div>
+            <div className="modal-section">
+              <div className="modal-section-h">Stack</div>
+              <div className="proj-tech">
+                {projects[open].tech.map(t => <span className="chip" key={t}>{t}</span>)}
+              </div>
+            </div>
+            <div className="proj-meta" style={{marginTop:8}}>
+              <div><b>Role</b> &nbsp;{projects[open].role}</div>
+              <div><b>Team</b> &nbsp;{projects[open].team}</div>
+            </div>
+            {projects[open].link && (
+              <a className="btn btn-primary" style={{marginTop:24}} href={`https://${projects[open].link}`} target="_blank" rel="noreferrer">
+                View on GitHub →
+              </a>
+            )}
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function Skills() {
+  const { skills } = PORTFOLIO_DATA;
+  return (
+    <section id="skills" data-screen-label="05 Skills">
+      <UI.SH num="05" eyebrow="Technical surface" title="The tools I reach for."
+        right="System-level: hardware → firmware → application." />
+      <div className="skill-grid">
+        {skills.map(g => (
+          <div className="skill-card" key={g.g}>
+            <div className="skill-g">{g.g}</div>
+            <div className="skill-items">
+              {g.items.map(it => <div className="skill-item" key={it}>{it}</div>)}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function Writing() {
+  const { writing } = PORTFOLIO_DATA;
+  return (
+    <section id="writing" data-screen-label="06 Writing">
+      <UI.SH num="06" eyebrow="Notes &amp; writing" title="Things I learned, written down."
+        right="Short engineering notes from shipping the projects above." />
+      <div className="writing">
+        {writing.map((w,i) => (
+          <article className="write-card" key={i}>
+            <div className="write-meta"><span>{w.date}</span><span>{w.read}</span></div>
+            <h3>{w.title}</h3>
+            <p className="write-excerpt">{w.excerpt}</p>
+            <div className="write-tags">
+              {w.tags.map(t => <span className="chip" key={t}>{t}</span>)}
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function Contact() {
+  const { personal } = PORTFOLIO_DATA;
+  const [name, setName] = useState2('');
+  const [email, setEmail] = useState2('');
+  const [org, setOrg] = useState2('');
+  const [msg, setMsg] = useState2('');
+  const [topics, setTopics] = useState2([]);
+  const [sent, setSent] = useState2(false);
+  const [sending, setSending] = useState2(false);
+  const [err, setErr] = useState2('');
+
+  const TOPICS = ['FPGA / RTL','Embedded','Edge AI','Internship','Research','Other'];
+  const toggle = (t) => setTopics(ts => ts.includes(t) ? ts.filter(x=>x!==t) : [...ts, t]);
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+    if (sending) return;
+    setErr('');
+    if (!name || !email || !msg) {
+      setErr('Please fill in your name, email and message.');
+      return;
+    }
+    setSending(true);
+    // Open user's email client with a fully-composed message — 100% reliable,
+    // no backend required. Works on every device.
+    const subject = `[Field Note] ${topics.join(', ') || 'New enquiry'} — ${name}`;
+    const body =
+      `Correspondent: ${name}\n` +
+      `Affiliation:   ${org || '—'}\n` +
+      `Reply to:      ${email}\n` +
+      `Topics:        ${topics.join(', ') || '—'}\n\n` +
+      `----\n\n${msg}\n`;
+    const href = `mailto:${personal.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    try {
+      window.location.href = href;
+      setTimeout(() => {
+        setSent(true);
+        setSending(false);
+      }, 500);
+    } catch (ex) {
+      setErr('Could not open your email client — please write directly to ' + personal.email);
+      setSending(false);
+    }
+  };
+
+  const today = new Date();
+  const dateStr = today.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }).toUpperCase();
+
+  return (
+    <section id="contact" className="jr-contact" data-screen-label="07 Contact">
+      {/* Masthead */}
+      <div className="jr-masthead">
+        <span className="jr-mast-l">Engineering Journal · Vol. 26 · No. 07</span>
+        <span className="jr-mast-r">Correspondence · {dateStr} · Hyderabad</span>
+      </div>
+
+      {/* Title row */}
+      <div className="jr-title-row">
+        <div>
+          <div className="jr-eyebrow">07 · Field Notes & Correspondence</div>
+          <div className="jr-title">
+            Have a hard problem?<br/>
+            <span className="accent-word">Let's talk silicon.</span>
+          </div>
+        </div>
+        <p className="jr-lede">
+          Drop a note in the margin. FPGA work, embedded builds, edge-AI
+          prototypes, or a chat about a role — all welcome.
+        </p>
+      </div>
+
+      {/* Two-sheet grid: Directory + Field Note form */}
+      <div className="jr-grid">
+        {/* Sheet 1 — Directory of channels */}
+        <div className="jr-sheet">
+          <span className="jr-stamp">Filed 2026</span>
+          <div className="jr-heading">Directory of Channels</div>
+          <div className="jr-ledger">
+            <a className="jr-row" href={`mailto:${personal.email}`}>
+              <span className="jr-row-label">Email</span>
+              <span className="jr-row-val">{personal.email}</span>
+              <span className="jr-row-arrow">↗</span>
+            </a>
+            <a className="jr-row" href={`https://${personal.github}`} target="_blank" rel="noreferrer">
+              <span className="jr-row-label">GitHub</span>
+              <span className="jr-row-val">{personal.github}</span>
+              <span className="jr-row-arrow">↗</span>
+            </a>
+            <a className="jr-row" href={`https://${personal.linkedin}`} target="_blank" rel="noreferrer">
+              <span className="jr-row-label">LinkedIn</span>
+              <span className="jr-row-val">{personal.linkedin}</span>
+              <span className="jr-row-arrow">↗</span>
+            </a>
+            <a className="jr-row" href="#home">
+              <span className="jr-row-label">Located</span>
+              <span className="jr-row-val">{personal.location}</span>
+              <span className="jr-row-arrow">↑</span>
+            </a>
+            <div className="jr-row" style={{cursor:'default'}}>
+              <span className="jr-row-label">Response</span>
+              <span className="jr-row-val">Within ~48 hours, typically</span>
+              <span className="jr-row-arrow" style={{opacity:0}}>·</span>
+            </div>
+          </div>
+          <div className="jr-margin-note">
+            <b>Marginalia.</b> Weekdays I'm between classes and the lab bench;
+            weekends are for longer replies and follow-up calls.
+          </div>
+        </div>
+
+        {/* Sheet 2 — Field Note form */}
+        <form className="jr-sheet" onSubmit={onSubmit} noValidate>
+          <span className="jr-stamp">Entry No. {String(Math.floor(Math.random()*89)+10)}</span>
+          <div className="jr-heading">Leave a Field Note</div>
+
+          <div className="jr-form">
+            <div className="jr-field-row-2">
+              <div className="jr-field">
+                <div className="jr-field-label"><span>Correspondent</span><span className="jr-field-hint">Name</span></div>
+                <input className="jr-input" type="text" placeholder="Ada Lovelace"
+                  value={name} onChange={e=>setName(e.target.value)} required/>
+              </div>
+              <div className="jr-field">
+                <div className="jr-field-label"><span>Affiliation</span><span className="jr-field-hint">Optional</span></div>
+                <input className="jr-input" type="text" placeholder="Company or university"
+                  value={org} onChange={e=>setOrg(e.target.value)}/>
+              </div>
+            </div>
+
+            <div className="jr-field">
+              <div className="jr-field-label"><span>Return Address</span><span className="jr-field-hint">Email</span></div>
+              <input className="jr-input" type="email" placeholder="you@somewhere.io"
+                value={email} onChange={e=>setEmail(e.target.value)} required/>
+            </div>
+
+            <div className="jr-topic-row">
+              <div className="jr-field-label" style={{marginBottom:0}}>
+                <span>Subject of Correspondence</span><span className="jr-field-hint">Select any</span>
+              </div>
+              <div className="jr-topics">
+                {TOPICS.map(t => (
+                  <button key={t} type="button"
+                    className={`jr-topic ${topics.includes(t) ? 'on' : ''}`}
+                    onClick={() => toggle(t)}>{t}</button>
+                ))}
+              </div>
+            </div>
+
+            <div className="jr-field">
+              <div className="jr-field-label"><span>The Note</span><span className="jr-field-hint">Be specific</span></div>
+              <textarea className="jr-textarea" placeholder="What are you working on, and where could I help?"
+                value={msg} onChange={e=>setMsg(e.target.value)} required/>
+            </div>
+          </div>
+
+          <div className="jr-submit-row">
+            <div className="jr-sig-line">— Signed, with care.</div>
+            <button type="submit" className="jr-submit" disabled={sending}>
+              {sending ? 'Sending…' : 'File Note →'}
+            </button>
+          </div>
+
+          {sent && (
+            <div className="jr-ok">
+              Thank you — your note has been filed. I'll reply from
+              <b> {personal.email}</b> within ~48 hours.
+            </div>
+          )}
+          {err && (
+            <div className="jr-ok jr-err">{err}</div>
+          )}
+        </form>
+
+      </div>
+
+      {/* Colophon / bottom bar in the same editorial rhythm */}
+      <div className="jr-colophon">
+        <div className="jr-col">
+          <span className="jr-col-k">Colophon</span>
+          <span className="jr-col-mark">{personal.name}</span>
+          <span className="jr-col-v">© 2026 · All field notes kept.</span>
+        </div>
+        <div className="jr-col jr-col-mid">
+          <span className="jr-col-k">Set in</span>
+          <span className="jr-col-v">Fraunces &amp; Space Grotesk</span>
+          <span className="jr-col-v">Designed &amp; built by hand.</span>
+        </div>
+        <div className="jr-col jr-col-r">
+          <span className="jr-col-k">Edition</span>
+          <span className="jr-col-v">v26 · {new Date().toISOString().slice(0,10)}</span>
+          <span className="jr-col-v">Pressed in Hyderabad, IN</span>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+window.SECTIONS = { Work, Projects, Skills, Writing, Contact };
+
+</script>
+<script type="text/babel">
+/* global React */
+const { useState: useStateWD, useEffect: useEffectWD } = React;
+
+function WelcomeDialog({ onClose }) {
+  const fullText = 'An electrical engineer building at the intersection of silicon and software — FPGAs, embedded systems, edge AI. This journal documents the work, the thinking, and the lessons learned along the way.';
+  const [typed, setTyped] = useStateWD('');
+  const done = typed.length >= fullText.length;
+
+  useEffectWD(() => {
+    let i = 0;
+    const iv = setInterval(() => {
+      i++;
+      setTyped(fullText.slice(0, i));
+      if (i >= fullText.length) clearInterval(iv);
+    }, 18);
+    return () => clearInterval(iv);
+  }, []);
+
+  return (
+    <div className="wdlg-bg" onClick={onClose}>
+      <div className="wdlg" onClick={e => e.stopPropagation()}>
+        <div className="wdlg-stamp">Filed 2026</div>
+        <div className="wdlg-top">
+          <span>Engineering Journal · Vol. 26</span>
+          <span>VMG · Portfolio</span>
+        </div>
+        <div className="wdlg-ruled">
+          <div className="wdlg-title">
+            Welcome to the<br/>field notes.
+          </div>
+          <div className="wdlg-body">
+            {typed}
+            {!done && <span className="wdlg-cursor"/>}
+          </div>
+          <div className="wdlg-rule"/>
+          <span className="wdlg-sig">— VMG</span>
+          <div className="wdlg-footer">
+            <span className="wdlg-date">Hyderabad · Apr 2026</span>
+            <button className="wdlg-btn" onClick={onClose}>
+              Open Journal →
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+window.WelcomeDialog = WelcomeDialog;
+
+</script>
+<script type="text/babel">
+/* global React, ReactDOM, UI, SECTIONS, THEMES */
+const { useState, useEffect } = React;
+
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "theme": "editorial"
+}/*EDITMODE-END*/;
+
+function Tweaks({ theme, setTheme, onClose }) {
+  return (
+    <div className="tw">
+      <div className="tw-h">
+        <span>Tweaks · Theme</span>
+        <button className="tw-x" onClick={onClose}>×</button>
+      </div>
+      <div className="tw-opts">
+        {Object.entries(THEMES).map(([k, v]) => (
+          <button key={k} className={`tw-opt ${theme === k ? 'on' : ''}`} onClick={() => setTheme(k)}>
+            <span className="tw-opt-dot" />
+            <span className="tw-opt-body">
+              <span className="tw-opt-title">{v.label}</span>
+              <span className="tw-opt-desc">{v.desc}</span>
+            </span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const saved = (() => { try { return localStorage.getItem('portfolio.theme'); } catch(e) { return null; } })();
+  const [theme, setThemeState] = useState(saved || TWEAK_DEFAULTS.theme);
+  const [active, setActive] = useState('home');
+  const [showWelcome, setShowWelcome] = useState(() => {
+    try { return !sessionStorage.getItem('portfolio.welcomed'); } catch(e) { return true; }
+  });
+
+  const dismissWelcome = () => {
+    try { sessionStorage.setItem('portfolio.welcomed', '1'); } catch(e) {}
+    setShowWelcome(false);
+  };
+
+  const setTheme = (t) => {
+    setThemeState(t);
+    try { localStorage.setItem('portfolio.theme', t); } catch(e) {}
+    window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { theme: t } }, '*');
+  };
+
+  useEffect(() => { document.body.setAttribute('data-theme', theme); }, [theme]);
+
+  useEffect(() => {
+    const ids = UI.NAV_ITEMS.map(n => n.id);
+    let raf = null;
+    const onScroll = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = null;
+        if (window.__navLockUntil && Date.now() < window.__navLockUntil) return;
+        let closest = ids[0], dist = Infinity;
+        for (const id of ids) {
+          const el = document.getElementById(id);
+          if (!el) continue;
+          const top = el.getBoundingClientRect().top;
+          const d = Math.abs(top - 120);
+          if (top < window.innerHeight * 0.5 && d < dist) { dist = d; closest = id; }
+        }
+        setActive(closest);
+      });
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const { Top, Hero, Nav } = UI;
+  const { Work, Projects, Skills, Writing, Contact } = SECTIONS;
+
+  return (
+    <>
+      <PaperGrain />
+      <div className="page">
+        <Top theme={theme} />
+        <Hero />
+        <Education />
+        <Work />
+        <Projects />
+        <Skills />
+        <Writing />
+        <Contact />
+      </div>
+      <Nav active={active} setActive={setActive} />
+      {showWelcome && <WelcomeDialog onClose={dismissWelcome} />}
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+
+</script>
+</body>
+</html>

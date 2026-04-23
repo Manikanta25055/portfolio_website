@@ -117,14 +117,14 @@ function Nav({ active, setActive }) {
   const dragRef = useRef({ on: false, startX: 0, startLeft: 0, moved: 0 });
   const [dragging, setDragging] = useState(false);
 
-  const measure = (id) => {
+  const measure = React.useCallback((id) => {
     const wrap = wrapRef.current; if (!wrap) return null;
     const el = wrap.querySelector(`[data-nav="${id}"]`);
     if (!el) return null;
     const wr = wrap.getBoundingClientRect();
     const er = el.getBoundingClientRect();
     return { left: er.left - wr.left, width: er.width };
-  };
+  }, []);
 
   useEffect(() => {
     if (dragRef.current.on) return;
@@ -136,7 +136,7 @@ function Nav({ active, setActive }) {
       el.offsetWidth;
       el.classList.add('active-pulse');
     }
-  }, [active]);
+  }, [active, measure]);
 
   useEffect(() => {
     const t = setTimeout(() => {
@@ -145,7 +145,7 @@ function Nav({ active, setActive }) {
     const onResize = () => { const m = measure(active); if (m) setPill(m); };
     window.addEventListener('resize', onResize);
     return () => { clearTimeout(t); window.removeEventListener('resize', onResize); };
-  }, []);
+  }, [active, measure]);
 
   const jump = (id) => {
     setActive(id);

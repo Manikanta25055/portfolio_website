@@ -175,10 +175,13 @@ body[data-theme="glass"] .hero h1 .accent-word{font-style:normal;background:line
   max-width:100%;
   aspect-ratio: 5 / 6;
   padding: 7cqi 7cqi 6cqi 10cqi;
+  --np-line-h: 6.5cqi;
   background:
     repeating-linear-gradient(
-      transparent 0 calc(6.5cqi - 1px),
-      rgba(20,40,90,.14) calc(6.5cqi - 1px) 6.5cqi
+      transparent 0,
+      transparent var(--np-line-h),
+      rgba(20,40,90,.14) var(--np-line-h),
+      rgba(20,40,90,.14) calc(var(--np-line-h) + 1px)
     ),
     #fff8d0;
   background-position: 0 8cqi;
@@ -228,7 +231,8 @@ body[data-theme="glass"] .hero h1 .accent-word{font-style:normal;background:line
   pointer-events:none; z-index:3;
 }
 .np-ring{
-  width: 4.5cqi; height: 4.5cqi; border-radius:50%;
+  --np-ring-s: 4.5cqi;
+  width: var(--np-ring-s); height: var(--np-ring-s); border-radius:50%;
   background:radial-gradient(circle at 35% 35%, #e9ecef 0%, #9aa0a6 55%, #5a5e66 100%);
   box-shadow: 0 .3cqi .6cqi rgba(0,0,0,.3), inset 0 -.3cqi 0 rgba(0,0,0,.2);
   position:relative;

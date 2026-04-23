@@ -1,6 +1,6 @@
 export const PERSONAL = {
   name: 'Veera Manikanta Gonugondla',
-  initials: 'VMG',
+  initials: 'GVM',
   tagline: 'Building where hardware meets software',
   sub: 'Silicon that thinks. Edge AI, FPGAs, embedded systems.',
   email: 'mgonugondlamanikanta@gmail.com',
@@ -150,16 +150,7 @@ export const WRITING = [
 ];
 
 export const THEMES = {
-  glass: {
-    label: 'Liquid Glass',
-    desc: 'iOS 26, frosted translucent, heavy color',
-  },
-  terminal: {
-    label: 'Brutalist Terminal',
-    desc: 'Mono type, ASCII, hacker',
-  },
-  editorial: {
-    label: 'Engineering Journal',
-    desc: 'Typographic, serious, magazine',
-  },
+  editorial: { label: 'Engineering Journal', desc: 'Typographic, serious, editorial' },
+  glass:     { label: 'Liquid Glass',        desc: 'iOS 26, frosted, colorful' },
+  terminal:  { label: 'Brutalist Terminal',  desc: 'Mono, scanlines, hacker' },
 };

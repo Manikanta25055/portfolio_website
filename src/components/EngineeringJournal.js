@@ -2,12 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import * as DATA from '../data/portfolio';
 
 const NAV_ITEMS = [
-  { id: 'home',    label: 'Home' },
-  { id: 'work',    label: 'Work' },
-  { id: 'projects',label: 'Projects' },
-  { id: 'skills',  label: 'Skills' },
-  { id: 'writing', label: 'Writing' },
-  { id: 'contact', label: 'Contact' },
+  { id: 'home',      label: 'Home' },
+  { id: 'education', label: 'Education' },
+  { id: 'work',      label: 'Work' },
+  { id: 'projects',  label: 'Projects' },
+  { id: 'skills',    label: 'Skills' },
+  { id: 'writing',   label: 'Writing' },
+  { id: 'contact',   label: 'Contact' },
 ];
 
 // Animated PCB-style circuit background — traces, vias, pulses
@@ -85,6 +86,30 @@ function Circuit() {
   );
 }
 
+// Paper grain SVG overlay — subtle crumpled paper texture
+function PaperGrain() {
+  return (
+    <svg className="paper-grain-svg" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+      <filter id="pg-fine" x="0%" y="0%" width="100%" height="100%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.72 0.54" numOctaves="4" seed="7"/>
+        <feColorMatrix type="saturate" values="0"/>
+      </filter>
+      <filter id="pg-coarse" x="0%" y="0%" width="100%" height="100%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.09 0.07" numOctaves="3" seed="3"/>
+        <feColorMatrix type="saturate" values="0"/>
+        <feComponentTransfer>
+          <feFuncR type="linear" slope="0.35" intercept="0.58"/>
+          <feFuncG type="linear" slope="0.35" intercept="0.58"/>
+          <feFuncB type="linear" slope="0.35" intercept="0.58"/>
+        </feComponentTransfer>
+      </filter>
+      <rect width="100%" height="100%" filter="url(#pg-fine)" opacity="0.048"/>
+      <rect width="100%" height="100%" filter="url(#pg-coarse)" opacity="0.07" style={{mixBlendMode:'multiply'}}/>
+    </svg>
+  );
+}
+
+// Draggable nav pill
 function Nav({ active, setActive }) {
   const wrapRef = useRef(null);
   const pillRef = useRef(null);
@@ -104,13 +129,23 @@ function Nav({ active, setActive }) {
   useEffect(() => {
     if (dragRef.current.on) return;
     const m = measure(active); if (m) setPill(m);
+    const el = pillRef.current;
+    if (el) {
+      el.classList.remove('active-pulse');
+      // eslint-disable-next-line no-unused-expressions
+      el.offsetWidth;
+      el.classList.add('active-pulse');
+    }
   }, [active]);
 
   useEffect(() => {
+    const t = setTimeout(() => {
+      const m = measure(active); if (m) setPill(m);
+    }, 60);
     const onResize = () => { const m = measure(active); if (m) setPill(m); };
     window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
-  }, [active]);
+    return () => { clearTimeout(t); window.removeEventListener('resize', onResize); };
+  }, []);
 
   const jump = (id) => {
     setActive(id);
@@ -152,6 +187,14 @@ function Nav({ active, setActive }) {
     const minL = 6;
     const maxL = wr.width - pill.width - 6;
     let nextLeft = Math.max(minL, Math.min(maxL, dragRef.current.startLeft + dx));
+    
+    if (pillRef.current) {
+      pillRef.current.style.transition = 'none';
+      pillRef.current.style.transform = `translateX(${nextLeft}px) scale(1.06)`;
+    }
+    const centerX = nextLeft + pill.width / 2;
+    const id = closestId(centerX);
+    if (id !== active) setActive(id);
     setPill(p => ({ ...p, left: nextLeft }));
   };
 
@@ -159,10 +202,14 @@ function Nav({ active, setActive }) {
     if (!dragRef.current.on) return;
     dragRef.current.on = false;
     setDragging(false);
+    if (pillRef.current) {
+      pillRef.current.style.transition = '';
+      pillRef.current.style.transform = '';
+    }
     window.removeEventListener('pointermove', onPointerMove);
     window.removeEventListener('pointerup', onPointerUp);
     const wrap = wrapRef.current;
-    if (wrap && dragRef.current.moved > 6) {
+    if (wrap && dragRef.current.moved > 2) {
       const centerX = pill.left + pill.width / 2;
       const id = closestId(centerX);
       jump(id);
@@ -174,7 +221,7 @@ function Nav({ active, setActive }) {
       <span
         ref={pillRef}
         className="nav-pill"
-        style={{ left: pill.left, width: pill.width }}
+        style={{ transform: `translateX(${pill.left}px)`, width: pill.width }}
         onPointerDown={onPointerDown}
       />
       {NAV_ITEMS.map(n => (
@@ -204,6 +251,35 @@ function Top({ theme }) {
   );
 }
 
+// Tilted notepad with handwritten "currently working" note near the hero title
+function NotepadCurrent() {
+  const wk = Math.ceil((((new Date()-new Date(new Date().getFullYear(),0,1))/86400000)+1)/7);
+  return (
+    <div className="notepad" aria-label="Currently working on">
+      <div className="np-rings" aria-hidden="true">
+        <span className="np-ring"/><span className="np-ring"/><span className="np-ring"/>
+      </div>
+      <span className="np-tear" aria-hidden="true"/>
+      <div className="np-inner">
+        <div className="np-brand">GVM</div>
+        <div className="np-head">
+          <span className="np-dot"/>
+          <span>Currently</span>
+          <span className="np-date">· wk {wk} ·</span>
+        </div>
+        <p className="np-line">Building <b>Project Breadth</b> —</p>
+        <p className="np-line np-sub">a wearable respiratory-rate &amp; effort sensor.</p>
+        <p className="np-line">Drafting the <i>IEEE Sensors Journal</i> paper</p>
+        <p className="np-line np-sub">on the signal-chain &amp; validation results.</p>
+        <div className="np-sign">
+          <span className="np-sig-line"/>
+          <span className="np-sig-name">— GVM</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function Hero() {
   const { PERSONAL, IN_PROGRESS, STATS } = DATA;
   return (
@@ -215,13 +291,29 @@ function Hero() {
       </div>
       <div className="hero-name">{PERSONAL.name}</div>
       <div className="hero-grid">
-        <div>
-          <h1>Building where hardware meets <span className="accent-word">software.</span></h1>
+        <div className="hero-left">
+          <div className="hero-title-row">
+            <h1>Building where hardware meets <span className="accent-word">software.</span></h1>
+            <div className="notepad-float-wrap"><NotepadCurrent/></div>
+          </div>
           <p className="hero-sub">
             Dual-degree at MIT Manipal &amp; IIT Madras. Deep in FPGAs, embedded
             systems, and AI on the edge — from sub-100ms vision on a Pi 5 to a
             full MODBUS RTU stack on an ESP32-S3.
           </p>
+          <div className="upcoming-tag" aria-label="Upcoming Systems Engineer Intern at Boeing">
+            <div className="up-stack">
+              <div className="up-meta">
+                <span className="up-dot" />
+                <span className="up-eyebrow">Upcoming · Summer 2026</span>
+              </div>
+              <div className="up-role-row">
+                <span className="up-role">Systems Engineer Intern</span>
+                <span className="up-at">at</span>
+                <img className="up-logo" src="logos/boeing.png" alt="Boeing" />
+              </div>
+            </div>
+          </div>
           <div className="hero-cta-row">
             <a className="btn btn-primary" href={`mailto:${PERSONAL.email}`}>Get in touch →</a>
             <a className="btn" href={`https://${PERSONAL.github}`} target="_blank" rel="noreferrer">View GitHub</a>
@@ -272,12 +364,117 @@ function SH({ num, eyebrow, title, right }) {
   );
 }
 
-function Work() {
-  const { EXPERIENCE, EDUCATION } = DATA;
+function BookCard({ edu, coverColor, spineColor, logo }) {
+  const [open, setOpen] = useState(false);
   return (
-    <section id="work" data-screen-label="02 Work">
-      <SH num="02" eyebrow="Experience &amp; Education" title="What I've shipped, and where I've trained."
-        right="Three roles in IoT and VLSI alongside concurrent dual-degree coursework." />
+    <div className="book-scene">
+      <div
+        className={`book-container ${open ? 'book-open' : ''}`}
+        onClick={() => setOpen(o => !o)}
+        role="button"
+        aria-label={`${open ? 'Close' : 'Open'} ${edu.inst} book`}
+      >
+        {/* Pages layer (always behind) */}
+        <div className="book-pages-bg">
+          <div className="bp-heading">Academic Record</div>
+          <div className="bp-body">
+            <div className="bp-field">
+              <div className="bp-label">Programme</div>
+              <div className="bp-val">{edu.deg}</div>
+            </div>
+            <div className="bp-field">
+              <div className="bp-label">Stage</div>
+              <div className="bp-val">{edu.sem}</div>
+            </div>
+            {edu.minor && (
+              <div className="bp-field">
+                <div className="bp-label">Minor / Specialisation</div>
+                <div className="bp-val">{edu.minor}</div>
+              </div>
+            )}
+            <div className="bp-field">
+              <div className="bp-label">Period</div>
+              <div className="bp-val">{edu.years}</div>
+            </div>
+            <div className="bp-cgpa-row">
+              <div className="bp-cgpa-n">{edu.cgpa}</div>
+              <div className="bp-cgpa-d"> /10</div>
+            </div>
+            <span className="bp-cgpa-label">CGPA</span>
+          </div>
+          {logo && (
+            <div className="bp-logo-slot" aria-hidden="true">
+              <img src={logo} alt="" />
+            </div>
+          )}
+        </div>
+
+        {/* Cover (rotates away on open) */}
+        <div className="book-cover-panel">
+          <div className="book-cover-front" style={{ background: coverColor, color: '#fff' }}>
+            <div>
+              <div className="bc-eyebrow">Academic Record</div>
+              <div className="bc-rule"/>
+              <div className="bc-title">{edu.inst}</div>
+              <div className="bc-sub">{edu.deg}</div>
+            </div>
+            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-end' }}>
+              <div className="bc-year">{edu.years}</div>
+              <div className="bc-seal">
+                {edu.inst.split(' ').map(w => w[0]).join('')}
+              </div>
+            </div>
+          </div>
+          <div className="book-cover-back-face"/>
+        </div>
+      </div>
+
+      <div className="book-label">{edu.inst}</div>
+      <div className="book-hint" onClick={() => setOpen(o => !o)}>
+        {open ? '← Close' : 'Tap to open →'}
+      </div>
+    </div>
+  );
+}
+
+function Education() {
+  const { EDUCATION } = DATA;
+  const palette = [
+    { cover: '#7a1212', spine: '#4a0a0a', logo: 'logos/manipal.png' },
+    { cover: '#162348', spine: '#0a1228', logo: 'logos/iitm.png' },
+  ];
+  return (
+    <section id="education" className="edu-section" data-screen-label="02 Education">
+      <header className="sh">
+        <div className="sh-l">
+          <span className="sh-counter">02 · Dual Degree</span>
+          <h2>Two institutions.<br/>One engineer.</h2>
+        </div>
+        <div className="sh-r">
+          Concurrent programmes at MIT Manipal and IIT Madras — two curricula, two campuses, parallel coursework since 2023.
+        </div>
+      </header>
+      <div className="edu-books-wrap">
+        {EDUCATION.map((e, i) => (
+          <BookCard
+            key={i}
+            edu={e}
+            coverColor={palette[i % palette.length].cover}
+            spineColor={palette[i % palette.length].spine}
+            logo={palette[i % palette.length].logo}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function Work() {
+  const { EXPERIENCE } = DATA;
+  return (
+    <section id="work" data-screen-label="03 Work">
+      <SH num="03" eyebrow="Experience" title="What I've shipped, and where I've trained."
+        right="Three roles in IoT, VLSI, and product development — alongside concurrent dual-degree coursework." />
       <div className="timeline">
         {EXPERIENCE.map((e, i) => (
           <div className="tl-row" key={i}>
@@ -294,19 +491,6 @@ function Work() {
             </div>
           </div>
         ))}
-        {EDUCATION.map((e, i) => (
-          <div className="tl-row" key={'ed'+i}>
-            <div className="tl-period">{e.years}</div>
-            <div className="tl-main">
-              <h3>{e.deg}</h3>
-              <div className="tl-co"><strong>{e.inst}</strong> · {e.sem} · CGPA {e.cgpa}/10</div>
-              <div className="tl-bullets">
-                {e.minor && <div className="tl-bullet">Minor: {e.minor}</div>}
-                <div className="tl-bullet">Concurrent dual-degree program — two institutions, parallel coursework.</div>
-              </div>
-            </div>
-          </div>
-        ))}
       </div>
     </section>
   );
@@ -316,8 +500,8 @@ function Projects() {
   const { PROJECTS } = DATA;
   const [open, setOpen] = useState(null);
   return (
-    <section id="projects" data-screen-label="03 Projects">
-      <SH num="03" eyebrow="Selected projects" title="Nine systems. One patent. A first place."
+    <section id="projects" data-screen-label="04 Projects">
+      <SH num="04" eyebrow="Selected projects" title="Nine systems. One patent. A first place."
         right="Each card carries the problem, approach, role, team, and measured numbers. Tap for the full entry." />
       <div className="proj-grid">
         {PROJECTS.map((p, i) => (
@@ -400,8 +584,8 @@ function Projects() {
 function Skills() {
   const { SKILLS } = DATA;
   return (
-    <section id="skills" data-screen-label="04 Skills">
-      <SH num="04" eyebrow="Technical surface" title="The tools I reach for."
+    <section id="skills" data-screen-label="05 Skills">
+      <SH num="05" eyebrow="Technical surface" title="The tools I reach for."
         right="System-level: hardware → firmware → application." />
       <div className="skill-grid">
         {SKILLS.map(g => (
@@ -420,8 +604,8 @@ function Skills() {
 function Writing() {
   const { WRITING } = DATA;
   return (
-    <section id="writing" data-screen-label="05 Writing">
-      <SH num="05" eyebrow="Notes &amp; writing" title="Things I learned, written down."
+    <section id="writing" data-screen-label="06 Writing">
+      <SH num="06" eyebrow="Notes &amp; writing" title="Things I learned, written down."
         right="Short engineering notes from shipping the projects above." />
       <div className="writing">
         {WRITING.map((w,i) => (
@@ -442,34 +626,80 @@ function Writing() {
 function Contact() {
   const { PERSONAL } = DATA;
   return (
-    <section id="contact" className="contact" data-screen-label="06 Contact">
-      <span className="eyebrow">06 · Let's build something</span>
-      <div className="contact-big">
-        Have a hard problem?<br/>
-        <span className="accent-word">Let's talk silicon.</span>
+    <section id="contact" className="jr-contact" data-screen-label="07 Contact">
+      <div className="jr-masthead">
+        <div className="jr-mast-l">Engineering Journal · Vol. 26</div>
+        <div className="jr-mast-r">Issue 04 · April 2026</div>
       </div>
-      <div className="contact-links">
-        <a className="clink" href={`mailto:${PERSONAL.email}`}>
-          <div><span className="clink-label">Email</span><span>{PERSONAL.email}</span></div>
-          <span className="clink-arrow">↗</span>
-        </a>
-        <a className="clink" href={`https://${PERSONAL.github}`} target="_blank" rel="noreferrer">
-          <div><span className="clink-label">GitHub</span><span>{PERSONAL.github}</span></div>
-          <span className="clink-arrow">↗</span>
-        </a>
-        <a className="clink" href={`https://${PERSONAL.linkedin}`} target="_blank" rel="noreferrer">
-          <div><span className="clink-label">LinkedIn</span><span>{PERSONAL.linkedin}</span></div>
-          <span className="clink-arrow">↗</span>
-        </a>
-        <a className="clink" href="#home">
-          <div><span className="clink-label">Based in</span><span>{PERSONAL.location}</span></div>
-          <span className="clink-arrow">↑</span>
+      <div className="jr-title-row">
+        <div>
+          <div className="jr-eyebrow">07 · Correspondence</div>
+          <h2 className="jr-title">Have a hard problem?<br/><span className="accent-word">Let's talk silicon.</span></h2>
+        </div>
+        <div className="jr-lede">
+          Open to roles in hardware engineering, embedded systems, and silicon design starting Summer 2026.
+        </div>
+      </div>
+
+      <div className="jr-grid">
+        {/* Ledger Page (Links) */}
+        <div className="jr-sheet">
+          <div className="jr-stamp">APPROVED</div>
+          <div className="jr-heading">Directory</div>
+          <div className="jr-ledger">
+            <a className="jr-row" href={`mailto:${PERSONAL.email}`}>
+              <span className="jr-row-label">Email</span>
+              <span className="jr-row-val">{PERSONAL.email}</span>
+              <span className="jr-row-arrow">↗</span>
+            </a>
+            <a className="jr-row" href={`https://${PERSONAL.github}`} target="_blank" rel="noreferrer">
+              <span className="jr-row-label">GitHub</span>
+              <span className="jr-row-val">{PERSONAL.github}</span>
+              <span className="jr-row-arrow">↗</span>
+            </a>
+            <a className="jr-row" href={`https://${PERSONAL.linkedin}`} target="_blank" rel="noreferrer">
+              <span className="jr-row-label">LinkedIn</span>
+              <span className="jr-row-val">manikanta-gonugondla</span>
+              <span className="jr-row-arrow">↗</span>
+            </a>
+            <div className="jr-row">
+              <span className="jr-row-label">Location</span>
+              <span className="jr-row-val">{PERSONAL.location}</span>
+            </div>
+          </div>
+          <div className="jr-margin-note">
+            <b>Note:</b> Response latency is typically <b>&lt; 24h</b>. Priority given to hardware/RTL-related inquiries.
+          </div>
+        </div>
+
+        {/* LinkedIn / Social Special Card (Replacement for simple form in React for now) */}
+        <a href={`https://${PERSONAL.linkedin}`} target="_blank" rel="noreferrer" className="li-special">
+          <div className="li-inner">
+            <div className="li-logo">in</div>
+            <div className="li-body">
+              <div className="li-label">Professional Network</div>
+              <div className="li-handle">Gonugondla Veera Manikanta</div>
+              <div className="li-roles">Electrical &amp; Electronics Engineer</div>
+            </div>
+            <div className="li-arrow">↗</div>
+          </div>
+          <div className="li-bar" />
         </a>
       </div>
-      <div className="foot">
-        <span>© 2026 {PERSONAL.name}</span>
-        <span>Designed &amp; built by hand</span>
-        <span>v26 · {new Date().toISOString().slice(0,10)}</span>
+
+      <div className="jr-colophon">
+        <div className="jr-col">
+          <span className="jr-col-k">Current Revision</span>
+          <span className="jr-col-v">v26.04.23</span>
+        </div>
+        <div className="jr-col jr-col-mid">
+          <span className="jr-col-k">Platform</span>
+          <span className="jr-col-v">React 18 · Framer Motion</span>
+        </div>
+        <div className="jr-col jr-col-r">
+          <span className="jr-col-mark">© 2026 {PERSONAL.name}</span>
+          <span className="jr-col-v">All Rights Reserved</span>
+        </div>
       </div>
     </section>
   );
@@ -535,9 +765,11 @@ export default function EngineeringJournal() {
 
   return (
     <div className="app-container">
+      <PaperGrain />
       <div className="page">
         <Top theme={theme} />
         <Hero />
+        <Education />
         <Work />
         <Projects />
         <Skills />
@@ -546,7 +778,7 @@ export default function EngineeringJournal() {
       </div>
       <Nav active={active} setActive={setActive} />
       {showTweaks && <Tweaks theme={theme} setTheme={setTheme} onClose={() => setShowTweaks(false)} />}
-      <button className="theme-toggle-btn" onClick={() => setShowTweaks(true)} style={{position:'fixed', right:20, bottom:20, zIndex:100, width:40, height:40, borderRadius:'50%', background:'var(--ink)', color:'var(--bg)', display:'flex', alignItems:'center', justifyCenter:'center', fontSize:20}}>⚙</button>
+      <button className="theme-toggle-btn" onClick={() => setShowTweaks(true)} style={{position:'fixed', right:20, bottom:20, zIndex:100, width:40, height:40, borderRadius:'50%', background:'var(--ink)', color:'var(--bg)', border: '1px solid var(--hairline)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:20, cursor:'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.15)'}}>⚙</button>
     </div>
   );
 }

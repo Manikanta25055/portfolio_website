@@ -86,28 +86,6 @@ function Circuit() {
   );
 }
 
-// Paper grain SVG overlay — subtle crumpled paper texture
-function PaperGrain() {
-  return (
-    <svg className="paper-grain-svg" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
-      <filter id="pg-fine" x="0%" y="0%" width="100%" height="100%">
-        <feTurbulence type="fractalNoise" baseFrequency="0.72 0.54" numOctaves="4" seed="7"/>
-        <feColorMatrix type="saturate" values="0"/>
-      </filter>
-      <filter id="pg-coarse" x="0%" y="0%" width="100%" height="100%">
-        <feTurbulence type="fractalNoise" baseFrequency="0.09 0.07" numOctaves="3" seed="3"/>
-        <feColorMatrix type="saturate" values="0"/>
-        <feComponentTransfer>
-          <feFuncR type="linear" slope="0.35" intercept="0.58"/>
-          <feFuncG type="linear" slope="0.35" intercept="0.58"/>
-          <feFuncB type="linear" slope="0.35" intercept="0.58"/>
-        </feComponentTransfer>
-      </filter>
-      <rect width="100%" height="100%" filter="url(#pg-fine)" opacity="0.048"/>
-      <rect width="100%" height="100%" filter="url(#pg-coarse)" opacity="0.07" style={{mixBlendMode:'multiply'}}/>
-    </svg>
-  );
-}
 
 // Draggable nav pill
 function Nav({ active, setActive }) {
@@ -129,22 +107,12 @@ function Nav({ active, setActive }) {
   useEffect(() => {
     if (dragRef.current.on) return;
     const m = measure(active); if (m) setPill(m);
-    const el = pillRef.current;
-    if (el) {
-      el.classList.remove('active-pulse');
-      // eslint-disable-next-line no-unused-expressions
-      el.offsetWidth;
-      el.classList.add('active-pulse');
-    }
   }, [active, measure]);
 
   useEffect(() => {
-    const t = setTimeout(() => {
-      const m = measure(active); if (m) setPill(m);
-    }, 60);
     const onResize = () => { const m = measure(active); if (m) setPill(m); };
     window.addEventListener('resize', onResize);
-    return () => { clearTimeout(t); window.removeEventListener('resize', onResize); };
+    return () => window.removeEventListener('resize', onResize);
   }, [active, measure]);
 
   const jump = (id) => {
@@ -738,7 +706,6 @@ export default function EngineeringJournal() {
 
   return (
     <div className="app-container">
-      <PaperGrain />
       <div className="page">
         <Top theme={theme} />
         <Hero />

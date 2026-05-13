@@ -705,38 +705,11 @@ function Contact() {
   );
 }
 
-function Tweaks({ theme, setTheme, onClose }) {
-  return (
-    <div className="tw">
-      <div className="tw-h">
-        <span>Tweaks · Theme</span>
-        <button className="tw-x" onClick={onClose}>×</button>
-      </div>
-      <div className="tw-opts">
-        {Object.entries(DATA.THEMES).map(([k, v]) => (
-          <button key={k} className={`tw-opt ${theme === k ? 'on' : ''}`} onClick={() => setTheme(k)}>
-            <span className="tw-opt-dot" />
-            <span className="tw-opt-body">
-              <span className="tw-opt-title">{v.label}</span>
-              <span className="tw-opt-desc">{v.desc}</span>
-            </span>
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
 
 export default function EngineeringJournal() {
   const saved = (() => { try { return localStorage.getItem('portfolio.theme'); } catch(e) { return null; } })();
-  const [theme, setThemeState] = useState(saved || 'editorial');
+  const [theme] = useState(saved || 'editorial');
   const [active, setActive] = useState('home');
-  const [showTweaks, setShowTweaks] = useState(false);
-
-  const setTheme = (t) => {
-    setThemeState(t);
-    try { localStorage.setItem('portfolio.theme', t); } catch(e) {}
-  };
 
   useEffect(() => { document.body.setAttribute('data-theme', theme); }, [theme]);
 
@@ -777,8 +750,6 @@ export default function EngineeringJournal() {
         <Contact />
       </div>
       <Nav active={active} setActive={setActive} />
-      {showTweaks && <Tweaks theme={theme} setTheme={setTheme} onClose={() => setShowTweaks(false)} />}
-      <button className="theme-toggle-btn" onClick={() => setShowTweaks(true)} style={{position:'fixed', right:20, bottom:20, zIndex:100, width:40, height:40, borderRadius:'50%', background:'var(--ink)', color:'var(--bg)', border: '1px solid var(--hairline)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:20, cursor:'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.15)'}}>⚙</button>
     </div>
   );
 }

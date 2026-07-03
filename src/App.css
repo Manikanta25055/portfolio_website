@@ -4,12 +4,18 @@
    Toggle via [data-theme] on body
    ========================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Kalam:wght@400;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,800;1,9..144,400;1,9..144,500&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+/* Fonts are loaded via <link> in public/index.html — @import here blocks first paint */
 
 *,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
 html,body,#root{height:100%}
 body{margin:0;overflow-x:hidden;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+::selection{background:var(--accent);color:var(--bg)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+}
 
 /* ──────────────── ENGINEERING JOURNAL (default) ──────────────── */
 body[data-theme="editorial"]{
@@ -506,14 +512,18 @@ body[data-theme="terminal"] .sh-r{font-family:'JetBrains Mono',mono}
 .edu-section{padding:80px 0 24px;scroll-margin-top:24px}
 .edu-books-wrap{display:flex;gap:80px;justify-content:center;flex-wrap:wrap;padding:40px 0 72px}
 
-.book-scene{perspective:1200px;display:flex;flex-direction:column;align-items:center;gap:20px;overflow:visible}
+.book-scene{perspective:1600px;display:flex;flex-direction:column;align-items:center;gap:20px;overflow:visible}
 .book-container{
   width:300px;height:400px;position:relative;
   transform-style:preserve-3d;cursor:pointer;
+  transition:transform .9s cubic-bezier(.3,.8,.3,1);
 }
+/* shift right while opening so the cover+pages spread stays centered,
+   and float above the neighbouring book instead of clipping into it */
+.book-open{transform:translateX(44%);z-index:9}
 
 .book-pages-bg{
-  position:absolute;inset:0;border-radius:3px 10px 10px 3px;
+  position:absolute;inset:2px 2px 2px 0;border-radius:3px 10px 10px 3px;
   background:#fdf8ee;
   box-shadow:
     0 30px 50px -20px rgba(30,20,10,.28),
@@ -530,13 +540,16 @@ body[data-theme="terminal"] .sh-r{font-family:'JetBrains Mono',mono}
 .book-cover-panel{
   position:absolute;inset:0;
   transform-origin:left center;transform-style:preserve-3d;
-  transition:transform .9s cubic-bezier(0.34,1.56,0.64,1);z-index:3;
+  /* smooth decelerating ease - overshoot easing here made the cover
+     wobble past 180deg and flicker at the backface boundary */
+  transition:transform .95s cubic-bezier(.3,.8,.3,1);z-index:3;
   will-change:transform;
 }
-.book-open .book-cover-panel{transform:rotateY(-178deg)}
+.book-open .book-cover-panel{transform:rotateY(-179deg)}
 
 .book-cover-front{
   position:absolute;inset:0;backface-visibility:hidden;
+  transform:translateZ(.6px);
   border-radius:3px 10px 10px 3px;padding:30px 26px 28px 34px;
   display:flex;flex-direction:column;justify-content:space-between;
   box-shadow:
@@ -552,7 +565,7 @@ body[data-theme="terminal"] .sh-r{font-family:'JetBrains Mono',mono}
   border:1px solid currentColor;opacity:.22;border-radius:2px;pointer-events:none;
 }
 .book-cover-back-face{
-  position:absolute;inset:0;transform:rotateY(180deg);backface-visibility:hidden;
+  position:absolute;inset:0;transform:rotateY(180deg) translateZ(.6px);backface-visibility:hidden;
   background:#e8dfc8;border-radius:3px 10px 10px 3px;
   box-shadow:inset 3px 0 12px rgba(0,0,0,.18),inset 0 0 60px rgba(0,0,0,.06);
   background-image:repeating-linear-gradient(
@@ -589,6 +602,14 @@ body[data-theme="terminal"] .sh-r{font-family:'JetBrains Mono',mono}
 .bp-cgpa-n{font-size:42px;font-weight:600;font-family:'Fraunces',serif;font-style:italic;color:#0f0e0c;line-height:1}
 .bp-cgpa-d{font-size:14px;color:#8a837c;font-family:'Space Grotesk',sans-serif}
 .bp-cgpa-label{font-size:9px;letter-spacing:.18em;text-transform:uppercase;font-family:'Space Grotesk',sans-serif;color:#8a837c;font-weight:600;margin-top:2px;display:block}
+
+/* Small screens: a 600px open spread cannot fit, so the cover simply
+   lifts and fades away instead of flipping */
+@media (max-width:720px){
+  .book-open{transform:none}
+  .book-cover-panel{transition:transform .55s ease,opacity .45s ease}
+  .book-open .book-cover-panel{transform:translateY(-16px);opacity:0;pointer-events:none}
+}
 
 .book-label{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;font-family:'Space Grotesk',sans-serif;color:var(--ink-mute);text-align:center}
 .book-hint{font-size:10px;color:var(--ink-dim);letter-spacing:.14em;text-transform:uppercase;font-family:'Space Grotesk',sans-serif;text-align:center;transition:color .2s;padding:3px 0}
@@ -1011,3 +1032,123 @@ body[data-theme="terminal"] .li-special:hover .li-arrow{color:var(--accent)}
   opacity:.4;
 }
 body[data-theme="terminal"] .li-bar{background:var(--accent);opacity:.5}
+
+/* ========== SCROLL REVEAL ========== */
+.will-reveal{opacity:0;transform:translateY(26px);transition:opacity .8s ease,transform .8s cubic-bezier(.22,1,.36,1)}
+.is-revealed{opacity:1;transform:none}
+
+/* ========== ENTRY CARD ========== */
+.entry{
+  position:fixed;inset:0;z-index:400;
+  display:flex;align-items:center;justify-content:center;
+  padding:24px;cursor:pointer;
+  background:
+    radial-gradient(ellipse 70vw 50vh at 50% 40%, rgba(0,0,0,0), rgba(0,0,0,.22)),
+    var(--bg);
+  transition:opacity .7s ease;
+}
+.entry-leave{opacity:0;pointer-events:none}
+
+.entry-card{
+  position:relative;
+  width:min(440px, 92vw);
+  background:#fdf8ee;color:#0f0e0c;
+  background-image:repeating-linear-gradient(
+    transparent 0,transparent 26px,
+    rgba(0,0,0,.05) 26px,rgba(0,0,0,.05) 27px
+  );
+  background-position:0 46px;
+  border-radius:3px 8px 8px 3px;
+  box-shadow:
+    0 40px 90px -20px rgba(20,12,4,.4),
+    0 12px 28px rgba(20,12,4,.18),
+    inset -3px 0 10px rgba(0,0,0,.07),
+    inset 16px 0 0 #7a1212,
+    inset 17px 0 0 rgba(0,0,0,.18);
+  padding:34px 36px 30px 48px;
+  text-align:left;
+  transform:translateY(0) rotate(-.6deg);
+  transition:transform .75s cubic-bezier(.22,1,.36,1),box-shadow .75s;
+  animation:entry-in .8s cubic-bezier(.22,1,.36,1);
+}
+.entry-leave .entry-card{
+  transform:translateY(-36px) rotate(-.6deg) scale(.98);
+  box-shadow:0 12px 30px -10px rgba(20,12,4,.2);
+}
+@keyframes entry-in{
+  from{opacity:0;transform:translateY(28px) rotate(-.6deg)}
+  to{opacity:1;transform:translateY(0) rotate(-.6deg)}
+}
+
+.entry-mast{
+  display:flex;justify-content:space-between;align-items:baseline;
+  border-top:2px solid #0f0e0c;border-bottom:1px solid #0f0e0c;
+  padding:7px 0;margin-bottom:26px;
+  font-family:'Space Grotesk',sans-serif;font-size:9px;font-weight:700;
+  letter-spacing:.28em;text-transform:uppercase;
+}
+.entry-seal{
+  width:56px;height:56px;border-radius:50%;
+  border:1.5px solid #7a1212;color:#7a1212;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:800;letter-spacing:.08em;
+  margin-bottom:20px;opacity:.85;
+  transform:rotate(-6deg);
+}
+.entry-name{
+  font-family:'Fraunces',serif;font-style:italic;font-weight:500;
+  font-size:clamp(26px,5vw,34px);line-height:1.06;letter-spacing:-0.025em;
+  margin-bottom:10px;
+}
+.entry-role{
+  font-family:'Space Grotesk',sans-serif;font-size:12px;letter-spacing:.14em;
+  text-transform:uppercase;color:#5b5550;font-weight:600;
+}
+.entry-rule{height:1px;background:rgba(0,0,0,.16);margin:20px 0 12px}
+.entry-line{
+  font-family:'Fraunces',serif;font-style:italic;font-size:14px;color:#5b5550;
+  margin-bottom:24px;
+}
+.entry-open{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:13px 20px;border-radius:2px;border:1px solid #0f0e0c;
+  background:#0f0e0c;color:#fdf8ee;cursor:pointer;
+  font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;
+  letter-spacing:.14em;text-transform:uppercase;
+  box-shadow:3px 3px 0 #c1321f;
+  transition:box-shadow .2s,transform .2s;
+}
+.entry-open:hover{box-shadow:5px 5px 0 #c1321f;transform:translateY(-1px)}
+.entry-arrow{transition:transform .25s}
+.entry-open:hover .entry-arrow{transform:translateX(4px)}
+.entry-hint{
+  margin-top:14px;font-family:'Space Grotesk',sans-serif;font-size:9px;
+  letter-spacing:.22em;text-transform:uppercase;color:#8a837c;
+}
+
+body[data-theme="glass"] .entry-card{
+  background:rgba(255,255,255,.08);color:var(--ink);backdrop-filter:blur(28px) saturate(160%);
+  background-image:none;border:1px solid var(--hairline);border-radius:24px;
+  box-shadow:0 40px 90px -20px rgba(0,0,0,.5);
+}
+body[data-theme="glass"] .entry-mast{border-color:var(--hairline)}
+body[data-theme="glass"] .entry-role,body[data-theme="glass"] .entry-line,body[data-theme="glass"] .entry-hint{color:var(--ink-mute)}
+body[data-theme="terminal"] .entry-card{
+  background:#0f1a0d;color:var(--ink);background-image:none;border:1px solid var(--accent);
+  border-radius:0;box-shadow:6px 6px 0 var(--accent);transform:none;animation-name:none;
+}
+body[data-theme="terminal"] .entry-mast{border-color:var(--accent)}
+body[data-theme="terminal"] .entry-seal{border-color:var(--accent);color:var(--accent);border-radius:0;transform:none}
+body[data-theme="terminal"] .entry-open{background:var(--accent);color:#0a0a0a;border-color:var(--accent);box-shadow:4px 4px 0 var(--ink);border-radius:0}
+
+/* ========== NAV — MOBILE ========== */
+@media (max-width:760px){
+  .nav{
+    max-width:calc(100vw - 20px);bottom:14px;
+    overflow-x:auto;justify-content:flex-start;
+    touch-action:pan-x;
+    scrollbar-width:none;
+  }
+  .nav::-webkit-scrollbar{display:none}
+  .nav-item{padding:10px 12px;font-size:10px;letter-spacing:.08em;flex:none}
+}

@@ -87,6 +87,68 @@ function Circuit() {
 }
 
 
+// Entry card — journal cover shown on load; opens on click or after a beat
+function EntryCard({ onDone }) {
+  const { PERSONAL } = DATA;
+  const [leaving, setLeaving] = useState(false);
+
+  useEffect(() => {
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const t = setTimeout(() => setLeaving(true), reduced ? 400 : 3200);
+    return () => clearTimeout(t);
+  }, []);
+
+  useEffect(() => {
+    if (!leaving) return;
+    const t = setTimeout(onDone, 750);
+    return () => clearTimeout(t);
+  }, [leaving, onDone]);
+
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, []);
+
+  return (
+    <div className={`entry ${leaving ? 'entry-leave' : ''}`} onClick={() => setLeaving(true)}>
+      <div className="entry-card" role="button" aria-label="Open the journal">
+        <div className="entry-mast">
+          <span>Engineering Journal</span>
+          <span>Vol. 26</span>
+        </div>
+        <div className="entry-seal">{PERSONAL.initials}</div>
+        <div className="entry-name">{PERSONAL.name}</div>
+        <div className="entry-role">{PERSONAL.role}</div>
+        <div className="entry-rule" />
+        <div className="entry-line">Hardware · Embedded · Silicon</div>
+        <button className="entry-open" onClick={() => setLeaving(true)}>
+          Open the journal <span className="entry-arrow">→</span>
+        </button>
+        <div className="entry-hint">opens automatically</div>
+      </div>
+    </div>
+  );
+}
+
+// Reveal sections as they scroll into view
+function useReveal(enabled) {
+  useEffect(() => {
+    if (!enabled || !('IntersectionObserver' in window)) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const els = document.querySelectorAll('.page section');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((en) => {
+        if (en.isIntersecting) {
+          en.target.classList.add('is-revealed');
+          io.unobserve(en.target);
+        }
+      });
+    }, { threshold: 0.06 });
+    els.forEach((el) => { el.classList.add('will-reveal'); io.observe(el); });
+    return () => io.disconnect();
+  }, [enabled]);
+}
+
 // Draggable nav pill
 function Nav({ active, setActive }) {
   const wrapRef = useRef(null);
@@ -139,7 +201,9 @@ function Nav({ active, setActive }) {
   const onPointerDown = (e) => {
     e.preventDefault();
     const x = e.clientX ?? e.touches?.[0]?.clientX;
-    dragRef.current = { on: true, startX: x, startLeft: pill.left, moved: 0 };
+    // curLeft tracks the live pill position in a ref — window listeners
+    // outlive the render that registered them, so state would be stale here
+    dragRef.current = { on: true, startX: x, startLeft: pill.left, curLeft: pill.left, moved: 0 };
     setDragging(true);
     window.addEventListener('pointermove', onPointerMove);
     window.addEventListener('pointerup', onPointerUp);
@@ -149,13 +213,14 @@ function Nav({ active, setActive }) {
     if (!dragRef.current.on) return;
     const x = e.clientX;
     const dx = x - dragRef.current.startX;
-    dragRef.current.moved = Math.abs(dx);
+    dragRef.current.moved = Math.max(dragRef.current.moved, Math.abs(dx));
     const wrap = wrapRef.current; if (!wrap) return;
     const wr = wrap.getBoundingClientRect();
     const minL = 6;
     const maxL = wr.width - pill.width - 6;
     let nextLeft = Math.max(minL, Math.min(maxL, dragRef.current.startLeft + dx));
-    
+    dragRef.current.curLeft = nextLeft;
+
     if (pillRef.current) {
       pillRef.current.style.transition = 'none';
       pillRef.current.style.transform = `translateX(${nextLeft}px) scale(1.06)`;
@@ -178,7 +243,7 @@ function Nav({ active, setActive }) {
     window.removeEventListener('pointerup', onPointerUp);
     const wrap = wrapRef.current;
     if (wrap && dragRef.current.moved > 2) {
-      const centerX = pill.left + pill.width / 2;
+      const centerX = dragRef.current.curLeft + pill.width / 2;
       const id = closestId(centerX);
       jump(id);
     }
@@ -278,7 +343,7 @@ function Hero() {
               <div className="up-role-row">
                 <span className="up-role">Systems Engineer Intern</span>
                 <span className="up-at">at</span>
-                <img className="up-logo" src="logos/boeing.png" alt="Boeing" />
+                <img className="up-logo" src={`${process.env.PUBLIC_URL}/logos/boeing.png`} alt="Boeing" />
               </div>
             </div>
           </div>
@@ -408,8 +473,8 @@ function BookCard({ edu, coverColor, spineColor, logo }) {
 function Education() {
   const { EDUCATION } = DATA;
   const palette = [
-    { cover: '#7a1212', spine: '#4a0a0a', logo: 'logos/manipal.png' },
-    { cover: '#162348', spine: '#0a1228', logo: 'logos/iitm.png' },
+    { cover: '#7a1212', spine: '#4a0a0a', logo: `${process.env.PUBLIC_URL}/logos/manipal.png` },
+    { cover: '#162348', spine: '#0a1228', logo: `${process.env.PUBLIC_URL}/logos/iitm.png` },
   ];
   return (
     <section id="education" className="edu-section" data-screen-label="02 Education">
@@ -662,7 +727,7 @@ function Contact() {
         </div>
         <div className="jr-col jr-col-mid">
           <span className="jr-col-k">Platform</span>
-          <span className="jr-col-v">React 18 · Framer Motion</span>
+          <span className="jr-col-v">React 18 · Hand-set CSS</span>
         </div>
         <div className="jr-col jr-col-r">
           <span className="jr-col-mark">© 2026 {PERSONAL.name}</span>
@@ -676,10 +741,13 @@ function Contact() {
 
 export default function EngineeringJournal() {
   const saved = (() => { try { return localStorage.getItem('portfolio.theme'); } catch(e) { return null; } })();
-  const [theme] = useState(saved || 'editorial');
+  // a stale/unknown key in localStorage would crash DATA.THEMES[theme].label
+  const [theme] = useState(saved && DATA.THEMES[saved] ? saved : 'editorial');
   const [active, setActive] = useState('home');
+  const [entered, setEntered] = useState(false);
 
   useEffect(() => { document.body.setAttribute('data-theme', theme); }, [theme]);
+  useReveal(true);
 
   useEffect(() => {
     const ids = NAV_ITEMS.map(n => n.id);
@@ -706,6 +774,7 @@ export default function EngineeringJournal() {
 
   return (
     <div className="app-container">
+      {!entered && <EntryCard onDone={() => setEntered(true)} />}
       <div className="page">
         <Top theme={theme} />
         <Hero />

@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Manikanta Gonugondla - Electrical & Electronics Engineer specializing in hardware-software integration, FPGA design, and embedded systems">
+    <meta name="keywords" content="Electrical Engineer, Electronics, FPGA, Embedded Systems, Hardware Design, IoT, AI">
+    <meta name="author" content="Manikanta Gonugondla">
+    <title>Manikanta Gonugondla | Electrical & Electronics Engineer</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Particle Network Canvas -->
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- Loading Screen -->
+    <div class="loader-wrapper">
+        <div class="loader-content">
+            <div class="particle-container" id="particles"></div>
+            <h1 class="loader-text">
+                <span class="loader-letter">M</span>
+                <span class="loader-letter">A</span>
+                <span class="loader-letter">N</span>
+                <span class="loader-letter">I</span>
+                <span class="loader-letter">K</span>
+                <span class="loader-letter">A</span>
+                <span class="loader-letter">N</span>
+                <span class="loader-letter">T</span>
+                <span class="loader-letter">A</span>
+            </h1>
+            <div class="loader-bar">
+                <div class="loader-progress"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Magnetic Cursor -->
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="#home" class="nav-logo">GVM</a>
+            <ul class="nav-menu">
+                <li><a href="#about" class="nav-link">About</a></li>
+                <li><a href="#skills" class="nav-link">Skills</a></li>
+                <li><a href="#projects" class="nav-link">Projects</a></li>
+                <li><a href="#experience" class="nav-link">Experience</a></li>
+                <li><a href="#contact" class="nav-link nav-cta">Contact</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Animated Background -->
+    <div class="gradient-bg">
+        <div class="gradient-sphere gradient-sphere-1"></div>
+        <div class="gradient-sphere gradient-sphere-2"></div>
+        <div class="gradient-sphere gradient-sphere-3"></div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="hero-tag">
+                    <span class="tag-dot"></span>
+                    <span class="tag-text">Available for opportunities</span>
+                </div>
+                <p class="hero-greeting">Hello, I'm</p>
+                <h1 class="hero-name">
+                    <span class="name-first">Manikanta</span>
+                    <span class="name-last">Gonugondla</span>
+                </h1>
+                <div class="hero-role-container">
+                    <h2 class="hero-title">
+                        <span class="title-highlight">Electrical & Electronics Engineer</span>
+                    </h2>
+                    <div class="hero-badge">Boeing Intern 2026</div>
+                </div>
+                <p class="hero-description">
+                    Specializing in hardware-software integration, FPGA design, and AI-powered embedded systems.
+                    Building innovative solutions at the intersection of electronics and intelligence.
+                </p>
+                <div class="hero-stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                                <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                            </svg>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-number">8.07</span>
+                            <span class="stat-label">CGPA MIT</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            </svg>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-number">1st</span>
+                            <span class="stat-label">Gadget Expo</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                                <line x1="12" y1="18" x2="12" y2="12"/>
+                                <line x1="9" y1="15" x2="15" y2="15"/>
+                            </svg>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-number">Patent</span>
+                            <span class="stat-label">Filed</span>
+                        </div>
+                    </div>
+                    <div class="stat-card stat-highlight">
+                        <div class="stat-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
+                                <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                                <line x1="12" y1="22.08" x2="12" y2="12"/>
+                            </svg>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-number">Boeing</span>
+                            <span class="stat-label">Intern 2026</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-cta">
+                    <a href="#projects" class="btn btn-primary magnetic-element">
+                        View Projects
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                    <a href="#contact" class="btn btn-secondary magnetic-element">Get In Touch</a>
+                </div>
+            </div>
+            <div class="scroll-indicator">
+                <span class="scroll-text">Scroll to explore</span>
+                <div class="scroll-line"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section - Bento Grid -->
+    <section class="about-section" id="about">
+        <div class="container">
+            <h2 class="section-title">
+                <span class="title-number">01</span>
+                About Me
+            </h2>
+
+            <div class="bento-grid">
+                <!-- Large Card - Main Bio -->
+                <div class="bento-card bento-large magnetic-element">
+                    <div class="bento-content">
+                        <h3 class="bento-title">Who I Am</h3>
+                        <p class="bento-text">
+                            I am an Electrical & Electronics Engineer with advanced expertise in hardware-software
+                            integration. My journey spans across designing electronic circuits, programming microcontrollers,
+                            and deploying machine learning for smart devices.
+                        </p>
+                        <p class="bento-text">
+                            Currently pursuing a dual degree from Manipal Institute of Technology and IIT Madras,
+                            I've led impactful projects including Project GARUDA (1st place winner), AI security systems,
+                            and filed a patent for healthcare monitoring innovation.
+                        </p>
+                        <div class="tech-icons">
+                            <span class="tech-icon">FPGA</span>
+                            <span class="tech-icon">Embedded Systems</span>
+                            <span class="tech-icon">AI/ML</span>
+                            <span class="tech-icon">Circuit Design</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Education Card 1 -->
+                <div class="bento-card bento-medium magnetic-element">
+                    <div class="bento-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                            <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                        </svg>
+                    </div>
+                    <div class="bento-content">
+                        <h3 class="bento-title">BTech in Electrical & Electronics</h3>
+                        <p class="bento-subtitle">Manipal Institute of Technology</p>
+                        <p class="bento-highlight">8.07 CGPA</p>
+                        <p class="bento-date">2023 - Present</p>
+                    </div>
+                </div>
+
+                <!-- Education Card 2 -->
+                <div class="bento-card bento-medium magnetic-element">
+                    <div class="bento-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                            <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                        </svg>
+                    </div>
+                    <div class="bento-content">
+                        <h3 class="bento-title">BS in Electronic Systems</h3>
+                        <p class="bento-subtitle">IIT Madras</p>
+                        <p class="bento-highlight">7.33 CGPA</p>
+                        <p class="bento-date">2023 - Present</p>
+                    </div>
+                </div>
+
+                <!-- Location Card -->
+                <div class="bento-card bento-small magnetic-element">
+                    <div class="bento-icon">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+                            <circle cx="12" cy="10" r="3"/>
+                        </svg>
+                    </div>
+                    <div class="bento-content">
+                        <h3 class="bento-title">Based in</h3>
+                        <p class="bento-highlight">Hyderabad, India</p>
+                    </div>
+                </div>
+
+                <!-- Languages Card -->
+                <div class="bento-card bento-small magnetic-element">
+                    <div class="bento-icon">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 8l6 6M4 14l6-6 2-3M2 5h12M7 2h1M22 22l-5-10-5 10M14.5 17h6.5"/>
+                        </svg>
+                    </div>
+                    <div class="bento-content">
+                        <h3 class="bento-title">Languages</h3>
+                        <p class="bento-text-sm">Telugu, English, Hindi</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section class="skills-section" id="skills">
+        <div class="container">
+            <h2 class="section-title">
+                <span class="title-number">02</span>
+                Technical Arsenal
+            </h2>
+
+            <div class="skills-bento">
+                <div class="skill-card skill-large magnetic-element">
+                    <h3 class="skill-category">Programming & HDL</h3>
+                    <div class="skill-grid">
+                        <div class="skill-item">
+                            <div class="skill-dot"></div>
+                            <span>C</span>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-dot"></div>
+                            <span>Python</span>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-dot"></div>
+                            <span>Embedded C</span>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-dot"></div>
+                            <span>Verilog</span>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-dot"></div>
+                            <span>SystemVerilog</span>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-dot"></div>
+                            <span>Linux</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="skill-card skill-medium magnetic-element">
+                    <h3 class="skill-category">Hardware Platforms</h3>
+                    <div class="skill-grid">
+                        <div class="skill-item">
+                            <div class="skill-dot"></div>
+                            <span>Raspberry Pi 5</span>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-dot"></div>
+                            <span>ESP32</span>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-dot"></div>
+                            <span>Arduino</span>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-dot"></div>
+                            <span>Nexys A7 FPGA</span>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-dot"></div>
+                            <span>Hailo AI</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="skill-card skill-medium magnetic-element">
+                    <h3 class="skill-category">Design & Simulation</h3>
+                    <div class="skill-grid">
+                        <div class="skill-item">
+                            <div class="skill-dot"></div>
+                            <span>MATLAB Simulink</span>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-dot"></div>
+                            <span>LT Spice</span>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-dot"></div>
+                            <span>NI LabView</span>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-dot"></div>
+                            <span>Analog Discovery 3</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="skill-card skill-accent magnetic-element">
+                    <h3 class="skill-category">Core Expertise</h3>
+                    <div class="expertise-list">
+                        <p>Digital & Analog Electronics</p>
+                        <p>Circuit Analysis & Design</p>
+                        <p>FPGA Development</p>
+                        <p>Hardware-Software Integration</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section class="projects-section" id="projects">
+        <div class="container">
+            <h2 class="section-title">
+                <span class="title-number">03</span>
+                Featured Projects
+            </h2>
+
+            <div class="projects-bento">
+                <!-- Featured Project - GARUDA -->
+                <div class="project-card project-featured magnetic-element">
+                    <div class="project-badge">Award Winner</div>
+                    <div class="project-content">
+                        <h3 class="project-title">Project GARUDA</h3>
+                        <p class="project-subtitle">AI-Powered Real-Time Security System</p>
+                        <p class="project-description">
+                            Created an intelligent home security system featuring real-time AI-based object detection with
+                            YOLOv8, multithreaded processing, and hardware integration with Raspberry Pi 5 and Hailo AI
+                            accelerator. Won 1st place at IITM Gadget Expo 2025.
+                        </p>
+                        <div class="project-tech">
+                            <span class="tech-badge">Python</span>
+                            <span class="tech-badge">YOLOv8</span>
+                            <span class="tech-badge">Hailo AI</span>
+                            <span class="tech-badge">Raspberry Pi</span>
+                            <span class="tech-badge">GStreamer</span>
+                            <span class="tech-badge">OpenCV</span>
+                        </div>
+                        <div class="project-achievement">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            </svg>
+                            <span>1st Place - Gadget Expo 2025</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Patent Project -->
+                <div class="project-card project-large magnetic-element">
+                    <div class="project-badge project-badge-patent">Patent Filed</div>
+                    <div class="project-content">
+                        <h3 class="project-title">Patient Collapse Detection System</h3>
+                        <p class="project-description">
+                            Non-invasive real-time detection system using multi-modal vital monitoring for
+                            biomedical signal monitoring and wearable health technologies. Filed patent with
+                            prototype currently in development.
+                        </p>
+                        <div class="project-tech">
+                            <span class="tech-badge">Biomedical Sensors</span>
+                            <span class="tech-badge">Wearable Tech</span>
+                            <span class="tech-badge">AI/ML</span>
+                            <span class="tech-badge">Signal Processing</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Battery Project -->
+                <div class="project-card project-medium magnetic-element">
+                    <div class="project-content">
+                        <h3 class="project-title">Active Battery Cell Equalization</h3>
+                        <p class="project-description">
+                            Flyback converter topology for bidirectional energy transfer in lithium-ion battery packs.
+                            Extends battery lifespan by 20-30%.
+                        </p>
+                        <div class="project-tech">
+                            <span class="tech-badge">Power Electronics</span>
+                            <span class="tech-badge">EV Systems</span>
+                            <span class="tech-badge">BMS</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Suspension Project -->
+                <div class="project-card project-medium magnetic-element">
+                    <div class="project-content">
+                        <h3 class="project-title">Active Suspension System</h3>
+                        <p class="project-description">
+                            PID controller design achieving 15.24 dB peak magnitude reduction in vibration isolation
+                            compared to passive systems.
+                        </p>
+                        <div class="project-tech">
+                            <span class="tech-badge">Control Systems</span>
+                            <span class="tech-badge">PID</span>
+                            <span class="tech-badge">MATLAB</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Projects -->
+                <div class="project-card project-small magnetic-element">
+                    <div class="project-content">
+                        <h3 class="project-title">Custom 7447 IC</h3>
+                        <p class="project-description">
+                            Binary to decimal counter using BJT and logic gates.
+                        </p>
+                        <div class="project-tech">
+                            <span class="tech-badge">Digital Logic</span>
+                            <span class="tech-badge">IC Design</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="project-card project-small magnetic-element">
+                    <div class="project-content">
+                        <h3 class="project-title">Smart Parking System</h3>
+                        <p class="project-description">
+                            FPGA-based parking management with Verilog.
+                        </p>
+                        <div class="project-tech">
+                            <span class="tech-badge">FPGA</span>
+                            <span class="tech-badge">Verilog</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Experience Section -->
+    <section class="experience-section" id="experience">
+        <div class="container">
+            <h2 class="section-title">
+                <span class="title-number">04</span>
+                Work Experience
+            </h2>
+
+            <div class="timeline">
+                <div class="timeline-item magnetic-element">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <span class="timeline-date">Summer 2026 (2 Months)</span>
+                        <h3 class="timeline-title">Summer Intern</h3>
+                        <h4 class="timeline-company">Boeing</h4>
+                        <p class="timeline-location">Bangalore, India</p>
+                        <ul class="timeline-list">
+                            <li>Selected for prestigious 2-month summer internship program</li>
+                            <li>Working on aerospace engineering and aviation technology projects</li>
+                            <li>Collaborating with global engineering teams on cutting-edge solutions</li>
+                            <li>Applying hardware-software integration skills to aerospace applications</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="timeline-item magnetic-element">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <span class="timeline-date">Jul 2025 - Sep 2025</span>
+                        <h3 class="timeline-title">Project Intern</h3>
+                        <h4 class="timeline-company">Apsis Solutions & IIT Guwahati</h4>
+                        <p class="timeline-location">Bangalore, India</p>
+                        <ul class="timeline-list">
+                            <li>Selected for project-based IoT mentorship internship program</li>
+                            <li>Worked on IoT solutions for FMCG, Banking, and Telecom industries</li>
+                            <li>Collaborated remotely on innovative technology projects</li>
+                            <li>Gained hands-on experience in IoT development and implementation</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="timeline-item magnetic-element">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <span class="timeline-date">Jul 2025 - Sep 2025</span>
+                        <h3 class="timeline-title">Project Intern</h3>
+                        <h4 class="timeline-company">Mindenious Edutech</h4>
+                        <p class="timeline-location">Bangalore, India</p>
+                        <ul class="timeline-list">
+                            <li>Completed comprehensive VLSI design training program</li>
+                            <li>Developed test benches for FPGA validation</li>
+                            <li>Created comprehensive test cases for digital circuit validation</li>
+                            <li>Built expertise in RTL design, verification, and synthesis</li>
+                            <li>Gained skills in ASIC design flow and semiconductor fabrication</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="timeline-item magnetic-element">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <span class="timeline-date">Jun 2024 - Jul 2024</span>
+                        <h3 class="timeline-title">Summer School Participant</h3>
+                        <h4 class="timeline-company">IIIT Hyderabad</h4>
+                        <p class="timeline-location">Hyderabad, India</p>
+                        <ul class="timeline-list">
+                            <li>Completed intensive Product Development Management program</li>
+                            <li>Gained exposure to industry-standard methodologies</li>
+                            <li>Participated in workshops on product lifecycle and innovation</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact-section" id="contact">
+        <div class="container">
+            <h2 class="section-title">
+                <span class="title-number">05</span>
+                Let's Connect
+            </h2>
+
+            <div class="contact-grid">
+                <div class="contact-info">
+                    <h3 class="contact-heading">Get In Touch</h3>
+                    <p class="contact-text">
+                        I'm always interested in hearing about new projects, opportunities, and collaborations.
+                        Whether you have a question or just want to say hi, feel free to reach out!
+                    </p>
+
+                    <div class="contact-methods">
+                        <a href="mailto:mgonugondlamanikanta@gmail.com" class="contact-item magnetic-element">
+                            <div class="contact-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                    <polyline points="22,6 12,13 2,6"/>
+                                </svg>
+                            </div>
+                            <div class="contact-details">
+                                <span class="contact-label">Email</span>
+                                <span class="contact-value">mgonugondlamanikanta@gmail.com</span>
+                            </div>
+                        </a>
+
+                        <a href="tel:+918331901122" class="contact-item magnetic-element">
+                            <div class="contact-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/>
+                                </svg>
+                            </div>
+                            <div class="contact-details">
+                                <span class="contact-label">Phone</span>
+                                <span class="contact-value">+91 8331901122</span>
+                            </div>
+                        </a>
+
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+                                    <circle cx="12" cy="10" r="3"/>
+                                </svg>
+                            </div>
+                            <div class="contact-details">
+                                <span class="contact-label">Location</span>
+                                <span class="contact-value">Hyderabad, India</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="social-links">
+                        <a href="https://github.com/Manikanta25055" target="_blank" rel="noopener noreferrer" class="social-link magnetic-element">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+                            </svg>
+                            GitHub
+                        </a>
+                        <a href="https://helicanexplanations.wordpress.com" target="_blank" rel="noopener noreferrer" class="social-link magnetic-element">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm-1 15.5v-2h2v2h-2zm0-4v-7h2v7h-2z"/>
+                            </svg>
+                            Portfolio Blog
+                        </a>
+                    </div>
+                </div>
+
+                <div class="contact-visual magnetic-element">
+                    <div class="contact-card">
+                        <div class="card-glow"></div>
+                        <div class="card-content">
+                            <h4>Available for</h4>
+                            <ul class="availability-list">
+                                <li>Full-time opportunities</li>
+                                <li>Internship positions</li>
+                                <li>Research collaborations</li>
+                                <li>Hardware projects</li>
+                                <li>Consulting work</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p class="footer-text">Designed and built by Manikanta Gonugondla</p>
+                <p class="footer-copyright">2026. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

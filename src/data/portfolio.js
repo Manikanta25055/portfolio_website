@@ -7,7 +7,7 @@ export const PERSONAL = {
   phone: '+91 83319 01122',
   phoneHref: '+918331901122',
   github: 'github.com/Manikanta25055',
-  linkedin: 'linkedin.com/in/manikanta-gonugondla-349bb729a',
+  linkedin: 'www.linkedin.com/in/veera-manikanta-gonugondla-349bb729a/',
   website: 'veeramanikanta.in',
   location: 'Hyderabad, India',
   summary: 'I design digital hardware from the instruction set upward and get it running on real boards. My work spans RTL and FPGA implementation, embedded systems, edge AI, and engineering analytics.',

@@ -78,8 +78,67 @@ function useReveal() {
   }, []);
 }
 
+function useScrollProgress() {
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    let frame;
+    const update = () => {
+      const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+      setProgress(scrollable > 0 ? Math.min(window.scrollY / scrollable, 1) : 0);
+      frame = undefined;
+    };
+    const requestUpdate = () => {
+      if (!frame) frame = window.requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener('scroll', requestUpdate, { passive: true });
+    window.addEventListener('resize', requestUpdate);
+    return () => {
+      window.removeEventListener('scroll', requestUpdate);
+      window.removeEventListener('resize', requestUpdate);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, []);
+
+  return progress;
+}
+
+function useHeaderVisibility(menuOpen) {
+  const [hidden, setHidden] = useState(false);
+  const previousScroll = useRef(0);
+
+  useEffect(() => {
+    if (menuOpen) setHidden(false);
+
+    const updateVisibility = () => {
+      const currentScroll = Math.max(window.scrollY, 0);
+      const movement = currentScroll - previousScroll.current;
+
+      if (menuOpen || currentScroll <= 24) {
+        setHidden(false);
+      } else if (movement > 1) {
+        setHidden(true);
+      } else if (movement < -1) {
+        setHidden(false);
+      }
+
+      previousScroll.current = currentScroll;
+    };
+
+    previousScroll.current = Math.max(window.scrollY, 0);
+    window.addEventListener('scroll', updateVisibility, { passive: true });
+    return () => window.removeEventListener('scroll', updateVisibility);
+  }, [menuOpen]);
+
+  return hidden;
+}
+
 function Header({ active, onNavigate }) {
   const [open, setOpen] = useState(false);
+  const scrollProgress = useScrollProgress();
+  const hidden = useHeaderVisibility(open);
 
   useEffect(() => {
     if (!open) return undefined;
@@ -97,7 +156,7 @@ function Header({ active, onNavigate }) {
   };
 
   return (
-    <header className="site-header">
+    <header className={`site-header ${hidden ? 'is-hidden' : ''}`}>
       <div className="nav-shell">
         <button className="brand" type="button" onClick={() => navigate('home')} aria-label="Go to home">
           <span className="brand-mark">{PERSONAL.initials}</span>
@@ -105,17 +164,6 @@ function Header({ active, onNavigate }) {
             <strong>Veera Manikanta</strong>
             <span>Hardware · Systems · Operations</span>
           </span>
-        </button>
-
-        <button
-          className="menu-toggle"
-          type="button"
-          aria-label={open ? 'Close navigation' : 'Open navigation'}
-          aria-expanded={open}
-          aria-controls="primary-navigation"
-          onClick={() => setOpen((value) => !value)}
-        >
-          <span aria-hidden="true">{open ? 'Close' : 'Menu'}</span>
         </button>
 
         <nav id="primary-navigation" className={`primary-nav ${open ? 'is-open' : ''}`} aria-label="Primary navigation">
@@ -134,7 +182,21 @@ function Header({ active, onNavigate }) {
             Résumé <span aria-hidden="true">↓</span>
           </a>
         </nav>
+
+        <div className="header-controls">
+          <button
+            className="menu-toggle"
+            type="button"
+            aria-label={open ? 'Close navigation' : 'Open navigation'}
+            aria-expanded={open}
+            aria-controls="primary-navigation"
+            onClick={() => setOpen((value) => !value)}
+          >
+            <span aria-hidden="true">{open ? 'Close' : 'Menu'}</span>
+          </button>
+        </div>
       </div>
+      <span className="scroll-progress" style={{ transform: `scaleX(${scrollProgress})` }} aria-hidden="true" />
     </header>
   );
 }
@@ -151,17 +213,45 @@ function SectionHeading({ number, eyebrow, title, intro }) {
   );
 }
 
+const PRACTICE_AREAS = [
+  { label: 'Digital hardware', detail: 'ISA · RTL · FPGA · verification' },
+  { label: 'Embedded & edge AI', detail: 'Sensors · firmware · local inference' },
+  { label: 'Engineering analytics', detail: 'Forecasting · ML · explainability' },
+  { label: 'Operations', detail: 'Process · reliability · improvement' },
+];
+
+function PracticeMap() {
+  return (
+    <figure className="practice-map" data-reveal>
+      <figcaption>
+        <span>Practice map</span>
+        <strong>Systems thinking across hardware, intelligence, data, and operations.</strong>
+        <p>Four parallel areas grounded in building, measuring, and improving real systems.</p>
+      </figcaption>
+      <div className="practice-graphic" aria-hidden="true">
+        <span className="practice-core">Systems</span>
+        <i className="practice-orbit practice-orbit-one" />
+        <i className="practice-orbit practice-orbit-two" />
+        <i className="practice-pulse" />
+      </div>
+      <ol className="practice-areas">
+        {PRACTICE_AREAS.map((area, index) => (
+          <li className="practice-area" key={area.label}>
+            <span>{String(index + 1).padStart(2, '0')}</span>
+            <strong>{area.label}</strong>
+            <small>{area.detail}</small>
+          </li>
+        ))}
+      </ol>
+    </figure>
+  );
+}
+
 function Hero() {
   const [logoFailed, setLogoFailed] = useState(false);
 
   return (
     <section id="home" className="hero-section">
-      <div className="circuit-field" aria-hidden="true">
-        <span className="trace trace-one" />
-        <span className="trace trace-two" />
-        <span className="chip-shape">RTL</span>
-      </div>
-
       <div className="hero-copy" data-reveal>
         <div className="availability"><span /> Hyderabad, India</div>
         <p className="hero-kicker">{PERSONAL.name}</p>
@@ -192,8 +282,10 @@ function Hero() {
         </div>
         <div className="upcoming-role">{UPCOMING_ROLE.role}</div>
         <div className="upcoming-company">@ {UPCOMING_ROLE.company}</div>
-        <p>An engineering mindset moving into high-impact operations and analytical problem-solving.</p>
+        <p>Joining Goldman Sachs with systems thinking, data analysis, and disciplined process improvement.</p>
       </aside>
+
+      <PracticeMap />
 
       <div className="stat-strip" data-reveal>
         {STATS.map((stat) => (
@@ -204,6 +296,91 @@ function Hero() {
         ))}
       </div>
     </section>
+  );
+}
+
+const PROJECT_VISUAL_LABELS = {
+  mak8u: 'Dual-core architecture',
+  garuda: 'Local edge-AI pipeline',
+  breadth: 'Patient signal monitoring',
+  thermal: 'Eight-channel heat profile',
+  battery: 'Bidirectional charge transfer',
+  'smart-factory': 'Connected factory floor',
+};
+
+function ProjectIllustration({ projectId }) {
+  const common = <path className="visual-grid" d="M0 24H320M0 56H320M0 88H320M0 120H320M40 0V144M80 0V144M120 0V144M160 0V144M200 0V144M240 0V144M280 0V144" />;
+  const illustrations = {
+    mak8u: (
+      <>
+        <rect className="visual-block" x="24" y="35" width="78" height="58" rx="4" />
+        <rect className="visual-block visual-block-accent" x="218" y="35" width="78" height="58" rx="4" />
+        <path className="visual-line" d="M102 64H218M160 64V111H246" />
+        <circle className="visual-signal" cx="160" cy="64" r="5" />
+        <text x="63" y="68">50 MHz</text><text x="257" y="68">100 MHz</text>
+        <text className="visual-small" x="160" y="126">SHARED MEMORY</text>
+      </>
+    ),
+    garuda: (
+      <>
+        <path className="visual-outline" d="M22 79L64 42l42 37v35H22z" />
+        <circle className="visual-block-accent" cx="64" cy="80" r="13" />
+        <path className="visual-line" d="M107 80H198" />
+        <rect className="visual-block" x="198" y="46" width="94" height="68" rx="5" />
+        <path className="visual-scan" d="M218 64h54M218 80h38M218 96h46" />
+        <circle className="visual-signal" cx="153" cy="80" r="5" />
+        <text className="visual-small" x="245" y="131">LOCAL INFERENCE</text>
+      </>
+    ),
+    breadth: (
+      <>
+        <path className="visual-line visual-wave" d="M18 78h42l9-23 17 47 18-74 20 102 18-52h35l12-20 15 40 13-20h85" />
+        <circle className="visual-signal" cx="177" cy="78" r="6" />
+        <rect className="visual-outline" x="18" y="22" width="284" height="112" rx="6" />
+        <text className="visual-small" x="160" y="122">MULTI-MODAL VITALS</text>
+      </>
+    ),
+    thermal: (
+      <>
+        {[0, 1, 2, 3, 4, 5, 6, 7].map((item) => (
+          <circle key={item} className={`thermal-node thermal-${item}`} cx={48 + (item % 4) * 74} cy={48 + Math.floor(item / 4) * 55} r="17" />
+        ))}
+        <path className="visual-line" d="M48 48H270M48 103H270" />
+        <text className="visual-small" x="160" y="137">LIVE THERMAL MAP</text>
+      </>
+    ),
+    battery: (
+      <>
+        {[0, 1, 2, 3].map((item) => (
+          <g key={item} transform={`translate(${28 + item * 72} 42)`}>
+            <rect className="visual-block" width="48" height="64" rx="4" />
+            <path className="visual-line" d="M17 13h14M24 6v14" />
+          </g>
+        ))}
+        <path className="visual-transfer" d="M48 122C100 145 214 145 271 122" />
+        <path className="visual-transfer" d="M271 27C219 4 105 4 48 27" />
+      </>
+    ),
+    'smart-factory': (
+      <>
+        {Array.from({ length: 13 }, (_, item) => (
+          <rect key={item} className={`factory-node ${item === 7 ? 'visual-block-accent' : ''}`} x={29 + (item % 7) * 40} y={35 + Math.floor(item / 7) * 48} width="25" height="25" rx="3" />
+        ))}
+        <path className="visual-line" d="M42 118H278M160 118V93" />
+        <circle className="visual-signal" cx="160" cy="118" r="5" />
+        <text className="visual-small" x="160" y="138">13 MACHINES · ONE VIEW</text>
+      </>
+    ),
+  };
+
+  return (
+    <div className={`project-illustration visual-${projectId}`} aria-hidden="true">
+      <svg viewBox="0 0 320 144" focusable="false">
+        {common}
+        {illustrations[projectId]}
+      </svg>
+      <span>{PROJECT_VISUAL_LABELS[projectId]}</span>
+    </div>
   );
 }
 
@@ -295,6 +472,7 @@ function ProjectModal({ project, onClose }) {
         <span className="project-badge">{project.badge}</span>
         <h2 id="project-modal-title">{project.title}</h2>
         <p className="modal-subtitle">{project.subtitle} · {project.period}</p>
+        <ProjectIllustration projectId={project.id} />
         <p className="modal-overview">{project.overview}</p>
 
         <div className="metric-grid modal-metrics">
@@ -338,6 +516,7 @@ function Projects() {
               <span>P/{String(index + 1).padStart(2, '0')}</span>
               <time>{project.period}</time>
             </div>
+            <ProjectIllustration projectId={project.id} />
             <span className="project-badge">{project.badge}</span>
             <h3>{project.title}</h3>
             <p className="project-subtitle">{project.subtitle}</p>
@@ -412,6 +591,16 @@ function Education() {
 }
 
 function Research() {
+  const [certificateQuery, setCertificateQuery] = useState('');
+  const [showAllCertificates, setShowAllCertificates] = useState(false);
+  const normalizedQuery = certificateQuery.trim().toLowerCase();
+  const filteredCertificates = CERTIFICATIONS.filter((certificate) => (
+    `${certificate.title} ${certificate.issuer} ${certificate.date}`.toLowerCase().includes(normalizedQuery)
+  ));
+  const visibleCertificates = normalizedQuery || showAllCertificates
+    ? filteredCertificates
+    : filteredCertificates.slice(0, 5);
+
   return (
     <section id="research" className="content-section">
       <SectionHeading
@@ -440,8 +629,23 @@ function Research() {
       </div>
 
       <div className="certification-list" data-reveal>
-        <span className="section-index">Certifications</span>
-        {CERTIFICATIONS.map((certificate) => (
+        <div className="certification-header">
+          <div>
+            <span className="section-index">Certifications</span>
+            <p>{filteredCertificates.length} credential{filteredCertificates.length === 1 ? '' : 's'}</p>
+          </div>
+          <label className="certificate-search">
+            <span>Filter</span>
+            <input
+              type="search"
+              value={certificateQuery}
+              aria-label="Filter certifications"
+              placeholder="Title, issuer, or year"
+              onChange={(event) => setCertificateQuery(event.target.value)}
+            />
+          </label>
+        </div>
+        {visibleCertificates.map((certificate) => (
           <div className="certificate" key={certificate.title}>
             <div className="certificate-title">
               <span>{certificate.title}</span>
@@ -451,6 +655,12 @@ function Research() {
             <time>{certificate.date}</time>
           </div>
         ))}
+        {!visibleCertificates.length && <p className="certificate-empty">No certifications match this filter.</p>}
+        {!normalizedQuery && CERTIFICATIONS.length > 5 && (
+          <button className="certificate-disclosure" type="button" onClick={() => setShowAllCertificates((value) => !value)}>
+            {showAllCertificates ? 'Show fewer' : `Show all ${CERTIFICATIONS.length}`}
+          </button>
+        )}
       </div>
     </section>
   );
@@ -467,7 +677,7 @@ function Contact() {
         </div>
         <div className="contact-links">
           <a href={`mailto:${PERSONAL.email}`}><span>Email</span><strong>{PERSONAL.email}</strong><i>↗</i></a>
-          <a href={`https://${PERSONAL.linkedin}`} target="_blank" rel="noreferrer"><span>LinkedIn</span><strong>/in/manikanta-gonugondla-349bb729a</strong><i>↗</i></a>
+          <a href={`https://${PERSONAL.linkedin}`} target="_blank" rel="noreferrer"><span>LinkedIn</span><strong>/in/veera-manikanta-gonugondla-349bb729a</strong><i>↗</i></a>
           <a href={`https://${PERSONAL.github}`} target="_blank" rel="noreferrer"><span>GitHub</span><strong>@Manikanta25055</strong><i>↗</i></a>
           <a href={`tel:${PERSONAL.phoneHref}`}><span>Phone</span><strong>{PERSONAL.phone}</strong><i>↗</i></a>
         </div>
@@ -483,6 +693,11 @@ function Contact() {
 export default function EngineeringJournal() {
   const [active, setActive] = useActiveSection();
   useReveal();
+
+  useEffect(() => {
+    delete document.documentElement.dataset.theme;
+    window.localStorage.removeItem('portfolio-theme');
+  }, []);
 
   return (
     <div className="portfolio-shell">

@@ -1,383 +1,205 @@
-import React, { useState, useEffect, useRef } from 'react';
-import * as DATA from '../data/portfolio';
+import React, { useEffect, useRef, useState } from 'react';
+import goldmanSachsLogo from '../assets/goldman-sachs.png';
+import {
+  CERTIFICATIONS,
+  EDUCATION,
+  EXPERIENCE,
+  PERSONAL,
+  PROJECTS,
+  RESEARCH,
+  SKILL_GROUPS,
+  STATS,
+  UPCOMING_ROLE,
+} from '../data/portfolio';
 
 const NAV_ITEMS = [
-  { id: 'home',      label: 'Home' },
+  { id: 'home', label: 'Home' },
+  { id: 'experience', label: 'Experience' },
+  { id: 'projects', label: 'Projects' },
+  { id: 'skills', label: 'Skills' },
   { id: 'education', label: 'Education' },
-  { id: 'work',      label: 'Work' },
-  { id: 'projects',  label: 'Projects' },
-  { id: 'skills',    label: 'Skills' },
-  { id: 'writing',   label: 'Writing' },
-  { id: 'contact',   label: 'Contact' },
+  { id: 'research', label: 'Research' },
+  { id: 'contact', label: 'Contact' },
 ];
 
-// Animated PCB-style circuit background — traces, vias, pulses
-function Circuit() {
-  const ref = useRef(null);
+const asset = (path) => `${process.env.PUBLIC_URL}${path}`;
+
+function useActiveSection() {
+  const [active, setActive] = useState('home');
+
   useEffect(() => {
-    const svg = ref.current;
-    if (!svg) return;
-    const pulses = svg.querySelectorAll('.circuit-pulse');
-    pulses.forEach((p, i) => {
-      const dur = 4 + (i % 3);
-      p.animate(
-        [{ offsetDistance: '0%' }, { offsetDistance: '100%' }],
-        { duration: dur * 1000, iterations: Infinity, delay: i * 700, easing: 'linear' }
-      );
-    });
+    const sections = NAV_ITEMS
+      .map(({ id }) => document.getElementById(id))
+      .filter(Boolean);
+
+    if (!('IntersectionObserver' in window)) return undefined;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+        if (visible[0]) setActive(visible[0].target.id);
+      },
+      { rootMargin: '-18% 0px -66% 0px', threshold: [0, 0.08, 0.3] },
+    );
+
+    sections.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
   }, []);
-  return (
-    <div className="circuit" aria-hidden>
-      <svg ref={ref} viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice">
-        <defs>
-          <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
-            <path d="M 32 0 L 0 0 0 32" fill="none" stroke="currentColor" strokeWidth=".3" opacity=".15"/>
-          </pattern>
-        </defs>
-        <rect width="1200" height="700" fill="url(#grid)" color="var(--ink)" />
 
-        {/* PCB traces */}
-        <path className="circuit-trace" id="t1" d="M 50 120 L 280 120 L 280 240 L 540 240 L 540 80 L 820 80 L 820 200 L 1150 200" />
-        <path className="circuit-trace" id="t2" d="M 80 580 L 320 580 L 320 460 L 600 460 L 600 620 L 900 620 L 900 500 L 1140 500" />
-        <path className="circuit-trace" id="t3" d="M 50 360 L 200 360 L 200 300 L 460 300 L 460 400 L 720 400 L 720 360 L 1100 360" />
-        <path className="circuit-trace" id="t4" d="M 200 80 L 200 180 L 360 180 L 360 360" />
-        <path className="circuit-trace" id="t5" d="M 700 80 L 700 200 L 880 200 L 880 320" />
-        <path className="circuit-trace" id="t6" d="M 1000 580 L 1000 480 L 800 480 L 800 360" />
-
-        {/* Vias / pads */}
-        <circle className="circuit-via" cx="280" cy="120" r="4"/>
-        <circle className="circuit-via" cx="540" cy="240" r="4"/>
-        <circle className="circuit-via" cx="820" cy="80"  r="4"/>
-        <circle className="circuit-via" cx="320" cy="580" r="4"/>
-        <circle className="circuit-via" cx="600" cy="460" r="4"/>
-        <circle className="circuit-via" cx="900" cy="620" r="4"/>
-        <circle className="circuit-via" cx="200" cy="360" r="4"/>
-        <circle className="circuit-via" cx="460" cy="300" r="4"/>
-        <circle className="circuit-via" cx="720" cy="400" r="4"/>
-
-        {/* Chip outlines */}
-        <g opacity=".55">
-          <rect x="380" y="180" width="120" height="80" fill="none" stroke="currentColor" strokeWidth="1"/>
-          <text x="440" y="225" fill="currentColor" fontSize="9" textAnchor="middle" fontFamily="monospace" opacity=".6">FPGA</text>
-          {Array.from({length:6}).map((_,i)=>(
-            <line key={'p'+i} x1={395+i*18} y1="178" x2={395+i*18} y2="170" stroke="currentColor" strokeWidth=".8"/>
-          ))}
-          {Array.from({length:6}).map((_,i)=>(
-            <line key={'q'+i} x1={395+i*18} y1="262" x2={395+i*18} y2="270" stroke="currentColor" strokeWidth=".8"/>
-          ))}
-        </g>
-        <g opacity=".55">
-          <rect x="780" y="290" width="100" height="60" fill="none" stroke="currentColor" strokeWidth="1"/>
-          <text x="830" y="325" fill="currentColor" fontSize="9" textAnchor="middle" fontFamily="monospace" opacity=".6">MCU</text>
-        </g>
-        <g opacity=".55">
-          <rect x="160" y="500" width="80" height="50" fill="none" stroke="currentColor" strokeWidth="1"/>
-          <text x="200" y="530" fill="currentColor" fontSize="9" textAnchor="middle" fontFamily="monospace" opacity=".6">DSP</text>
-        </g>
-
-        {/* Pulses moving along traces */}
-        <circle className="circuit-pulse" r="3" style={{offsetPath:"path('M 50 120 L 280 120 L 280 240 L 540 240 L 540 80 L 820 80 L 820 200 L 1150 200')"}} />
-        <circle className="circuit-pulse" r="3" style={{offsetPath:"path('M 80 580 L 320 580 L 320 460 L 600 460 L 600 620 L 900 620 L 900 500 L 1140 500')"}} />
-        <circle className="circuit-pulse" r="3" style={{offsetPath:"path('M 50 360 L 200 360 L 200 300 L 460 300 L 460 400 L 720 400 L 720 360 L 1100 360')"}} />
-        <circle className="circuit-pulse" r="2" style={{offsetPath:"path('M 200 80 L 200 180 L 360 180 L 360 360')"}} />
-        <circle className="circuit-pulse" r="2" style={{offsetPath:"path('M 700 80 L 700 200 L 880 200 L 880 320')"}} />
-      </svg>
-    </div>
-  );
+  return [active, setActive];
 }
 
-
-// Entry card — journal cover shown on load; opens on click or after a beat
-function EntryCard({ onDone }) {
-  const { PERSONAL } = DATA;
-  const [leaving, setLeaving] = useState(false);
-
+function useReveal() {
   useEffect(() => {
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const t = setTimeout(() => setLeaving(true), reduced ? 400 : 3200);
-    return () => clearTimeout(t);
+    const elements = document.querySelectorAll('[data-reveal]');
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (reducedMotion || !('IntersectionObserver' in window)) {
+      elements.forEach((element) => element.classList.add('is-visible'));
+      return undefined;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { rootMargin: '0px 0px -8% 0px', threshold: 0.08 },
+    );
+
+    elements.forEach((element) => observer.observe(element));
+    return () => observer.disconnect();
   }, []);
+}
+
+function Header({ active, onNavigate }) {
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    if (!leaving) return;
-    const t = setTimeout(onDone, 750);
-    return () => clearTimeout(t);
-  }, [leaving, onDone]);
+    if (!open) return undefined;
+    const closeOnEscape = (event) => {
+      if (event.key === 'Escape') setOpen(false);
+    };
+    window.addEventListener('keydown', closeOnEscape);
+    return () => window.removeEventListener('keydown', closeOnEscape);
+  }, [open]);
 
-  useEffect(() => {
-    document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = ''; };
-  }, []);
+  const navigate = (id) => {
+    setOpen(false);
+    onNavigate(id);
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   return (
-    <div className={`entry ${leaving ? 'entry-leave' : ''}`} onClick={() => setLeaving(true)}>
-      <div className="entry-card" role="button" aria-label="Open the journal">
-        <div className="entry-mast">
-          <span>Engineering Journal</span>
-          <span>Vol. 26</span>
-        </div>
-        <div className="entry-seal">{PERSONAL.initials}</div>
-        <div className="entry-name">{PERSONAL.name}</div>
-        <div className="entry-role">{PERSONAL.role}</div>
-        <div className="entry-rule" />
-        <div className="entry-line">Hardware · Embedded · Silicon</div>
-        <button className="entry-open" onClick={() => setLeaving(true)}>
-          Open the journal <span className="entry-arrow">→</span>
+    <header className="site-header">
+      <div className="nav-shell">
+        <button className="brand" type="button" onClick={() => navigate('home')} aria-label="Go to home">
+          <span className="brand-mark">{PERSONAL.initials}</span>
+          <span className="brand-copy">
+            <strong>Veera Manikanta</strong>
+            <span>Hardware · Systems · Operations</span>
+          </span>
         </button>
-        <div className="entry-hint">opens automatically</div>
-      </div>
-    </div>
-  );
-}
 
-// Reveal sections as they scroll into view
-function useReveal(enabled) {
-  useEffect(() => {
-    if (!enabled || !('IntersectionObserver' in window)) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const els = document.querySelectorAll('.page section');
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((en) => {
-        if (en.isIntersecting) {
-          en.target.classList.add('is-revealed');
-          io.unobserve(en.target);
-        }
-      });
-    }, { threshold: 0.06 });
-    els.forEach((el) => { el.classList.add('will-reveal'); io.observe(el); });
-    return () => io.disconnect();
-  }, [enabled]);
-}
-
-// Draggable nav pill
-function Nav({ active, setActive }) {
-  const wrapRef = useRef(null);
-  const pillRef = useRef(null);
-  const [pill, setPill] = useState({ left: 0, width: 0 });
-  const dragRef = useRef({ on: false, startX: 0, startLeft: 0, moved: 0 });
-  const [dragging, setDragging] = useState(false);
-
-  const measure = React.useCallback((id) => {
-    const wrap = wrapRef.current; if (!wrap) return null;
-    const el = wrap.querySelector(`[data-nav="${id}"]`);
-    if (!el) return null;
-    const wr = wrap.getBoundingClientRect();
-    const er = el.getBoundingClientRect();
-    return { left: er.left - wr.left, width: er.width };
-  }, []);
-
-  useEffect(() => {
-    if (dragRef.current.on) return;
-    const m = measure(active); if (m) setPill(m);
-  }, [active, measure]);
-
-  useEffect(() => {
-    const onResize = () => { const m = measure(active); if (m) setPill(m); };
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
-  }, [active, measure]);
-
-  const jump = (id) => {
-    setActive(id);
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
-
-  const items = () => Array.from(wrapRef.current?.querySelectorAll('.nav-item') || []);
-
-  const closestId = (centerX) => {
-    const wrap = wrapRef.current; if (!wrap) return active;
-    const wr = wrap.getBoundingClientRect();
-    let best = NAV_ITEMS[0].id, dist = Infinity;
-    items().forEach(el => {
-      const r = el.getBoundingClientRect();
-      const c = (r.left - wr.left) + r.width / 2;
-      const d = Math.abs(c - centerX);
-      if (d < dist) { dist = d; best = el.dataset.nav; }
-    });
-    return best;
-  };
-
-  const onPointerDown = (e) => {
-    e.preventDefault();
-    const x = e.clientX ?? e.touches?.[0]?.clientX;
-    // curLeft tracks the live pill position in a ref — window listeners
-    // outlive the render that registered them, so state would be stale here
-    dragRef.current = { on: true, startX: x, startLeft: pill.left, curLeft: pill.left, moved: 0 };
-    setDragging(true);
-    window.addEventListener('pointermove', onPointerMove);
-    window.addEventListener('pointerup', onPointerUp);
-  };
-
-  const onPointerMove = (e) => {
-    if (!dragRef.current.on) return;
-    const x = e.clientX;
-    const dx = x - dragRef.current.startX;
-    dragRef.current.moved = Math.max(dragRef.current.moved, Math.abs(dx));
-    const wrap = wrapRef.current; if (!wrap) return;
-    const wr = wrap.getBoundingClientRect();
-    const minL = 6;
-    const maxL = wr.width - pill.width - 6;
-    let nextLeft = Math.max(minL, Math.min(maxL, dragRef.current.startLeft + dx));
-    dragRef.current.curLeft = nextLeft;
-
-    if (pillRef.current) {
-      pillRef.current.style.transition = 'none';
-      pillRef.current.style.transform = `translateX(${nextLeft}px) scale(1.06)`;
-    }
-    const centerX = nextLeft + pill.width / 2;
-    const id = closestId(centerX);
-    if (id !== active) setActive(id);
-    setPill(p => ({ ...p, left: nextLeft }));
-  };
-
-  const onPointerUp = () => {
-    if (!dragRef.current.on) return;
-    dragRef.current.on = false;
-    setDragging(false);
-    if (pillRef.current) {
-      pillRef.current.style.transition = '';
-      pillRef.current.style.transform = '';
-    }
-    window.removeEventListener('pointermove', onPointerMove);
-    window.removeEventListener('pointerup', onPointerUp);
-    const wrap = wrapRef.current;
-    if (wrap && dragRef.current.moved > 2) {
-      const centerX = dragRef.current.curLeft + pill.width / 2;
-      const id = closestId(centerX);
-      jump(id);
-    }
-  };
-
-  return (
-    <nav className={`nav ${dragging ? 'dragging' : ''}`} ref={wrapRef}>
-      <span
-        ref={pillRef}
-        className="nav-pill"
-        style={{ transform: `translateX(${pill.left}px)`, width: pill.width }}
-        onPointerDown={onPointerDown}
-      />
-      {NAV_ITEMS.map(n => (
         <button
-          key={n.id}
-          data-nav={n.id}
-          className={`nav-item ${active === n.id ? 'active' : ''}`}
-          onClick={() => jump(n.id)}
+          className="menu-toggle"
+          type="button"
+          aria-label={open ? 'Close navigation' : 'Open navigation'}
+          aria-expanded={open}
+          aria-controls="primary-navigation"
+          onClick={() => setOpen((value) => !value)}
         >
-          {n.label}
+          <span aria-hidden="true">{open ? 'Close' : 'Menu'}</span>
         </button>
-      ))}
-    </nav>
+
+        <nav id="primary-navigation" className={`primary-nav ${open ? 'is-open' : ''}`} aria-label="Primary navigation">
+          {NAV_ITEMS.map((item) => (
+            <button
+              key={item.id}
+              className={active === item.id ? 'is-active' : ''}
+              type="button"
+              aria-current={active === item.id ? 'page' : undefined}
+              onClick={() => navigate(item.id)}
+            >
+              {item.label}
+            </button>
+          ))}
+          <a className="nav-resume" href={asset('/Veera_Manikanta_Gonugondla_Resume.pdf')} download>
+            Résumé <span aria-hidden="true">↓</span>
+          </a>
+        </nav>
+      </div>
+    </header>
   );
 }
 
-function Top({ theme }) {
-  const { PERSONAL } = DATA;
+function SectionHeading({ number, eyebrow, title, intro }) {
   return (
-    <div className="top">
-      <div className="top-mark">
-        <span className="top-mark-dot" />
-        <span>{PERSONAL.initials} · {PERSONAL.location}</span>
+    <div className="section-heading" data-reveal>
+      <div>
+        <span className="section-index">{number} / {eyebrow}</span>
+        <h2>{title}</h2>
       </div>
-      <div className="top-meta">{DATA.THEMES[theme].label} · v26</div>
-    </div>
-  );
-}
-
-// Tilted notepad with handwritten "currently working" note near the hero title
-function NotepadCurrent() {
-  const wk = Math.ceil((((new Date()-new Date(new Date().getFullYear(),0,1))/86400000)+1)/7);
-  return (
-    <div className="notepad" aria-label="Currently working on">
-      <div className="np-rings" aria-hidden="true">
-        <span className="np-ring"/><span className="np-ring"/><span className="np-ring"/>
-      </div>
-      <span className="np-tear" aria-hidden="true"/>
-      <div className="np-inner">
-        <div className="np-brand">GVM</div>
-        <div className="np-head">
-          <span className="np-dot"/>
-          <span>Currently</span>
-          <span className="np-date">· wk {wk} ·</span>
-        </div>
-        <p className="np-line">Building <b>Project Breadth</b> —</p>
-        <p className="np-line np-sub">a wearable respiratory-rate &amp; effort sensor.</p>
-        <p className="np-line">Drafting the <i>IEEE Sensors Journal</i> paper</p>
-        <p className="np-line np-sub">on the signal-chain &amp; validation results.</p>
-        <div className="np-sign">
-          <span className="np-sig-line"/>
-          <span className="np-sig-name">— GVM</span>
-        </div>
-      </div>
+      {intro && <p>{intro}</p>}
     </div>
   );
 }
 
 function Hero() {
-  const { PERSONAL, IN_PROGRESS, STATS } = DATA;
+  const [logoFailed, setLogoFailed] = useState(false);
+
   return (
-    <section id="home" className="hero" data-screen-label="01 Home">
-      <Circuit />
-      <div className="hero-eyebrow">
-        <span className="hero-eyebrow-bar" />
-        <span className="eyebrow">Electrical &amp; Electronics Engineer · Hyderabad</span>
+    <section id="home" className="hero-section">
+      <div className="circuit-field" aria-hidden="true">
+        <span className="trace trace-one" />
+        <span className="trace trace-two" />
+        <span className="chip-shape">RTL</span>
       </div>
-      <div className="hero-name">{PERSONAL.name}</div>
-      <div className="hero-grid">
-        <div className="hero-left">
-          <div className="hero-title-row">
-            <h1>Building where hardware meets <span className="accent-word">software.</span></h1>
-            <div className="notepad-float-wrap"><NotepadCurrent/></div>
-          </div>
-          <p className="hero-sub">
-            Dual-degree at MIT Manipal &amp; IIT Madras. Deep in FPGAs, embedded
-            systems, and AI on the edge — from sub-100ms vision on a Pi 5 to a
-            full MODBUS RTU stack on an ESP32-S3.
-          </p>
-          <div className="upcoming-tag" aria-label="Upcoming Systems Engineer Intern at Boeing">
-            <div className="up-stack">
-              <div className="up-meta">
-                <span className="up-dot" />
-                <span className="up-eyebrow">Upcoming · Summer 2026</span>
-              </div>
-              <div className="up-role-row">
-                <span className="up-role">Systems Engineer Intern</span>
-                <span className="up-at">at</span>
-                <img className="up-logo" src={`${process.env.PUBLIC_URL}/logos/boeing.png`} alt="Boeing" />
-              </div>
-            </div>
-          </div>
-          <div className="hero-cta-row">
-            <a className="btn btn-primary" href={`mailto:${PERSONAL.email}`}>Get in touch →</a>
-            <a className="btn" href={`https://${PERSONAL.github}`} target="_blank" rel="noreferrer">View GitHub</a>
-          </div>
-          <div className="inprog">
-            <div className="inprog-h"><span className="inprog-pulse" /> Currently writing</div>
-            <div className="inprog-list">
-              {IN_PROGRESS.map((w, i) => (
-                <div className="inprog-item" key={i}>
-                  <div className="inprog-kind">{w.kind}</div>
-                  <div className="inprog-title">{w.title}</div>
-                  <div className="inprog-note">{w.note}</div>
-                </div>
-              ))}
-            </div>
-          </div>
+
+      <div className="hero-copy" data-reveal>
+        <div className="availability"><span /> Hyderabad, India</div>
+        <p className="hero-kicker">{PERSONAL.name}</p>
+        <h1>From instruction set<br />to <em>working system.</em></h1>
+        <p className="hero-summary">{PERSONAL.summary}</p>
+
+        <div className="hero-actions">
+          <a className="button button-primary" href={`mailto:${PERSONAL.email}`}>Start a conversation <span aria-hidden="true">↗</span></a>
+          <a className="button" href={asset('/Veera_Manikanta_Gonugondla_Resume.pdf')} target="_blank" rel="noreferrer">View résumé</a>
         </div>
-        <aside className="hero-card">
-          <div className="hero-card-h"><span>Status</span></div>
-          <div className="hero-card-row"><span>Role</span><strong>{PERSONAL.role}</strong></div>
-          <div className="hero-card-row"><span>Based</span><strong>{PERSONAL.location}</strong></div>
-          <div className="hero-card-row"><span>Open to</span><strong>Hardware · Embedded · Silicon</strong></div>
-          <div className="hero-card-row"><span>Notable</span><strong>Patent filed · IIT-M 1st place</strong></div>
-          <div className="hero-card-row"><span>Available</span><strong>Summer 2026</strong></div>
-        </aside>
       </div>
-      <div className="stats">
-        {STATS.map((s, i) => (
-          <div className="stat" key={i}>
-            <div className="stat-k">{s.k}</div>
-            <div className="stat-v">{s.v}</div>
+
+      <aside className="upcoming-card" data-reveal aria-label={`${UPCOMING_ROLE.label} ${UPCOMING_ROLE.role} at ${UPCOMING_ROLE.company}`}>
+        <div className="upcoming-label"><span /> {UPCOMING_ROLE.label}</div>
+        <div className="upcoming-logo-wrap">
+          {logoFailed ? (
+            <span className="goldman-fallback" aria-label="Goldman Sachs">Goldman<br />Sachs</span>
+          ) : (
+            <img
+              src={goldmanSachsLogo}
+              alt="Goldman Sachs"
+              width="186"
+              height="78"
+              decoding="sync"
+              onError={() => setLogoFailed(true)}
+            />
+          )}
+        </div>
+        <div className="upcoming-role">{UPCOMING_ROLE.role}</div>
+        <div className="upcoming-company">@ {UPCOMING_ROLE.company}</div>
+        <p>An engineering mindset moving into high-impact operations and analytical problem-solving.</p>
+      </aside>
+
+      <div className="stat-strip" data-reveal>
+        {STATS.map((stat) => (
+          <div className="stat-item" key={stat.label}>
+            <strong>{stat.value}</strong>
+            <span>{stat.label}</span>
           </div>
         ))}
       </div>
@@ -385,271 +207,249 @@ function Hero() {
   );
 }
 
-function SH({ num, eyebrow, title, right }) {
+function Experience() {
   return (
-    <header className="sh">
-      <div className="sh-l">
-        <span className="sh-counter">{num} · {eyebrow}</span>
-        <h2>{title}</h2>
+    <section id="experience" className="content-section">
+      <SectionHeading
+        number="01"
+        eyebrow="Experience"
+        title="Work measured in outcomes."
+        intro="Engineering experience across aerospace analytics, digital design, industrial automation, and product development."
+      />
+      <div className="experience-list">
+        {EXPERIENCE.map((experience, index) => (
+          <article className="experience-item" key={`${experience.company}-${experience.period}`} data-reveal>
+            <div className="experience-rail">
+              <span>{String(index + 1).padStart(2, '0')}</span>
+              <time>{experience.period}</time>
+            </div>
+            <div className="experience-body">
+              <div className="experience-title-row">
+                <div>
+                  <h3>{experience.role}</h3>
+                  <p className="company-name">{experience.company}</p>
+                </div>
+                {experience.logo && <img className="company-logo" src={asset(experience.logo)} alt="Boeing" />}
+              </div>
+              <ul>
+                {experience.bullets.map((bullet) => <li key={bullet}>{bullet}</li>)}
+              </ul>
+              <div className="tag-list">
+                {experience.skills.map((skill) => <span key={skill}>{skill}</span>)}
+              </div>
+            </div>
+          </article>
+        ))}
       </div>
-      {right && <div className="sh-r">{right}</div>}
-    </header>
+    </section>
   );
 }
 
-function BookCard({ edu, coverColor, spineColor, logo }) {
-  const [open, setOpen] = useState(false);
+function ProjectModal({ project, onClose }) {
+  const closeRef = useRef(null);
+  const modalRef = useRef(null);
+
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+    const previouslyFocused = document.activeElement;
+    document.body.style.overflow = 'hidden';
+    closeRef.current?.focus();
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') onClose();
+      if (event.key !== 'Tab') return;
+
+      const focusable = Array.from(modalRef.current?.querySelectorAll('button, [href]') || []);
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+      previouslyFocused?.focus?.();
+    };
+  }, [onClose]);
+
   return (
-    <div className="book-scene">
+    <div className="modal-backdrop" role="presentation" onMouseDown={onClose}>
       <div
-        className={`book-container ${open ? 'book-open' : ''}`}
-        onClick={() => setOpen(o => !o)}
-        role="button"
-        aria-label={`${open ? 'Close' : 'Open'} ${edu.inst} book`}
+        ref={modalRef}
+        className="project-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="project-modal-title"
+        onMouseDown={(event) => event.stopPropagation()}
       >
-        {/* Pages layer (always behind) */}
-        <div className="book-pages-bg">
-          <div className="bp-heading">Academic Record</div>
-          <div className="bp-body">
-            <div className="bp-field">
-              <div className="bp-label">Programme</div>
-              <div className="bp-val">{edu.deg}</div>
-            </div>
-            <div className="bp-field">
-              <div className="bp-label">Stage</div>
-              <div className="bp-val">{edu.sem}</div>
-            </div>
-            {edu.minor && (
-              <div className="bp-field">
-                <div className="bp-label">Minor / Specialisation</div>
-                <div className="bp-val">{edu.minor}</div>
-              </div>
-            )}
-            <div className="bp-field">
-              <div className="bp-label">Period</div>
-              <div className="bp-val">{edu.years}</div>
-            </div>
-            <div className="bp-cgpa-row">
-              <div className="bp-cgpa-n">{edu.cgpa}</div>
-              <div className="bp-cgpa-d"> /10</div>
-            </div>
-            <span className="bp-cgpa-label">CGPA</span>
-          </div>
-          {logo && (
-            <div className="bp-logo-slot" aria-hidden="true">
-              <img src={logo} alt="" />
-            </div>
-          )}
+        <button ref={closeRef} className="modal-close" type="button" onClick={onClose} aria-label="Close project details">×</button>
+        <span className="project-badge">{project.badge}</span>
+        <h2 id="project-modal-title">{project.title}</h2>
+        <p className="modal-subtitle">{project.subtitle} · {project.period}</p>
+        <p className="modal-overview">{project.overview}</p>
+
+        <div className="metric-grid modal-metrics">
+          {project.metrics.map((metric) => (
+            <div key={metric.label}><strong>{metric.value}</strong><span>{metric.label}</span></div>
+          ))}
         </div>
 
-        {/* Cover (rotates away on open) */}
-        <div className="book-cover-panel">
-          <div className="book-cover-front" style={{ background: coverColor, color: '#fff' }}>
-            <div>
-              <div className="bc-eyebrow">Academic Record</div>
-              <div className="bc-rule"/>
-              <div className="bc-title">{edu.inst}</div>
-              <div className="bc-sub">{edu.deg}</div>
-            </div>
-            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-end' }}>
-              <div className="bc-year">{edu.years}</div>
-              <div className="bc-seal">
-                {edu.inst.split(' ').map(w => w[0]).join('')}
-              </div>
-            </div>
-          </div>
-          <div className="book-cover-back-face"/>
-        </div>
-      </div>
+        <h3 className="modal-heading">Engineering highlights</h3>
+        <ul className="modal-highlights">
+          {project.highlights.map((highlight) => <li key={highlight}>{highlight}</li>)}
+        </ul>
 
-      <div className="book-label">{edu.inst}</div>
-      <div className="book-hint" onClick={() => setOpen(o => !o)}>
-        {open ? '← Close' : 'Tap to open →'}
+        <div className="tag-list">
+          {project.stack.map((item) => <span key={item}>{item}</span>)}
+        </div>
+        {project.link && (
+          <a className="button button-primary modal-link" href={project.link} target="_blank" rel="noreferrer">View repository <span aria-hidden="true">↗</span></a>
+        )}
       </div>
     </div>
   );
 }
 
-function Education() {
-  const { EDUCATION } = DATA;
-  const palette = [
-    { cover: '#7a1212', spine: '#4a0a0a', logo: `${process.env.PUBLIC_URL}/logos/manipal.png` },
-    { cover: '#162348', spine: '#0a1228', logo: `${process.env.PUBLIC_URL}/logos/iitm.png` },
-  ];
-  return (
-    <section id="education" className="edu-section" data-screen-label="02 Education">
-      <header className="sh">
-        <div className="sh-l">
-          <span className="sh-counter">02 · Dual Degree</span>
-          <h2>Two institutions.<br/>One engineer.</h2>
-        </div>
-        <div className="sh-r">
-          Concurrent programmes at MIT Manipal and IIT Madras — two curricula, two campuses, parallel coursework since 2023.
-        </div>
-      </header>
-      <div className="edu-books-wrap">
-        {EDUCATION.map((e, i) => (
-          <BookCard
-            key={i}
-            edu={e}
-            coverColor={palette[i % palette.length].cover}
-            spineColor={palette[i % palette.length].spine}
-            logo={palette[i % palette.length].logo}
-          />
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function Work() {
-  const { EXPERIENCE } = DATA;
-  return (
-    <section id="work" data-screen-label="03 Work">
-      <SH num="03" eyebrow="Experience" title="What I've shipped, and where I've trained."
-        right="Three roles in IoT, VLSI, and product development — alongside concurrent dual-degree coursework." />
-      <div className="timeline">
-        {EXPERIENCE.map((e, i) => (
-          <div className="tl-row" key={i}>
-            <div className="tl-period">{e.period}</div>
-            <div className="tl-main">
-              <h3>{e.role}</h3>
-              <div className="tl-co"><strong>{e.co}</strong> · {e.loc}</div>
-              <div className="tl-bullets">
-                {e.bullets.map((b, j) => <div className="tl-bullet" key={j}>{b}</div>)}
-              </div>
-              <div className="proj-tech">
-                {e.skills.map(s => <span className="chip" key={s}>{s}</span>)}
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
 function Projects() {
-  const { PROJECTS } = DATA;
-  const [open, setOpen] = useState(null);
+  const [selectedProject, setSelectedProject] = useState(null);
+
   return (
-    <section id="projects" data-screen-label="04 Projects">
-      <SH num="04" eyebrow="Selected projects" title="Nine systems. One patent. A first place."
-        right="Each card carries the problem, approach, role, team, and measured numbers. Tap for the full entry." />
-      <div className="proj-grid">
-        {PROJECTS.map((p, i) => (
-          <article key={p.id} className="proj" onClick={() => setOpen(i)}>
-            <div className="proj-head">
-              <span className="proj-num">P/{String(i+1).padStart(2,'0')} · {p.period}</span>
-              {p.badge && <span className="proj-badge">{p.badge}</span>}
+    <section id="projects" className="content-section">
+      <SectionHeading
+        number="02"
+        eyebrow="Selected systems"
+        title="Built, tested, and measured."
+        intro="Six current projects from the résumé and LinkedIn, with the performance figures and implementation details that matter."
+      />
+
+      <div className="project-grid">
+        {PROJECTS.map((project, index) => (
+          <button className="project-card" type="button" key={project.id} onClick={() => setSelectedProject(project)} data-reveal>
+            <div className="project-card-top">
+              <span>P/{String(index + 1).padStart(2, '0')}</span>
+              <time>{project.period}</time>
             </div>
-            <h3>{p.title}</h3>
-            <div className="proj-sub">{p.subtitle}</div>
-            <div className="proj-blurb">{p.blurb}</div>
-            <div className="proj-meta">
-              <div><b>Role</b> &nbsp;{p.role}</div>
-              <div><b>Team</b> &nbsp;{p.team}</div>
-            </div>
-            <div className="proj-metrics">
-              {p.metrics.map((m,j) => (
-                <div className="proj-metric" key={j}>
-                  <div className="proj-metric-k">{m.k}</div>
-                  <div className="proj-metric-v">{m.v}</div>
-                </div>
+            <span className="project-badge">{project.badge}</span>
+            <h3>{project.title}</h3>
+            <p className="project-subtitle">{project.subtitle}</p>
+            <p className="project-overview">{project.overview}</p>
+            <div className="metric-grid">
+              {project.metrics.map((metric) => (
+                <div key={metric.label}><strong>{metric.value}</strong><span>{metric.label}</span></div>
               ))}
             </div>
-            <div className="proj-tech">
-              {p.tech.slice(0,7).map(t => <span className="chip" key={t}>{t}</span>)}
-            </div>
-            <div className="proj-cta">Full entry</div>
-          </article>
+            <div className="project-card-footer"><span>Read case study</span><span aria-hidden="true">↗</span></div>
+          </button>
         ))}
       </div>
-      {open !== null && (
-        <div className="modal-bg" onClick={() => setOpen(null)}>
-          <div className="modal" onClick={e => e.stopPropagation()}>
-            <button className="modal-x" onClick={() => setOpen(null)}>×</button>
-            <div className="eyebrow" style={{marginBottom:12}}>{PROJECTS[open].badge || 'PROJECT'}</div>
-            <h2>{PROJECTS[open].title}</h2>
-            <div className="modal-period">{PROJECTS[open].subtitle} · {PROJECTS[open].period}</div>
-            <div className="modal-section">
-              <div className="modal-section-h">Overview</div>
-              <p>{PROJECTS[open].blurb}</p>
-            </div>
-            <div className="modal-section">
-              <div className="modal-section-h">Problem</div>
-              <p>{PROJECTS[open].problem}</p>
-            </div>
-            <div className="modal-section">
-              <div className="modal-section-h">Approach</div>
-              <p>{PROJECTS[open].approach}</p>
-            </div>
-            <div className="stats" style={{marginTop:24, marginBottom:24}}>
-              {PROJECTS[open].metrics.map((m,j) => (
-                <div className="stat" key={j}>
-                  <div className="stat-k">{m.k}</div>
-                  <div className="stat-v">{m.v}</div>
-                </div>
-              ))}
-            </div>
-            <div className="modal-section">
-              <div className="modal-section-h">Stack</div>
-              <div className="proj-tech">
-                {PROJECTS[open].tech.map(t => <span className="chip" key={t}>{t}</span>)}
-              </div>
-            </div>
-            <div className="proj-meta" style={{marginTop:8}}>
-              <div><b>Role</b> &nbsp;{PROJECTS[open].role}</div>
-              <div><b>Team</b> &nbsp;{PROJECTS[open].team}</div>
-            </div>
-            {PROJECTS[open].link && (
-              <a className="btn btn-primary" style={{marginTop:24}} href={`https://${PROJECTS[open].link}`} target="_blank" rel="noreferrer">
-                View on GitHub →
-              </a>
-            )}
-          </div>
-        </div>
-      )}
+
+      {selectedProject && <ProjectModal project={selectedProject} onClose={() => setSelectedProject(null)} />}
     </section>
   );
 }
 
 function Skills() {
-  const { SKILLS } = DATA;
   return (
-    <section id="skills" data-screen-label="05 Skills">
-      <SH num="05" eyebrow="Technical surface" title="The tools I reach for."
-        right="System-level: hardware → firmware → application." />
-      <div className="skill-grid">
-        {SKILLS.map(g => (
-          <div className="skill-card" key={g.g}>
-            <div className="skill-g">{g.g}</div>
-            <div className="skill-items">
-              {g.items.map(it => <div className="skill-item" key={it}>{it}</div>)}
+    <section id="skills" className="content-section">
+      <SectionHeading
+        number="03"
+        eyebrow="Technical skills"
+        title="Across the full hardware stack."
+        intro="Architecture, RTL, verification, implementation, embedded software, interfaces, and lab instrumentation."
+      />
+      <div className="skills-grid">
+        {SKILL_GROUPS.map((group, index) => (
+          <article className="skill-card" key={group.title} data-reveal>
+            <span className="skill-number">0{index + 1}</span>
+            <h3>{group.title}</h3>
+            <div className="skill-list">
+              {group.items.map((item) => <span key={item}>{item}</span>)}
             </div>
-          </div>
+          </article>
         ))}
       </div>
     </section>
   );
 }
 
-function Writing() {
-  const { WRITING } = DATA;
+function Education() {
   return (
-    <section id="writing" data-screen-label="06 Writing">
-      <SH num="06" eyebrow="Notes &amp; writing" title="Things I learned, written down."
-        right="Short engineering notes from shipping the projects above." />
-      <div className="writing">
-        {WRITING.map((w,i) => (
-          <article className="write-card" key={i}>
-            <div className="write-meta"><span>{w.date}</span><span>{w.read}</span></div>
-            <h3>{w.title}</h3>
-            <p className="write-excerpt">{w.excerpt}</p>
-            <div className="write-tags">
-              {w.tags.map(t => <span className="chip" key={t}>{t}</span>)}
+    <section id="education" className="content-section">
+      <SectionHeading
+        number="04"
+        eyebrow="Education"
+        title="Two programmes, pursued together."
+        intro="An on-campus engineering degree at Manipal and an online electronic-systems degree at IIT Madras."
+      />
+      <div className="education-grid">
+        {EDUCATION.map((education) => (
+          <article className="education-card" key={education.shortName} data-reveal>
+            <div className="education-logo"><img src={asset(education.logo)} alt={`${education.shortName} logo`} /></div>
+            <div className="education-copy">
+              <div className="education-meta"><span>{education.shortName}</span><time>{education.period}</time></div>
+              <h3>{education.degree}</h3>
+              <p className="education-institution">{education.institution}</p>
+              <div className="education-facts">
+                <div><strong>{education.cgpa}</strong><span>CGPA</span></div>
+                <div><strong>{education.progress}</strong><span>Progress</span></div>
+              </div>
+              <p className="education-detail">{education.detail}</p>
             </div>
           </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function Research() {
+  return (
+    <section id="research" className="content-section">
+      <SectionHeading
+        number="05"
+        eyebrow="Research & recognition"
+        title="Ideas carried beyond the prototype."
+        intro="Patent applications, peer-reviewed work in progress, certifications, and recognition."
+      />
+      <div className="research-layout">
+        <div className="research-list">
+          {RESEARCH.map((item) => (
+            <article className="research-item" key={item.title} data-reveal>
+              <span>{item.type}</span>
+              <div><h3>{item.title}</h3><p>{item.detail}</p></div>
+              <strong>{item.status}</strong>
+            </article>
+          ))}
+        </div>
+
+        <aside className="recognition-card" data-reveal>
+          <span className="section-index">Recognition</span>
+          <strong>1st Place</strong>
+          <h3>IITM Gadget Expo</h3>
+          <p>Best Low-Cost Solution for Project Garuda.</p>
+        </aside>
+      </div>
+
+      <div className="certification-list" data-reveal>
+        <span className="section-index">Certifications</span>
+        {CERTIFICATIONS.map((certificate) => (
+          <div className="certificate" key={certificate.title}>
+            <div className="certificate-title">
+              <span>{certificate.title}</span>
+              {certificate.credential && <small>Credential ID {certificate.credential}</small>}
+            </div>
+            <span>{certificate.issuer}</span>
+            <time>{certificate.date}</time>
+          </div>
         ))}
       </div>
     </section>
@@ -657,135 +457,46 @@ function Writing() {
 }
 
 function Contact() {
-  const { PERSONAL } = DATA;
   return (
-    <section id="contact" className="jr-contact" data-screen-label="07 Contact">
-      <div className="jr-masthead">
-        <div className="jr-mast-l">Engineering Journal · Vol. 26</div>
-        <div className="jr-mast-r">Issue 04 · April 2026</div>
-      </div>
-      <div className="jr-title-row">
+    <section id="contact" className="contact-section" data-reveal>
+      <span className="section-index">06 / Contact</span>
+      <div className="contact-grid">
         <div>
-          <div className="jr-eyebrow">07 · Correspondence</div>
-          <h2 className="jr-title">Have a hard problem?<br/><span className="accent-word">Let's talk silicon.</span></h2>
+          <h2>Let’s build something<br /><em>that has to work.</em></h2>
+          <p>For engineering, systems, operations, and research conversations.</p>
         </div>
-        <div className="jr-lede">
-          Open to roles in hardware engineering, embedded systems, and silicon design starting Summer 2026.
-        </div>
-      </div>
-
-      <div className="jr-grid">
-        {/* Ledger Page (Links) */}
-        <div className="jr-sheet">
-          <div className="jr-stamp">APPROVED</div>
-          <div className="jr-heading">Directory</div>
-          <div className="jr-ledger">
-            <a className="jr-row" href={`mailto:${PERSONAL.email}`}>
-              <span className="jr-row-label">Email</span>
-              <span className="jr-row-val">{PERSONAL.email}</span>
-              <span className="jr-row-arrow">↗</span>
-            </a>
-            <a className="jr-row" href={`https://${PERSONAL.github}`} target="_blank" rel="noreferrer">
-              <span className="jr-row-label">GitHub</span>
-              <span className="jr-row-val">{PERSONAL.github}</span>
-              <span className="jr-row-arrow">↗</span>
-            </a>
-            <a className="jr-row" href={`https://${PERSONAL.linkedin}`} target="_blank" rel="noreferrer">
-              <span className="jr-row-label">LinkedIn</span>
-              <span className="jr-row-val">manikanta-gonugondla</span>
-              <span className="jr-row-arrow">↗</span>
-            </a>
-            <div className="jr-row">
-              <span className="jr-row-label">Location</span>
-              <span className="jr-row-val">{PERSONAL.location}</span>
-            </div>
-          </div>
-          <div className="jr-margin-note">
-            <b>Note:</b> Response latency is typically <b>&lt; 24h</b>. Priority given to hardware/RTL-related inquiries.
-          </div>
-        </div>
-
-        {/* LinkedIn / Social Special Card (Replacement for simple form in React for now) */}
-        <a href={`https://${PERSONAL.linkedin}`} target="_blank" rel="noreferrer" className="li-special">
-          <div className="li-inner">
-            <div className="li-logo">in</div>
-            <div className="li-body">
-              <div className="li-label">Professional Network</div>
-              <div className="li-handle">Gonugondla Veera Manikanta</div>
-              <div className="li-roles">Electrical &amp; Electronics Engineer</div>
-            </div>
-            <div className="li-arrow">↗</div>
-          </div>
-          <div className="li-bar" />
-        </a>
-      </div>
-
-      <div className="jr-colophon">
-        <div className="jr-col">
-          <span className="jr-col-k">Current Revision</span>
-          <span className="jr-col-v">v26.04.23</span>
-        </div>
-        <div className="jr-col jr-col-mid">
-          <span className="jr-col-k">Platform</span>
-          <span className="jr-col-v">React 18 · Hand-set CSS</span>
-        </div>
-        <div className="jr-col jr-col-r">
-          <span className="jr-col-mark">© 2026 {PERSONAL.name}</span>
-          <span className="jr-col-v">All Rights Reserved</span>
+        <div className="contact-links">
+          <a href={`mailto:${PERSONAL.email}`}><span>Email</span><strong>{PERSONAL.email}</strong><i>↗</i></a>
+          <a href={`https://${PERSONAL.linkedin}`} target="_blank" rel="noreferrer"><span>LinkedIn</span><strong>/in/manikanta-gonugondla-349bb729a</strong><i>↗</i></a>
+          <a href={`https://${PERSONAL.github}`} target="_blank" rel="noreferrer"><span>GitHub</span><strong>@Manikanta25055</strong><i>↗</i></a>
+          <a href={`tel:${PERSONAL.phoneHref}`}><span>Phone</span><strong>{PERSONAL.phone}</strong><i>↗</i></a>
         </div>
       </div>
+      <footer>
+        <span>© {new Date().getFullYear()} {PERSONAL.name}</span>
+        <span>{PERSONAL.location}</span>
+      </footer>
     </section>
   );
 }
 
-
 export default function EngineeringJournal() {
-  const saved = (() => { try { return localStorage.getItem('portfolio.theme'); } catch(e) { return null; } })();
-  // a stale/unknown key in localStorage would crash DATA.THEMES[theme].label
-  const [theme] = useState(saved && DATA.THEMES[saved] ? saved : 'editorial');
-  const [active, setActive] = useState('home');
-  const [entered, setEntered] = useState(false);
-
-  useEffect(() => { document.body.setAttribute('data-theme', theme); }, [theme]);
-  useReveal(true);
-
-  useEffect(() => {
-    const ids = NAV_ITEMS.map(n => n.id);
-    let raf = null;
-    const onScroll = () => {
-      if (raf) return;
-      raf = requestAnimationFrame(() => {
-        raf = null;
-        let closest = ids[0], dist = Infinity;
-        for (const id of ids) {
-          const el = document.getElementById(id);
-          if (!el) continue;
-          const top = el.getBoundingClientRect().top;
-          const d = Math.abs(top - 120);
-          if (top < window.innerHeight * 0.5 && d < dist) { dist = d; closest = id; }
-        }
-        setActive(closest);
-      });
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+  const [active, setActive] = useActiveSection();
+  useReveal();
 
   return (
-    <div className="app-container">
-      {!entered && <EntryCard onDone={() => setEntered(true)} />}
-      <div className="page">
-        <Top theme={theme} />
+    <div className="portfolio-shell">
+      <a className="skip-link" href="#main-content">Skip to content</a>
+      <Header active={active} onNavigate={setActive} />
+      <main id="main-content">
         <Hero />
-        <Education />
-        <Work />
+        <Experience />
         <Projects />
         <Skills />
-        <Writing />
+        <Education />
+        <Research />
         <Contact />
-      </div>
-      <Nav active={active} setActive={setActive} />
+      </main>
     </div>
   );
 }

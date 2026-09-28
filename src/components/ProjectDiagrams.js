@@ -73,15 +73,15 @@ function Mak8u() {
       <Arrow x1={140} y1={91} x2={164} y2={91} both />
       <Arrow x1={236} y1={91} x2={260} y2={91} both />
 
-      <path className="dg-wire" d="M76 122V140M324 122V140M200 124V131" />
-      <path className="dg-bus" d="M44 140H356" />
-      <Box x={164} y={131} w={72} h={18} label="LOCK ARBITER" variant="paper" />
+      <path className="dg-wire" d="M76 122V146M324 122V146M200 124V128M200 142V146" />
+      <Box x={164} y={128} w={72} h={14} label="LOCK ARBITER" variant="paper" />
+      <path className="dg-bus" d="M44 146H356" />
       {peripherals.map((name, index) => {
         const x = 21 + index * 52;
         return (
           <g key={name}>
-            <path className="dg-wire" d={`M${x + 23} 140V156`} />
-            <Box x={x} y={156} w={46} h={22} label={name} />
+            <path className="dg-wire" d={`M${x + 23} 146V158`} />
+            <Box x={x} y={158} w={46} h={22} label={name} />
           </g>
         );
       })}

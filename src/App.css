@@ -1871,17 +1871,13 @@ footer {
     box-shadow: none;
   }
   .scroll-cue {
-    position: fixed;
-    bottom: calc(18px + env(safe-area-inset-bottom));
-    left: 50%;
-    z-index: 50;
     width: 34px;
     height: 34px;
+    margin: 22px auto 0;
     display: grid;
     place-items: center;
     color: var(--ink);
     opacity: 0.78;
-    transform: translate(-50%, 0);
     transition: opacity 300ms ease, visibility 300ms ease;
   }
   .scroll-cue svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.6; animation: cue-drift 2.2s ease-in-out infinite; stroke-linecap: round; stroke-linejoin: round; }

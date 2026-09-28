@@ -46,34 +46,34 @@ function Mak8u() {
   return (
     <>
       <Box x={160} y={8} w={80} h={30} label="MMCM" sub="2:1 RATIO" variant="ink" />
-      <path className="dg-wire dg-clock" d="M180 38V48H84V60M220 38V48H316V60" />
-      <text className="dg-note" x="120" y="43">50 MHz</text>
-      <text className="dg-note" x="280" y="43">100 MHz</text>
+      <path className="dg-wire dg-clock" d="M180 38V48H76V60M220 38V48H324V60" />
+      <text className="dg-note" x="118" y="43">50 MHz</text>
+      <text className="dg-note" x="282" y="43">100 MHz</text>
 
-      <Box x={14} y={60} w={140} h={62} label="CORE A · 5-STAGE" labelY={72} />
+      <Box x={12} y={60} w={128} h={62} label="CORE A · 5-STAGE" labelY={72} />
       {[0, 1, 2, 3, 4].map((stage) => (
         <g key={stage}>
-          <rect className="dg-cell" x={24 + stage * 25} y={86} width="21" height="24" />
-          <text className="dg-sub" x={34.5 + stage * 25} y="98" dy="0.35em">{stage + 1}</text>
+          <rect className="dg-cell" x={22 + stage * 22.5} y={86} width="18" height="24" />
+          <text className="dg-sub" x={31 + stage * 22.5} y="98" dy="0.35em">{stage + 1}</text>
         </g>
       ))}
 
-      <Box x={246} y={60} w={140} h={62} label="CORE B · 7-STAGE" labelY={72} />
+      <Box x={260} y={60} w={128} h={62} label="CORE B · 7-STAGE" labelY={72} />
       {[0, 1, 2, 3, 4, 5, 6].map((stage) => (
         <g key={stage}>
-          <rect className="dg-cell" x={256 + stage * 17.4} y={86} width="14" height="24" />
-          <text className="dg-sub" x={263 + stage * 17.4} y="98" dy="0.35em">{stage + 1}</text>
+          <rect className="dg-cell" x={270 + stage * 16} y={86} width="12" height="24" />
+          <text className="dg-sub" x={276 + stage * 16} y="98" dy="0.35em">{stage + 1}</text>
         </g>
       ))}
 
-      <Box x={168} y={58} w={64} h={66} variant="accent" label="INTER-CORE" labelY={70} />
+      <Box x={164} y={58} w={72} h={66} variant="accent" label="INTER-CORE" labelY={70} />
       <text className="dg-sub" x="200" y="88" dy="0.35em">QUEUES</text>
       <text className="dg-sub" x="200" y="99" dy="0.35em">SEMAPHORES</text>
       <text className="dg-sub" x="200" y="110" dy="0.35em">BARRIERS</text>
-      <Arrow x1={154} y1={91} x2={168} y2={91} both />
-      <Arrow x1={232} y1={91} x2={246} y2={91} both />
+      <Arrow x1={140} y1={91} x2={164} y2={91} both />
+      <Arrow x1={236} y1={91} x2={260} y2={91} both />
 
-      <path className="dg-wire" d="M84 122V140M316 122V140M200 124V131" />
+      <path className="dg-wire" d="M76 122V140M324 122V140M200 124V131" />
       <path className="dg-bus" d="M44 140H356" />
       <Box x={164} y={131} w={72} h={18} label="LOCK ARBITER" variant="paper" />
       {peripherals.map((name, index) => {
@@ -85,7 +85,6 @@ function Mak8u() {
           </g>
         );
       })}
-      <circle className="dg-pulse" cx="200" cy="91" r="3" />
     </>
   );
 }

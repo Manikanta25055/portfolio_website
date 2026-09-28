@@ -66,5 +66,17 @@
       "source": "/((?!api/).*)",
       "destination": "/index.html"
     }
+  ],
+  "redirects": [
+    {
+      "source": "/Veera_Manikanta_Gonugondla_Resume.pdf",
+      "destination": "/Gonugondla_Veera_Manikanta_Resume.pdf",
+      "permanent": false
+    },
+    {
+      "source": "/Manikanta_Gonugondla_Resume.pdf",
+      "destination": "/Gonugondla_Veera_Manikanta_Resume.pdf",
+      "permanent": false
+    }
   ]
 }

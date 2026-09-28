@@ -178,7 +178,7 @@ function Header({ active, onNavigate }) {
               {item.label}
             </button>
           ))}
-          <a className="nav-resume" href={asset('/Veera_Manikanta_Gonugondla_Resume.pdf')} download>
+          <a className="nav-resume" href={asset('/Gonugondla_Veera_Manikanta_Resume.pdf')} download>
             Résumé <span aria-hidden="true">↓</span>
           </a>
         </nav>
@@ -260,7 +260,7 @@ function Hero() {
 
         <div className="hero-actions">
           <a className="button button-primary" href={`mailto:${PERSONAL.email}`}>Start a conversation <span aria-hidden="true">↗</span></a>
-          <a className="button" href={asset('/Veera_Manikanta_Gonugondla_Resume.pdf')} target="_blank" rel="noreferrer">View résumé</a>
+          <a className="button" href={asset('/Gonugondla_Veera_Manikanta_Resume.pdf')} target="_blank" rel="noreferrer">View résumé</a>
         </div>
       </div>
 

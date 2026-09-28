@@ -277,6 +277,17 @@ function Hero() {
           <a className="button button-primary" href={`mailto:${PERSONAL.email}`}>Start a conversation <span aria-hidden="true">↗</span></a>
           <a className="button" href={asset('/Gonugondla_Veera_Manikanta_Resume.pdf')} target="_blank" rel="noreferrer">View résumé</a>
         </div>
+
+        <a
+          className={`scroll-cue ${showScrollCue ? '' : 'is-hidden'}`}
+          href="#experience"
+          aria-label="Scroll to experience"
+          tabIndex={showScrollCue ? 0 : -1}
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M6 9.5l6 6 6-6" />
+          </svg>
+        </a>
       </div>
 
       <aside className="upcoming-card" data-reveal aria-label={`${UPCOMING_ROLE.label} ${UPCOMING_ROLE.role} at ${UPCOMING_ROLE.company}`}>
@@ -310,17 +321,6 @@ function Hero() {
           </div>
         ))}
       </div>
-
-      <a
-        className={`scroll-cue ${showScrollCue ? '' : 'is-hidden'}`}
-        href="#experience"
-        aria-label="Scroll to experience"
-        tabIndex={showScrollCue ? 0 : -1}
-      >
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <path d="M6 9.5l6 6 6-6" />
-        </svg>
-      </a>
     </section>
   );
 }

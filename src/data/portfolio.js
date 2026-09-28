@@ -21,7 +21,7 @@ export const UPCOMING_ROLE = {
 
 export const STATS = [
   { value: '6', label: 'Featured systems' },
-  { value: '2', label: 'Indian patent applications' },
+  { value: '2', label: 'Published patent applications' },
   { value: '126', label: 'Self-checking MAK8u tests' },
   { value: '1st', label: 'IITM Gadget Expo' },
 ];

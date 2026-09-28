@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import goldmanSachsLogo from '../assets/goldman-sachs.png';
+import ProjectIllustration from './ProjectDiagrams';
 import {
   CERTIFICATIONS,
   EDUCATION,
@@ -247,8 +248,22 @@ function PracticeMap() {
   );
 }
 
+function useScrollCue() {
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    const update = () => setVisible(window.scrollY < 40);
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+    return () => window.removeEventListener('scroll', update);
+  }, []);
+
+  return visible;
+}
+
 function Hero() {
   const [logoFailed, setLogoFailed] = useState(false);
+  const showScrollCue = useScrollCue();
 
   return (
     <section id="home" className="hero-section">
@@ -295,92 +310,18 @@ function Hero() {
           </div>
         ))}
       </div>
+
+      <a
+        className={`scroll-cue ${showScrollCue ? '' : 'is-hidden'}`}
+        href="#experience"
+        aria-label="Scroll to experience"
+        tabIndex={showScrollCue ? 0 : -1}
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M6 9.5l6 6 6-6" />
+        </svg>
+      </a>
     </section>
-  );
-}
-
-const PROJECT_VISUAL_LABELS = {
-  mak8u: 'Dual-core architecture',
-  garuda: 'Local edge-AI pipeline',
-  breadth: 'Patient signal monitoring',
-  thermal: 'Eight-channel heat profile',
-  battery: 'Bidirectional charge transfer',
-  'smart-factory': 'Connected factory floor',
-};
-
-function ProjectIllustration({ projectId }) {
-  const common = <path className="visual-grid" d="M0 24H320M0 56H320M0 88H320M0 120H320M40 0V144M80 0V144M120 0V144M160 0V144M200 0V144M240 0V144M280 0V144" />;
-  const illustrations = {
-    mak8u: (
-      <>
-        <rect className="visual-block" x="24" y="35" width="78" height="58" rx="4" />
-        <rect className="visual-block visual-block-accent" x="218" y="35" width="78" height="58" rx="4" />
-        <path className="visual-line" d="M102 64H218M160 64V111H246" />
-        <circle className="visual-signal" cx="160" cy="64" r="5" />
-        <text x="63" y="68">50 MHz</text><text x="257" y="68">100 MHz</text>
-        <text className="visual-small" x="160" y="126">SHARED MEMORY</text>
-      </>
-    ),
-    garuda: (
-      <>
-        <path className="visual-outline" d="M22 79L64 42l42 37v35H22z" />
-        <circle className="visual-block-accent" cx="64" cy="80" r="13" />
-        <path className="visual-line" d="M107 80H198" />
-        <rect className="visual-block" x="198" y="46" width="94" height="68" rx="5" />
-        <path className="visual-scan" d="M218 64h54M218 80h38M218 96h46" />
-        <circle className="visual-signal" cx="153" cy="80" r="5" />
-        <text className="visual-small" x="245" y="131">LOCAL INFERENCE</text>
-      </>
-    ),
-    breadth: (
-      <>
-        <path className="visual-line visual-wave" d="M18 78h42l9-23 17 47 18-74 20 102 18-52h35l12-20 15 40 13-20h85" />
-        <circle className="visual-signal" cx="177" cy="78" r="6" />
-        <rect className="visual-outline" x="18" y="22" width="284" height="112" rx="6" />
-        <text className="visual-small" x="160" y="122">MULTI-MODAL VITALS</text>
-      </>
-    ),
-    thermal: (
-      <>
-        {[0, 1, 2, 3, 4, 5, 6, 7].map((item) => (
-          <circle key={item} className={`thermal-node thermal-${item}`} cx={48 + (item % 4) * 74} cy={48 + Math.floor(item / 4) * 55} r="17" />
-        ))}
-        <path className="visual-line" d="M48 48H270M48 103H270" />
-        <text className="visual-small" x="160" y="137">LIVE THERMAL MAP</text>
-      </>
-    ),
-    battery: (
-      <>
-        {[0, 1, 2, 3].map((item) => (
-          <g key={item} transform={`translate(${28 + item * 72} 42)`}>
-            <rect className="visual-block" width="48" height="64" rx="4" />
-            <path className="visual-line" d="M17 13h14M24 6v14" />
-          </g>
-        ))}
-        <path className="visual-transfer" d="M48 122C100 145 214 145 271 122" />
-        <path className="visual-transfer" d="M271 27C219 4 105 4 48 27" />
-      </>
-    ),
-    'smart-factory': (
-      <>
-        {Array.from({ length: 13 }, (_, item) => (
-          <rect key={item} className={`factory-node ${item === 7 ? 'visual-block-accent' : ''}`} x={29 + (item % 7) * 40} y={35 + Math.floor(item / 7) * 48} width="25" height="25" rx="3" />
-        ))}
-        <path className="visual-line" d="M42 118H278M160 118V93" />
-        <circle className="visual-signal" cx="160" cy="118" r="5" />
-        <text className="visual-small" x="160" y="138">13 MACHINES · ONE VIEW</text>
-      </>
-    ),
-  };
-
-  return (
-    <div className={`project-illustration visual-${projectId}`} aria-hidden="true">
-      <svg viewBox="0 0 320 144" focusable="false">
-        {common}
-        {illustrations[projectId]}
-      </svg>
-      <span>{PROJECT_VISUAL_LABELS[projectId]}</span>
-    </div>
   );
 }
 
@@ -422,7 +363,7 @@ function Experience() {
   );
 }
 
-function ProjectModal({ project, onClose }) {
+function ProjectModal({ project, figure, onClose }) {
   const closeRef = useRef(null);
   const modalRef = useRef(null);
 
@@ -469,29 +410,36 @@ function ProjectModal({ project, onClose }) {
         onMouseDown={(event) => event.stopPropagation()}
       >
         <button ref={closeRef} className="modal-close" type="button" onClick={onClose} aria-label="Close project details">×</button>
-        <span className="project-badge">{project.badge}</span>
-        <h2 id="project-modal-title">{project.title}</h2>
-        <p className="modal-subtitle">{project.subtitle} · {project.period}</p>
-        <ProjectIllustration projectId={project.id} />
-        <p className="modal-overview">{project.overview}</p>
+        <div className="modal-scroll">
+          <header className="modal-header">
+            <div className="modal-meta">
+              <span className="project-badge">{project.badge}</span>
+              <time>{project.period}</time>
+            </div>
+            <h2 id="project-modal-title">{project.title}</h2>
+            <p className="modal-subtitle">{project.subtitle}</p>
+          </header>
+          <ProjectIllustration projectId={project.id} figure={figure} />
+          <p className="modal-overview">{project.overview}</p>
 
-        <div className="metric-grid modal-metrics">
-          {project.metrics.map((metric) => (
-            <div key={metric.label}><strong>{metric.value}</strong><span>{metric.label}</span></div>
-          ))}
+          <div className="metric-grid modal-metrics">
+            {project.metrics.map((metric) => (
+              <div key={metric.label}><strong>{metric.value}</strong><span>{metric.label}</span></div>
+            ))}
+          </div>
+
+          <h3 className="modal-heading">Engineering highlights</h3>
+          <ul className="modal-highlights">
+            {project.highlights.map((highlight) => <li key={highlight}>{highlight}</li>)}
+          </ul>
+
+          <div className="tag-list">
+            {project.stack.map((item) => <span key={item}>{item}</span>)}
+          </div>
+          {project.link && (
+            <a className="button button-primary modal-link" href={project.link} target="_blank" rel="noreferrer">View repository <span aria-hidden="true">↗</span></a>
+          )}
         </div>
-
-        <h3 className="modal-heading">Engineering highlights</h3>
-        <ul className="modal-highlights">
-          {project.highlights.map((highlight) => <li key={highlight}>{highlight}</li>)}
-        </ul>
-
-        <div className="tag-list">
-          {project.stack.map((item) => <span key={item}>{item}</span>)}
-        </div>
-        {project.link && (
-          <a className="button button-primary modal-link" href={project.link} target="_blank" rel="noreferrer">View repository <span aria-hidden="true">↗</span></a>
-        )}
       </div>
     </div>
   );
@@ -516,7 +464,7 @@ function Projects() {
               <span>P/{String(index + 1).padStart(2, '0')}</span>
               <time>{project.period}</time>
             </div>
-            <ProjectIllustration projectId={project.id} />
+            <ProjectIllustration projectId={project.id} figure={index + 1} />
             <span className="project-badge">{project.badge}</span>
             <h3>{project.title}</h3>
             <p className="project-subtitle">{project.subtitle}</p>
@@ -531,7 +479,13 @@ function Projects() {
         ))}
       </div>
 
-      {selectedProject && <ProjectModal project={selectedProject} onClose={() => setSelectedProject(null)} />}
+      {selectedProject && (
+        <ProjectModal
+          project={selectedProject}
+          figure={PROJECTS.indexOf(selectedProject) + 1}
+          onClose={() => setSelectedProject(null)}
+        />
+      )}
     </section>
   );
 }

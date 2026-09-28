@@ -10,7 +10,7 @@ export const PERSONAL = {
   linkedin: 'www.linkedin.com/in/veera-manikanta-gonugondla-349bb729a/',
   website: 'veeramanikanta.in',
   location: 'Hyderabad, India',
-  summary: 'I design digital hardware from the instruction set upward and get it running on real boards. My work spans RTL and FPGA implementation, embedded systems, edge AI, and engineering analytics.',
+  summary: 'I design digital hardware from the instruction set upward and get it running on a board. My current work is MAK8u, a dual-core microcontroller in SystemVerilog that closes post-route on an Artix-7 at 50 and 100 MHz, backed by 126 testbenches. I am also co-inventor on two Indian patent applications and was a Systems & Digital Engineering Intern at Boeing India.',
 };
 
 export const UPCOMING_ROLE = {
@@ -56,8 +56,8 @@ export const EXPERIENCE = [
     period: 'May 2026 - Jul 2026',
     logo: '/logos/boeing.png',
     bullets: [
-      'Built a fleet-maintenance analytics platform with Python, FastAPI, React, and TypeScript that answers queries across 6,900+ maintenance records in under a second.',
-      'Created a forecasting engine that selects among 11 algorithms across a 24-feature pipeline, cutting error by up to 50% against linear interpolation.',
+      'Built a fleet-maintenance analytics platform with Python, FastAPI, React, and TypeScript that answers queries across 6,900+ maintenance records in under a second, with a RAG chatbot on a 5-stage deterministic NLQ pipeline and automated reporting.',
+      'Wrote a forecasting engine that picks among 11 algorithms by horizon over a 24-feature pipeline, cutting error by up to 50% against linear interpolation.',
       'Trained an 82-feature XGBoost failure-prediction model (F1 0.964, ROC-AUC 0.952) with SHAP explainability; risk alerts save 40+ engineering hours each month.',
     ],
     skills: ['Python', 'FastAPI', 'React', 'TypeScript', 'XGBoost', 'SHAP', 'RAG'],
@@ -69,7 +69,8 @@ export const EXPERIENCE = [
     bullets: [
       'Completed a VLSI and ASIC design programme using commercial EDA tools.',
       'Wrote Verilog and SystemVerilog RTL with self-checking testbenches through synthesis to FPGA.',
-      'Measured functional coverage and analysed timing and area trade-offs across synthesis constraints.',
+      'Measured functional coverage in simulation before taking designs to synthesis.',
+      'Analysed timing and area trade-offs across synthesis constraints on FPGA targets.',
     ],
     skills: ['Verilog', 'SystemVerilog', 'RTL', 'Verification', 'Synthesis', 'FPGA'],
   },
@@ -78,8 +79,8 @@ export const EXPERIENCE = [
     company: 'Apsis Solutions & IIT Guwahati',
     period: 'Jul 2025 - Oct 2025',
     bullets: [
-      'Built a factory-automation monitoring system covering 13 machines and reduced manual check time by 89%.',
-      'Instrumented the floor for continuous machine-status capture in one live supervisor view.',
+      'Built factory-automation monitoring across 13 machines, cutting manual check time by 89%.',
+      'Captured machine status continuously in one live supervisor view.',
       'Worked with IIT Guwahati mentors to validate monitoring accuracy against manual floor logs.',
     ],
     skills: ['Industrial IoT', 'Monitoring', 'Automation', 'Validation'],
@@ -103,17 +104,20 @@ export const PROJECTS = [
     subtitle: 'Asymmetric dual-core microcontroller',
     period: 'Jun 2025 - Present',
     badge: 'Custom ISA + RTL',
-    overview: 'A dual-core 8-bit microcontroller built from its own 54-instruction ISA. One core runs five stages at 50 MHz for predictable timing; the other runs seven at 100 MHz for throughput.',
+    overview: 'A dual-core 8-bit microcontroller built from its own 54-instruction ISA. One core runs five stages at 50 MHz for predictable timing, the other seven at 100 MHz for throughput, and one MMCM holds both at an exact 2:1 ratio so the boundary between them closes under static timing analysis rather than through a synchronizer.',
     highlights: [
-      'Both clocks close post-route on Artix-7 with WNS +0.452 ns and +0.480 ns and positive hold slack.',
-      '126 self-checking testbenches pass before every synthesis; five mutation campaigns caught tests that only looked strong.',
-      'Two cores share memory at an exact 2:1 ratio, with worst-case wait reporting, DMA, and SPI, I2C, UART, GPIO, PWM, and XADC peripherals.',
-      'Patent draft in progress for repeatable inter-core timing across rationally related clock domains.',
+      'Both clocks close post-route with WNS +0.452 ns and +0.480 ns and positive hold slack, in 8,823 LUTs and 7,619 registers on an Artix-7.',
+      'Crossing latency held at 2 cycles across 27.5M silicon measurements, versus 32 to 36 cycles with an asynchronous crossing.',
+      'Shortened the critical path to the program counter from 14 logic levels to 6.',
+      'Forwarding and hazard logic on both cores, an inter-core controller with message queues, semaphores, and barriers, a lock arbiter that reports the worst-case wait before a core commits to it, DMA, and SPI, I2C, UART, GPIO, PWM, and XADC peripherals.',
+      '126 self-checking testbenches pass before every synthesis; five mutation campaigns found the tests that only looked strong.',
+      'Tooling includes a Python assembler, ILA capture for silicon debug, and MAK IDE, a terminal workbench that loads images over UART without Vivado.',
+      'Patent draft in progress on repeatable inter-core timing across rationally related clock domains.',
     ],
     metrics: [
       { value: '50/100', label: 'MHz dual clocks' },
       { value: '126', label: 'testbenches' },
-      { value: '8,823', label: 'Artix-7 LUTs' },
+      { value: '2', label: 'cycle crossing' },
       { value: '54', label: 'ISA instructions' },
     ],
     stack: ['SystemVerilog', 'Vivado', 'Tcl', 'Verilator', 'Python', 'Nexys A7'],
@@ -129,7 +133,7 @@ export const PROJECTS = [
     highlights: [
       'INT8-quantized YOLOv8s inference reaches 52.2 FPS at 18.4 ms latency and 0.854 mAP@0.5.',
       'Runs on a Raspberry Pi 5 with a Hailo-8L M.2 AI HAT under a 5.8 W total power budget.',
-      'Co-inventor on Indian Patent Application No. 202641090505; research paper in preparation.',
+      'Co-inventor on Indian Patent Application No. 202641090505 (published Sep 2026); research paper in preparation.',
     ],
     metrics: [
       { value: '52.2', label: 'FPS' },
@@ -149,7 +153,7 @@ export const PROJECTS = [
     overview: 'A wearable monitor for continuous vital signs and early-collapse detection, paired with a macOS app for multi-patient floor-plan tracking.',
     highlights: [
       'An embedded Random Forest detects falls from 104 features; a local RAG agent supports vital-sign diagnostics and clinical-handbook queries.',
-      'Indian Patent Application No. 202541059846 was published in Aug 2026.',
+      'Co-inventor on Indian Patent Application No. 202541059846 (published Aug 2026).',
       'The manuscript is under review at IEEE Sensors Journal.',
     ],
     metrics: [
@@ -178,7 +182,7 @@ export const PROJECTS = [
       { value: 'RS-485', label: 'field bus' },
       { value: 'Live', label: 'anomaly detection' },
     ],
-    stack: ['ESP32-S3', 'DS18B20', 'MODBUS RTU', 'Python', 'PyQt5', 'SwiftUI'],
+    stack: ['ESP32-S3', 'DS18B20', 'MODBUS RTU', 'RS-485', 'Python', 'PyQt5', 'scikit-learn', 'SwiftUI'],
     link: 'https://github.com/Manikanta25055/Thermal_Profiling',
   },
   {
@@ -227,15 +231,15 @@ export const PROJECTS = [
 export const SKILL_GROUPS = [
   {
     title: 'RTL & architecture',
-    items: ['SystemVerilog', 'Verilog', 'RTL design', 'Computer architecture', 'Pipelined cores', 'Hazard detection & forwarding', 'FSM & datapath design', 'Clock-domain crossing', 'Memory arbitration', 'ISA definition'],
+    items: ['SystemVerilog', 'Verilog', 'RTL design', 'Computer architecture', 'Pipelined cores', 'Hazard detection & forwarding', 'FSM & datapath design', 'Clock-domain crossing', 'Memory arbitration', 'Interrupt & DMA controllers', 'ISA definition'],
   },
   {
     title: 'Verification & implementation',
-    items: ['Self-checking testbenches', 'Mutation testing', 'Functional coverage', 'Waveform & ILA debug', 'Synthesis', 'Post-route timing closure', 'AMD Vivado', 'Verilator', 'Nexys A7'],
+    items: ['Self-checking testbenches', 'Mutation testing', 'Functional coverage', 'Waveform & ILA debugging', 'Synthesis', 'Post-route timing closure', 'AMD Vivado', 'Verilator', 'Nexys A7'],
   },
   {
     title: 'Embedded & tools',
-    items: ['C', 'Embedded C', 'Assembly', 'Python', 'MATLAB', 'Tcl', 'Bash', 'Raspberry Pi', 'ESP32', 'Arduino', 'FreeRTOS', 'Git', 'Linux'],
+    items: ['C', 'Embedded C', 'Assembly', 'Python', 'MATLAB', 'Tcl', 'Bash', 'Raspberry Pi', 'ESP32', 'Arduino', 'FreeRTOS', 'Git', 'Linux', 'Simulink', 'LTspice', 'LabVIEW'],
   },
   {
     title: 'Interfaces & instrumentation',
@@ -247,7 +251,7 @@ export const RESEARCH = [
   {
     type: 'Patent',
     title: 'Project Garuda',
-    status: 'Filed Jul 2026',
+    status: 'Published Sep 2026',
     detail: 'Indian Patent Application No. 202641090505. Co-inventor; research paper in preparation.',
   },
   {
@@ -260,7 +264,7 @@ export const RESEARCH = [
 
 export const CERTIFICATIONS = [
   { title: 'Computer Architecture Essentials on Arm', issuer: 'Arm Education', date: 'Aug 2026' },
-  { title: 'FPGA Architecture Based System for Industrial Application', issuer: 'L&T Edutech', date: 'Aug 2026' },
+  { title: 'FPGA Architecture Based System for Industrial Applications', issuer: 'L&T EduTech', date: 'Aug 2026' },
   {
     title: 'CCL India FY26, CNSL Participant',
     issuer: 'Cisco',

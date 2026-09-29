@@ -1,4 +1,4 @@
-import { apply, constrain, fold, multiply, mirror } from './geometry';
+import { apply, bezier, constrain, fold, multiply, mirror } from './geometry';
 
 const W = 540;
 const H = 760;
@@ -47,5 +47,19 @@ describe('page fold geometry', () => {
     const P = constrain([-900, -400], G, W, H);
     expect(Math.hypot(P[0], P[1] - H)).toBeLessThanOrEqual(W);
     expect(Math.hypot(P[0], P[1])).toBeLessThanOrEqual(Math.hypot(W, H));
+  });
+
+  test('the timing curve starts at rest, ends at rest and never runs backwards', () => {
+    const ease = bezier(0.42, 0, 0.18, 1);
+    expect(ease(0)).toBe(0);
+    expect(ease(1)).toBe(1);
+    let previous = 0;
+    for (let i = 1; i <= 100; i += 1) {
+      const value = ease(i / 100);
+      expect(value).toBeGreaterThanOrEqual(previous - 1e-9);
+      previous = value;
+    }
+    // Symmetric curves cross the middle at the middle.
+    expect(bezier(0.42, 0, 0.58, 1)(0.5)).toBeCloseTo(0.5, 4);
   });
 });

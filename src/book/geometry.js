@@ -127,6 +127,42 @@ export function gradientFrom(w, h, origin, dir, stops) {
   return `linear-gradient(${angle.toFixed(4)}rad, ${list})`;
 }
 
+// A CSS-style cubic-bezier timing function: x is time, the result is progress.
+export function bezier(x1, y1, x2, y2) {
+  const cx = 3 * x1;
+  const bx = 3 * (x2 - x1) - cx;
+  const ax = 1 - cx - bx;
+  const cy = 3 * y1;
+  const by = 3 * (y2 - y1) - cy;
+  const ay = 1 - cy - by;
+  const sampleX = (t) => ((ax * t + bx) * t + cx) * t;
+  const sampleY = (t) => ((ay * t + by) * t + cy) * t;
+  const slopeX = (t) => (3 * ax * t + 2 * bx) * t + cx;
+  return (x) => {
+    if (x <= 0) return 0;
+    if (x >= 1) return 1;
+    let t = x;
+    for (let i = 0; i < 8; i += 1) {
+      const error = sampleX(t) - x;
+      if (Math.abs(error) < 1e-6) break;
+      const slope = slopeX(t);
+      if (Math.abs(slope) < 1e-6) break;
+      t -= error / slope;
+    }
+    // Newton can stall on flat stretches; finish with bisection if needed.
+    if (Math.abs(sampleX(t) - x) > 1e-4) {
+      let lo = 0;
+      let hi = 1;
+      t = x;
+      for (let i = 0; i < 30; i += 1) {
+        if (sampleX(t) < x) lo = t; else hi = t;
+        t = (lo + hi) / 2;
+      }
+    }
+    return sampleY(Math.min(1, Math.max(0, t)));
+  };
+}
+
 export const easeInOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
 export const easeOut = (t) => 1 - (1 - t) ** 3;
 export const lerp = (a, b, t) => a + (b - a) * t;

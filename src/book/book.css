@@ -9,9 +9,13 @@ body.is-reading {
 }
 
 .bk-room {
-  --cloth: #9f2c1f;
-  --cloth-deep: #7c2016;
-  --cloth-light: #b8412f;
+  --cloth: #8e2519;
+  --cloth-deep: #6f1b12;
+  --cloth-light: #b23b2a;
+  --foil: #d2b36c;
+  --mat: #1d2834;
+  --page-recto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 540 760' preserveAspectRatio='none'%3E%3Cpath d='M0 12C18 4 90 0 240 0C360 0 470 1.2 540 2.5V757.5C470 758.8 360 760 240 760C90 760 18 756 0 748Z'/%3E%3C/svg%3E");
+  --page-verso: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 540 760' preserveAspectRatio='none'%3E%3Cpath d='M540 12C522 4 450 0 300 0C180 0 70 1.2 0 2.5V757.5C70 758.8 180 760 300 760C450 760 522 756 540 748Z'/%3E%3C/svg%3E");
   --leaf: #f6f1e7;
   --leaf-ink: #1c1915;
   --leaf-muted: #6b645b;
@@ -20,12 +24,16 @@ body.is-reading {
   position: fixed;
   inset: 0;
   overflow: hidden;
-  background-color: var(--desk);
+  background-color: var(--mat);
   background-image:
-    radial-gradient(ellipse 70% 60% at 50% 44%, rgba(255, 251, 243, 0.62), rgba(255, 251, 243, 0) 70%),
-    radial-gradient(ellipse 120% 90% at 50% 50%, transparent 55%, rgba(58, 44, 28, 0.16)),
-    var(--grain),
-    var(--fibers);
+    radial-gradient(ellipse 120% 95% at 50% 44%, transparent 48%, rgba(5, 9, 13, 0.6)),
+    linear-gradient(rgba(236, 228, 214, 0.065) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(236, 228, 214, 0.065) 1px, transparent 1px),
+    linear-gradient(rgba(236, 228, 214, 0.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(236, 228, 214, 0.028) 1px, transparent 1px),
+    var(--grain);
+  background-size: 100% 100%, 100px 100px, 100px 100px, 20px 20px, 20px 20px, 220px 220px;
+  background-position: 0 0, 24px 24px, 24px 24px, 24px 24px, 24px 24px, 0 0;
   color: var(--leaf-ink);
   -webkit-user-select: none;
   user-select: none;
@@ -33,7 +41,8 @@ body.is-reading {
 
 .bk-stage {
   position: absolute;
-  inset: 0 0 64px;
+  z-index: 1;
+  inset: 24px 0 84px 24px;
   display: grid;
   place-items: center;
   touch-action: none;
@@ -60,17 +69,40 @@ body.is-reading {
 
 /* ---------------------------- shadows ----------------------------- */
 
+/* The book's own shadow on the mat: a tight contact line where the boards
+   touch, then softer layers falling away from the lamp above. Each floor
+   covers only its board's footprint and scales with it as a cover swings. */
 .bk-floor {
   position: absolute;
   z-index: 0;
   pointer-events: none;
   border-radius: 3px;
   box-shadow:
-    0 1px 1px rgba(46, 32, 18, 0.2),
-    0 6px 10px -2px rgba(46, 32, 18, 0.22),
-    0 26px 48px -14px rgba(46, 32, 18, 0.38),
-    0 60px 90px -40px rgba(46, 32, 18, 0.34);
+    0 0 0 0.5px rgba(0, 0, 0, 0.3),
+    0 1px 2px rgba(0, 0, 0, 0.5),
+    0 5px 10px -2px rgba(0, 0, 0, 0.42),
+    0 22px 38px -12px rgba(0, 0, 0, 0.55),
+    0 58px 90px -30px rgba(0, 0, 0, 0.6);
 }
+
+.bk-floor.is-left { transform-origin: 100% 50%; }
+.bk-floor.is-right { transform-origin: 0 50%; }
+
+/* Where the spine rests on the mat */
+.bk-block::before {
+  position: absolute;
+  z-index: 0;
+  top: 758px;
+  left: 450px;
+  width: 180px;
+  height: 36px;
+  background: radial-gradient(ellipse 50% 45% at 50% 40%, rgba(0, 0, 0, 0.5), transparent 75%);
+  content: '';
+  pointer-events: none;
+  transition: opacity 500ms ease;
+}
+
+.bk-room.is-closed .bk-block::before { opacity: 0; }
 
 .bk-under-shade,
 .bk-cast,
@@ -199,24 +231,169 @@ body.is-reading {
 .bk-cover.is-front .bk-cover-joint { left: 20px; }
 .bk-cover.is-back .bk-cover-joint { right: 20px; transform: scaleX(-1); }
 
-.bk-cover-stamp {
-  position: absolute;
-  top: 76px;
-  left: 50%;
-  width: 70px;
-  height: 70px;
-  margin-left: -28px;
-  fill: none;
-  stroke: rgba(60, 12, 6, 0.55);
-  stroke-width: 2.2;
-  stroke-linecap: round;
-  filter: drop-shadow(0 1px 0 rgba(255, 205, 185, 0.16));
+/* Gold foil stamped into the cloth */
+.bk-foil {
+  background-image: linear-gradient(100deg, #8d6b2e 0%, #e7cd87 18%, #b18c45 34%, #f5e4b2 48%, #a8833d 62%, #dcc07a 80%, #8d6b2e 100%);
+  background-size: 240% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 1px 0 rgba(44, 6, 2, 0.6));
 }
 
-.bk-cover-stamp .is-die { stroke-width: 1.4; }
-.bk-cover-stamp .is-dot { fill: rgba(60, 12, 6, 0.5); stroke: none; }
+.bk-foil-frame {
+  position: absolute;
+  top: 36px;
+  left: 52px;
+  width: calc(100% - 84px);
+  height: calc(100% - 72px);
+  filter: drop-shadow(0 1px 0 rgba(44, 6, 2, 0.55));
+}
 
-/* The pasted paper label */
+.bk-foil-frame .is-fill { fill: var(--foil); stroke: none; }
+
+.bk-cover-layout {
+  position: absolute;
+  top: 36px;
+  bottom: 36px;
+  left: 52px;
+  right: 32px;
+  padding: 56px 30px 46px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.bk-cover-volume {
+  font-family: var(--sans);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+}
+
+.bk-cover-volume i {
+  margin: 0 0.7em;
+  font-size: 7px;
+  font-style: normal;
+}
+
+.bk-medallion {
+  width: 170px;
+  height: 170px;
+  margin: 34px 0 30px;
+  overflow: visible;
+  filter: drop-shadow(0 1px 0 rgba(44, 6, 2, 0.6));
+}
+
+.bk-medallion-ring {
+  font-family: var(--sans);
+  font-size: 9.6px;
+  font-weight: 700;
+  letter-spacing: 3.1px;
+}
+
+.bk-medallion-mark {
+  font-family: var(--serif);
+  font-size: 36px;
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-anchor: middle;
+}
+
+.bk-medallion.is-small {
+  position: absolute;
+  bottom: 92px;
+  left: calc(50% - 53px);
+  width: 86px;
+  height: 86px;
+  margin: 0;
+}
+
+.bk-cover-title {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: var(--serif);
+  font-weight: 400;
+  line-height: 1;
+}
+
+.bk-cover-title > span,
+.bk-cover-title > em {
+  display: block;
+  font-size: 54px;
+  letter-spacing: -0.01em;
+  font-variation-settings: 'opsz' 144;
+}
+
+.bk-cover-title > em { margin-top: 2px; font-style: italic; }
+
+.bk-cover-title > .bk-cover-kicker {
+  margin-bottom: 12px;
+  font-size: 22px;
+  font-style: italic;
+  letter-spacing: 0.03em;
+}
+
+.bk-cover-rule {
+  position: relative;
+  width: 150px;
+  height: 9px;
+  margin: 24px 0 18px;
+  background: linear-gradient(90deg, transparent, var(--foil) 18%, var(--foil) 82%, transparent) center / 100% 1px no-repeat;
+}
+
+.bk-cover-rule i {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  background: var(--foil);
+  box-shadow: 0 0 0 3px var(--cloth);
+  transform: rotate(45deg);
+}
+
+.bk-cover-subtitle {
+  font-family: var(--sans);
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+
+.bk-cover-author {
+  margin-top: auto;
+  font-family: var(--sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+
+/* A slow band of lamplight passing over the foil */
+.bk-cover-sheen {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 38%, rgba(255, 236, 200, 0.1) 46%, rgba(255, 246, 226, 0.18) 50%, rgba(255, 236, 200, 0.1) 54%, transparent 62%);
+  background-position: 120% 0;
+  background-size: 300% 100%;
+  mix-blend-mode: screen;
+  pointer-events: none;
+  animation: cover-sheen 8s ease-in-out 1.2s infinite;
+}
+
+@keyframes cover-sheen {
+  0% { background-position: 120% 0; }
+  36%, 100% { background-position: -20% 0; }
+}
+
+/* The pasted paper label (back cover blurb) */
 .bk-label {
   position: absolute;
   top: 190px;
@@ -248,49 +425,11 @@ body.is-reading {
   text-transform: uppercase;
 }
 
-.bk-label-title {
-  margin: 20px 0 22px;
-  font-family: var(--serif);
-  font-size: 30px;
-  font-weight: 400;
-  line-height: 1.1;
-  letter-spacing: -0.01em;
-  font-variation-settings: 'opsz' 72;
-}
-
-.bk-label-title span {
-  display: block;
-  font-style: italic;
-}
-
 .bk-label-rule {
   width: 34px;
   height: 1px;
   margin-bottom: 18px;
   background: var(--red);
-}
-
-.bk-label-author {
-  font-family: var(--sans);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-}
-
-.bk-cover-mark {
-  position: absolute;
-  bottom: 70px;
-  left: 50%;
-  margin-left: -40px;
-  width: 104px;
-  color: rgba(62, 12, 6, 0.6);
-  font-family: var(--serif);
-  font-size: 22px;
-  font-style: italic;
-  letter-spacing: 0.12em;
-  text-align: center;
-  text-shadow: 0 1px 0 rgba(255, 205, 185, 0.18);
 }
 
 .bk-label.is-blurb {
@@ -323,18 +462,16 @@ body.is-reading {
 
 .bk-cover-web {
   position: absolute;
-  bottom: 66px;
+  bottom: 54px;
   left: 50%;
-  margin-left: -150px;
+  margin-left: -160px;
   width: 300px;
-  color: rgba(62, 12, 6, 0.62);
   font-family: var(--sans);
   font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.3em;
   text-align: center;
   text-transform: uppercase;
-  text-shadow: 0 1px 0 rgba(255, 205, 185, 0.16);
 }
 
 /* Endpapers, pasted inside each board with the cloth turned in */
@@ -428,41 +565,224 @@ body.is-reading {
 
 .bk-bookplate-name {
   font-family: var(--serif);
-  font-size: 13px;
+  font-size: 20px;
+  font-style: italic;
+  letter-spacing: 0.04em;
+}
+
+.bk-bookplate-line.is-sub {
+  font-size: 6.5px;
+  letter-spacing: 0.16em;
+  opacity: 0.75;
 }
 
 /* ------------------------ text block edges ------------------------ */
 
-.bk-stack {
-  position: absolute;
-  z-index: 2;
-  top: 1px;
-  height: 758px;
-  pointer-events: none;
-  background:
-    linear-gradient(180deg, rgba(60, 44, 28, 0.12), transparent 6%, transparent 94%, rgba(60, 44, 28, 0.14)),
-    repeating-linear-gradient(90deg, #f3ecdf 0 0.9px, #d2c6b3 0.9px 1.25px);
+/* Every page curves down into the binding: the top and bottom edges dip
+   toward the spine. The same outline shapes the sheets stacked beneath. */
+.bk-leaf.is-recto,
+.bk-sheet.is-right span {
+  -webkit-mask: var(--page-recto) 0 0 / 100% 100% no-repeat;
+  mask: var(--page-recto) 0 0 / 100% 100% no-repeat;
 }
 
-.bk-stack.is-left { box-shadow: -1px 0 1px rgba(60, 40, 20, 0.2); }
-.bk-stack.is-right { box-shadow: 1px 0 1px rgba(60, 40, 20, 0.2); }
+.bk-leaf.is-verso,
+.bk-sheet.is-left span {
+  -webkit-mask: var(--page-verso) 0 0 / 100% 100% no-repeat;
+  mask: var(--page-verso) 0 0 / 100% 100% no-repeat;
+}
+
+.bk-sheets {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.bk-sheet {
+  position: absolute;
+  top: 0;
+  width: 540px;
+  height: 760px;
+  filter: drop-shadow(0 0 0.5px rgba(86, 64, 40, 0.6));
+}
+
+.bk-sheet span {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+/* The stitched headbands, seen where the pages dip at the spine */
+.bk-headband {
+  position: absolute;
+  z-index: 6;
+  left: 527px;
+  width: 26px;
+  height: 9px;
+  border-radius: 4.5px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.28), transparent 45%, rgba(0, 0, 0, 0.35)),
+    repeating-linear-gradient(90deg, #efe4cf 0 2px, #9f2c1f 2px 4px);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+}
+
+.bk-headband.is-top { top: -3px; }
+.bk-headband.is-bottom { top: 754px; }
+
+/* ---------------------------- bookmarks --------------------------- */
+
+.bk-mark {
+  position: absolute;
+  width: 18px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.bk-mark.is-tab {
+  z-index: 4;
+  top: -30px;
+  height: 46px;
+  transition: transform 260ms var(--ease-out);
+}
+
+.bk-mark.is-tab:hover,
+.bk-mark.is-tab:focus-visible { transform: translateY(-7px); }
+
+.bk-mark.is-tab::after {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  padding: 5px 9px;
+  border-radius: 8px;
+  background: rgba(28, 24, 20, 0.88);
+  color: #f6f1e7;
+  content: attr(data-tip);
+  font: 600 9px/1.2 var(--sans);
+  letter-spacing: 0.08em;
+  opacity: 0;
+  pointer-events: none;
+  text-transform: uppercase;
+  transform: translate(-50%, 4px);
+  transition: opacity 180ms ease, transform 180ms ease;
+  white-space: nowrap;
+}
+
+.bk-mark.is-tab:hover::after,
+.bk-mark.is-tab:focus-visible::after {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.bk-mark.is-drape {
+  z-index: 26;
+  top: -30px;
+  height: 262px;
+  overflow: hidden;
+}
 
 .bk-ribbon {
   position: absolute;
-  z-index: 3;
-  top: 700px;
-  left: 574px;
-  width: 11px;
-  height: 128px;
-  background: linear-gradient(90deg, #7e1f14, #b3392a 38%, #c4493a 52%, #8f2619);
-  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% calc(100% - 9px), 0 100%);
-  filter: drop-shadow(1px 2px 1px rgba(40, 20, 10, 0.3));
-  transform: rotate(4deg);
-  transform-origin: 50% 0;
-  transition: opacity 400ms ease;
+  top: 0;
+  left: 0;
+  width: 18px;
+  display: block;
 }
 
-.bk-ribbon.is-hidden { opacity: 0; }
+.bk-ribbon.is-tab { height: 46px; }
+
+.bk-ribbon.is-drape {
+  height: 262px;
+  animation: silk-arrive 2.8s var(--ease-out) forwards;
+}
+
+/* Arrives across the page, rests, then slides up into the top margin. */
+@keyframes silk-arrive {
+  0% { transform: translateY(-262px); }
+  24% { transform: translateY(0); }
+  60% { transform: translateY(0); }
+  100% { transform: translateY(-196px); }
+}
+
+.bk-silk {
+  position: absolute;
+  inset: 0;
+  display: block;
+  background: linear-gradient(90deg,
+    color-mix(in srgb, var(--silk) 62%, #000) 0%,
+    var(--silk) 18%,
+    color-mix(in srgb, var(--silk) 68%, #fff) 42%,
+    var(--silk) 60%,
+    color-mix(in srgb, var(--silk) 70%, #000) 100%);
+  box-shadow: 0 2px 4px rgba(20, 10, 4, 0.35);
+}
+
+/* Stitching down both edges */
+.bk-silk::before {
+  position: absolute;
+  inset: 0 3px;
+  border-right: 1px dashed rgba(255, 245, 225, 0.4);
+  border-left: 1px dashed rgba(255, 245, 225, 0.4);
+  content: '';
+}
+
+.bk-ribbon.is-tab .bk-silk {
+  clip-path: polygon(0 0, 50% 7px, 100% 0, 100% 100%, 0 100%);
+}
+
+.bk-ribbon.is-drape .bk-silk {
+  bottom: 22px;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% calc(100% - 9px), 0 100%);
+}
+
+.bk-silk-folio {
+  position: absolute;
+  top: 11px;
+  left: 0;
+  right: 0;
+  background-image: linear-gradient(180deg, #f5e4b2, #c9a55a);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font: 700 7.5px/1 var(--sans);
+  letter-spacing: 0.02em;
+  text-align: center;
+}
+
+.bk-ribbon.is-drape .bk-silk-folio { top: auto; bottom: 20px; }
+
+/* A small brass charm on a thread */
+.bk-charm {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 15px;
+  height: 15px;
+  margin-left: -7.5px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at 35% 30%, #fff3c9, #d9b45c 42%, #8a6526 92%);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.45), inset 0 0 0 1.5px rgba(120, 86, 30, 0.6);
+}
+
+.bk-charm::before {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  width: 1px;
+  height: 7px;
+  background: #8a6526;
+  content: '';
+}
+
+.bk-charm b {
+  color: #6b4b17;
+  font: italic 600 8px/1 var(--serif);
+}
 
 /* ----------------------------- leaves ----------------------------- */
 
@@ -1007,6 +1327,15 @@ body.is-reading {
 
 .bk-title em { font-weight: 400; }
 
+.bk-title-kicker {
+  display: block;
+  margin-bottom: 0.3em;
+  color: var(--red);
+  font-size: 0.42em;
+  font-style: italic;
+  letter-spacing: 0.02em;
+}
+
 .bk-title-note {
   margin: 0;
   color: var(--leaf-muted);
@@ -1494,11 +1823,12 @@ body.is-reading {
 
 .bk-hint {
   position: absolute;
-  bottom: 78px;
+  z-index: 2;
+  bottom: 96px;
   left: 0;
   right: 0;
   margin: 0;
-  color: var(--leaf-muted);
+  color: rgba(236, 228, 214, 0.62);
   font-family: var(--serif);
   font-size: 13px;
   font-style: italic;
@@ -1512,37 +1842,205 @@ body.is-reading {
 .bk-hint kbd {
   margin: 0 2px;
   padding: 1px 5px;
-  border: 1px solid rgba(64, 52, 40, 0.28);
+  border: 1px solid rgba(236, 228, 214, 0.3);
   border-radius: 4px;
   font-family: var(--sans);
   font-size: 10px;
   font-style: normal;
 }
 
-.bk-controls {
+/* ---------------------------- the desk ---------------------------- */
+
+.bk-desk {
   position: absolute;
-  bottom: 22px;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* A pool of warm light from the reading lamp */
+.bk-desk-lamp {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 56% 60% at 50% 43%, rgba(255, 232, 196, 0.17), rgba(255, 232, 196, 0.05) 46%, transparent 72%);
+}
+
+.bk-desk-ruler {
+  position: absolute;
+  color: rgba(236, 228, 214, 0.42);
+  font: 500 7.5px/1 'JetBrains Mono', ui-monospace, monospace;
+  letter-spacing: 0.04em;
+}
+
+.bk-desk-ruler.is-top {
+  top: 0;
+  left: 24px;
+  right: 0;
+  height: 24px;
+  border-bottom: 1px solid rgba(236, 228, 214, 0.2);
+  background:
+    repeating-linear-gradient(90deg, rgba(236, 228, 214, 0.42) 0 1px, transparent 1px 100px) left bottom / 100% 13px no-repeat,
+    repeating-linear-gradient(90deg, rgba(236, 228, 214, 0.3) 0 1px, transparent 1px 50px) left bottom / 100% 8px no-repeat,
+    repeating-linear-gradient(90deg, rgba(236, 228, 214, 0.2) 0 1px, transparent 1px 10px) left bottom / 100% 4px no-repeat;
+}
+
+.bk-desk-ruler.is-left {
+  top: 24px;
+  bottom: 0;
+  left: 0;
+  width: 24px;
+  border-right: 1px solid rgba(236, 228, 214, 0.2);
+  background:
+    repeating-linear-gradient(180deg, rgba(236, 228, 214, 0.42) 0 1px, transparent 1px 100px) right top / 13px 100% no-repeat,
+    repeating-linear-gradient(180deg, rgba(236, 228, 214, 0.3) 0 1px, transparent 1px 50px) right top / 8px 100% no-repeat,
+    repeating-linear-gradient(180deg, rgba(236, 228, 214, 0.2) 0 1px, transparent 1px 10px) right top / 4px 100% no-repeat;
+}
+
+.bk-desk-ruler span { position: absolute; }
+.bk-desk-ruler.is-top span { top: 4px; margin-left: 3px; }
+.bk-desk-ruler.is-left span { left: 3px; margin-top: 3px; writing-mode: vertical-rl; transform: rotate(180deg); }
+.bk-desk-ruler span:first-child { display: none; }
+
+.bk-desk-reg {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  fill: none;
+  stroke: rgba(236, 228, 214, 0.26);
+  stroke-width: 0.9;
+}
+
+.bk-desk-reg.is-tl { top: 40px; left: 40px; }
+.bk-desk-reg.is-tr { top: 40px; right: 18px; }
+.bk-desk-reg.is-bl { bottom: 18px; left: 40px; }
+.bk-desk-reg.is-br { right: 18px; bottom: 124px; }
+
+.bk-desk-angles {
+  position: absolute;
+  bottom: 60px;
+  left: 60px;
+  width: 190px;
+  height: 190px;
+  overflow: visible;
+  fill: none;
+  stroke: rgba(236, 228, 214, 0.1);
+  stroke-width: 1;
+}
+
+.bk-desk-angles text {
+  fill: rgba(236, 228, 214, 0.3);
+  stroke: none;
+  font: 500 9px 'JetBrains Mono', ui-monospace, monospace;
+}
+
+/* An engineering drawing's title block, in the corner of the mat */
+.bk-titleblock {
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
+  width: 262px;
+  border: 1px solid rgba(236, 228, 214, 0.26);
+  color: rgba(236, 228, 214, 0.5);
+  font: 500 7px/1.2 'JetBrains Mono', ui-monospace, monospace;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.bk-titleblock-row {
+  padding: 6px 8px;
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.bk-titleblock-row + .bk-titleblock-row,
+.bk-titleblock-grid + .bk-titleblock-row { border-top: 1px solid rgba(236, 228, 214, 0.18); }
+
+.bk-titleblock-row.is-title { grid-template-columns: auto 1fr; }
+
+.bk-titleblock strong {
+  color: rgba(246, 240, 228, 0.78);
+  font-weight: 500;
+}
+
+.bk-titleblock-row.is-title strong {
+  font: italic 400 13px/1.1 var(--serif);
+  letter-spacing: 0.01em;
+  text-transform: none;
+}
+
+.bk-titleblock-grid {
+  border-top: 1px solid rgba(236, 228, 214, 0.18);
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 0.7fr;
+}
+
+.bk-titleblock-grid span {
+  padding: 5px 8px;
+  border-left: 1px solid rgba(236, 228, 214, 0.18);
+}
+
+.bk-titleblock-grid span:first-child { border-left: 0; }
+
+.bk-titleblock-grid b {
+  display: block;
+  margin-top: 3px;
+  color: rgba(246, 240, 228, 0.78);
+  font-size: 8.5px;
+  font-weight: 500;
+}
+
+@media (max-width: 1379px) {
+  .bk-titleblock,
+  .bk-desk-angles,
+  .bk-desk-reg.is-br { display: none; }
+}
+
+/* ------------------------- the reading bar ------------------------ */
+
+.bk-dock {
+  position: absolute;
+  z-index: 60;
+  bottom: 20px;
   left: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  transform: translateX(-50%);
+}
+
+.bk-controls,
+.bk-undo,
+.bk-pop {
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  background: rgba(250, 246, 238, 0.78);
+  box-shadow:
+    0 18px 40px -16px rgba(0, 0, 0, 0.55),
+    0 2px 6px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  backdrop-filter: blur(20px) saturate(150%);
+}
+
+.bk-controls {
   padding: 5px;
   display: flex;
   align-items: center;
   gap: 2px;
-  border: 1px solid rgba(94, 83, 70, 0.16);
   border-radius: 999px;
-  background: rgba(250, 246, 238, 0.58);
-  box-shadow: 0 10px 30px -12px rgba(46, 32, 18, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.6);
-  -webkit-backdrop-filter: blur(18px) saturate(140%);
-  backdrop-filter: blur(18px) saturate(140%);
-  transform: translateX(-50%);
   transition: opacity 700ms ease;
 }
 
-.bk-room.is-idle .bk-controls { opacity: 0.32; }
+.bk-room.is-idle .bk-controls { opacity: 0.4; }
 .bk-room.is-idle .bk-controls:hover,
 .bk-controls:focus-within { opacity: 1; }
 
 .bk-controls button,
 .bk-controls a {
+  position: relative;
   height: 32px;
   border: 0;
   border-radius: 999px;
@@ -1556,11 +2054,13 @@ body.is-reading {
   transition: background 160ms ease, color 160ms ease, opacity 160ms ease;
 }
 
-.bk-controls button:not(.bk-controls-text) { width: 32px; }
+.bk-controls button:not(.bk-controls-text),
+.bk-controls a { width: 32px; }
 
 .bk-controls button:hover:not(:disabled),
-.bk-controls a:hover {
-  background: rgba(64, 52, 40, 0.08);
+.bk-controls a:hover,
+.bk-controls button.is-active {
+  background: rgba(64, 52, 40, 0.09);
   color: var(--red);
 }
 
@@ -1569,7 +2069,9 @@ body.is-reading {
   opacity: 0.3;
 }
 
-.bk-controls svg {
+.bk-controls svg,
+.bk-undo svg,
+.bk-pop svg {
   width: 14px;
   height: 14px;
   fill: none;
@@ -1578,6 +2080,9 @@ body.is-reading {
   stroke-linecap: round;
   stroke-linejoin: round;
 }
+
+.bk-controls button.is-on { color: var(--red); }
+.bk-controls button.is-on svg { fill: currentColor; }
 
 .bk-controls-text {
   padding: 0 12px;
@@ -1588,17 +2093,383 @@ body.is-reading {
   text-transform: uppercase;
 }
 
-.bk-controls-folio {
-  min-width: 78px;
-  padding: 0 6px;
-  border-left: 1px solid rgba(94, 83, 70, 0.16);
+.bk-controls-rule {
+  width: 1px;
+  height: 18px;
+  margin: 0 4px;
+  background: rgba(94, 83, 70, 0.18);
+}
+
+.bk-count {
+  position: absolute;
+  top: 2px;
+  right: 1px;
+  min-width: 14px;
+  height: 14px;
+  padding: 0 3px;
+  border-radius: 7px;
+  background: var(--red);
+  color: #fff;
+  font: 700 8px/14px var(--sans);
+}
+
+/* The scrubber: drag to riffle to any spread */
+.bk-scrub {
+  margin: 0 4px;
+  padding: 0 12px;
   border-right: 1px solid rgba(94, 83, 70, 0.16);
+  border-left: 1px solid rgba(94, 83, 70, 0.16);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bk-scrub-head {
+  width: 104px;
+  overflow: hidden;
   color: var(--leaf-muted);
+  font: 700 8.5px/1 var(--sans);
+  letter-spacing: 0.14em;
+  text-align: right;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.bk-scrub-folio {
+  min-width: 58px;
+  color: var(--leaf-ink);
+  font: italic 13px/1 var(--serif);
+  font-variant-numeric: oldstyle-nums;
+}
+
+.bk-scrub-track {
+  position: relative;
+  width: 230px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+}
+
+.bk-scrub-tick,
+.bk-scrub-mark {
+  position: absolute;
+  pointer-events: none;
+}
+
+.bk-scrub-tick {
+  top: 50%;
+  width: 1px;
+  height: 9px;
+  margin-top: -4.5px;
+  background: rgba(64, 52, 40, 0.32);
+}
+
+.bk-scrub-mark {
+  top: 3px;
+  width: 6px;
+  height: 9px;
+  margin-left: -3px;
+  background: var(--silk);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 72%, 0 100%);
+}
+
+.bk-scrub input {
+  position: relative;
+  width: 100%;
+  height: 32px;
+  margin: 0;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.bk-scrub input::-webkit-slider-runnable-track {
+  height: 3px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--red) var(--fill), rgba(64, 52, 40, 0.16) var(--fill));
+}
+
+.bk-scrub input::-moz-range-track {
+  height: 3px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--red) var(--fill), rgba(64, 52, 40, 0.16) var(--fill));
+}
+
+.bk-scrub input::-webkit-slider-thumb {
+  width: 14px;
+  height: 14px;
+  margin-top: -5.5px;
+  border: 0;
+  border-radius: 50%;
+  -webkit-appearance: none;
+  appearance: none;
+  background: #fff;
+  box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.18), 0 2px 5px rgba(0, 0, 0, 0.28);
+  transition: transform 160ms ease;
+}
+
+.bk-scrub input::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.18), 0 2px 5px rgba(0, 0, 0, 0.28);
+}
+
+.bk-scrub input:hover::-webkit-slider-thumb,
+.bk-scrub.is-scrubbing input::-webkit-slider-thumb { transform: scale(1.18); }
+
+.bk-scrub input:focus-visible { outline: none; }
+.bk-scrub input:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 3px rgba(182, 47, 33, 0.35), 0 2px 5px rgba(0, 0, 0, 0.28); }
+
+.bk-scrub-bubble {
+  position: absolute;
+  bottom: 40px;
+  padding: 7px 11px 8px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  background: rgba(28, 24, 20, 0.9);
+  color: #f6f1e7;
+  pointer-events: none;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.bk-scrub-bubble strong {
+  font: 700 8.5px/1 var(--sans);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.bk-scrub-bubble em {
+  color: rgba(246, 241, 231, 0.75);
+  font: italic 12px/1 var(--serif);
+}
+
+/* Undo a long jump */
+.bk-undo {
+  height: 34px;
+  padding: 0 14px 0 11px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--leaf-ink);
+  cursor: pointer;
+  font: 600 10px/1 var(--sans);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  animation: dock-in 380ms var(--ease-out) both;
+}
+
+.bk-undo em {
+  color: var(--leaf-muted);
+  font: italic 12px/1 var(--serif);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.bk-undo:hover { color: var(--red); }
+
+/* Menus */
+.bk-pop {
+  width: 330px;
+  max-height: calc(100vh - 140px);
+  padding: 12px 14px 14px;
+  overflow: auto;
+  border-radius: 16px;
+  color: var(--leaf-ink);
   font-family: var(--serif);
+  animation: dock-in 280ms var(--ease-out) both;
+}
+
+.bk-pop-head {
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font: 700 9px/1 var(--sans);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.bk-pop-head button,
+.bk-marklist-remove {
+  width: 26px;
+  height: 26px;
+  border: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  color: var(--leaf-muted);
+  cursor: pointer;
+}
+
+.bk-pop-head button:hover,
+.bk-marklist-remove:hover { background: rgba(64, 52, 40, 0.08); color: var(--red); }
+
+.bk-pop-empty {
+  margin: 4px 0 12px;
+  color: var(--leaf-muted);
   font-size: 13px;
   font-style: italic;
-  font-variant-numeric: oldstyle-nums;
-  text-align: center;
+  line-height: 1.45;
+}
+
+.bk-pop kbd {
+  padding: 1px 5px;
+  border: 1px solid rgba(64, 52, 40, 0.25);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.6);
+  font: 600 10px/1.4 var(--sans);
+  font-style: normal;
+}
+
+.bk-marklist {
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.bk-marklist li {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid rgba(64, 52, 40, 0.1);
+}
+
+.bk-marklist-go {
+  min-width: 0;
+  flex: 1;
+  padding: 8px 4px;
+  border: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.bk-marklist-go:hover span { color: var(--red); }
+
+.bk-marklist-go i {
+  width: 8px;
+  height: 16px;
+  flex: none;
+  background: var(--silk);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 76%, 0 100%);
+}
+
+.bk-marklist-go span {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bk-marklist-go em {
+  color: var(--leaf-muted);
+  font-size: 12px;
+}
+
+.bk-marklist li.is-here span::after {
+  margin-left: 6px;
+  color: var(--red);
+  content: '· open';
+  font: 700 8px/1 var(--sans);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.bk-pop-add label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--leaf-muted);
+  font: 700 8.5px/1 var(--sans);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.bk-pop-add div {
+  display: flex;
+  gap: 6px;
+}
+
+.bk-pop-add select {
+  min-width: 0;
+  flex: 1;
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid rgba(64, 52, 40, 0.2);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--leaf-ink);
+  font: 13px var(--serif);
+}
+
+.bk-pop-add button {
+  height: 32px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 9px;
+  background: var(--leaf-ink);
+  color: #f6f1e7;
+  cursor: pointer;
+  font: 600 10px/1 var(--sans);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.bk-pop-add button:disabled { cursor: default; opacity: 0.35; }
+
+.bk-keys { margin: 0; }
+
+.bk-keys div {
+  padding: 7px 0;
+  border-bottom: 1px solid rgba(64, 52, 40, 0.1);
+  display: grid;
+  grid-template-columns: 104px 1fr;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.bk-keys div:last-child { border-bottom: 0; }
+
+.bk-keys dt {
+  font: 600 10px/1 var(--sans);
+  letter-spacing: 0.08em;
+}
+
+.bk-keys dd {
+  margin: 0;
+  color: var(--leaf-muted);
+  font-size: 13px;
+  font-style: italic;
+}
+
+@keyframes dock-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .bk-controls,
+  .bk-undo,
+  .bk-pop {
+    background: var(--paper);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
 }
 
 .bk-visually-hidden {
@@ -1608,14 +2479,6 @@ body.is-reading {
   overflow: hidden;
   clip: rect(0 0 0 0);
   white-space: nowrap;
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  .bk-controls {
-    background: var(--paper);
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
 }
 
 .bk-project .bk-figures { margin: 0.75em 0 0.8em; }

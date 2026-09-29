@@ -13,7 +13,8 @@ import {
   UPCOMING_ROLE,
 } from '../data/portfolio';
 
-export const BOOK_TITLE = 'From Instruction Set to Working System';
+export const BOOK_TITLE = 'A GVM’s Engineering Journal';
+export const BOOK_SUBTITLE = 'From Instruction Set to Working System';
 export const RESUME = `${process.env.PUBLIC_URL}/Gonugondla_Veera_Manikanta_Resume.pdf`;
 const asset = (path) => `${process.env.PUBLIC_URL}${path}`;
 const dash = (text) => text.replace(/ - /g, ' – ');
@@ -136,14 +137,15 @@ function Fleuron() {
 function TitlePage() {
   return (
     <div className="bk-title-page">
-      <span className="bk-smallcaps bk-red">A working journal</span>
+      <span className="bk-smallcaps bk-red">Volume I · MMXXVI</span>
       <h1 className="bk-title">
-        From Instruction Set
+        <span className="bk-title-kicker">A GVM’s</span>
+        Engineering
         <br />
-        <em>to Working System</em>
+        <em>Journal</em>
       </h1>
       <Fleuron />
-      <p className="bk-title-note">Notes on hardware, systems and operations,<br />2023 to 2026</p>
+      <p className="bk-title-note">{BOOK_SUBTITLE}.<br />Notes on hardware, systems and operations, 2023 to 2026</p>
       <p className="bk-title-author">{PERSONAL.name}</p>
       <div className="bk-imprint">
         <span className="bk-monogram">{PERSONAL.initials}</span>
@@ -156,7 +158,7 @@ function TitlePage() {
 function Colophon() {
   return (
     <div className="bk-colophon">
-      <p><em>{BOOK_TITLE}</em><br />A working journal by {PERSONAL.name}</p>
+      <p><em>{BOOK_TITLE}</em><br />{BOOK_SUBTITLE}<br />by {PERSONAL.name} (GVM)</p>
       <p>First published online at {PERSONAL.website}.<br />This edition revised September 2026.</p>
       <p>© 2026 {PERSONAL.name}. All rights reserved.</p>
       <p>
@@ -244,7 +246,7 @@ function Acknowledgements() {
         And to everyone who lent a board, a bench or an hour of their evening: the mistakes that
         remain are mine; the ones that were caught are very often yours.
       </p>
-      <p className="bk-signoff">V. M. G.<br /><span>Hyderabad, 2026</span></p>
+      <p className="bk-signoff">GVM<br /><span>Hyderabad, 2026</span></p>
     </div>
   );
 }
@@ -799,7 +801,7 @@ export function buildBook() {
       <div className="bk-prose">
         <h2 className="bk-matter-title">About the Author</h2>
         <p className="bk-p">
-          <strong>{PERSONAL.name}</strong> is an electrical and electronics engineer working across
+          <strong>{PERSONAL.name}</strong> (GVM) is an electrical and electronics engineer working across
           digital hardware, embedded systems and edge AI, currently completing a BTech at Manipal
           Institute of Technology and a BS in Electronic Systems at IIT Madras side by side, and
           soon to join {UPCOMING_ROLE.company} as an {UPCOMING_ROLE.role}.

@@ -10,12 +10,12 @@ import React, {
 } from 'react';
 import { BOOK_TITLE, RESUME, buildBook } from './pages';
 import { BackCover, FrontCover, Pastedown } from './Covers';
+import Desk from './Desk';
 import {
   apply,
+  bezier,
   clamp,
   constrain,
-  easeInOut,
-  easeOut,
   fold,
   gradientFrom,
   identity,
@@ -37,12 +37,54 @@ const CAST_PAD = 160;
 const SHIFT = (W + OV) / 2; // closed books sit centred on their cover
 const CLOSED_FRONT = -1;
 
+// Motion: a page is carried by a spring when released, and follows an
+// ease-in-out curve when the book turns it for you.
+const TURN_EASE = bezier(0.42, 0, 0.18, 1);
+const BOARD_EASE = bezier(0.45, 0.05, 0.2, 1);
+const SPRING_K = 170;
+const SPRING_C = 2 * Math.sqrt(SPRING_K) * 0.96;
+const TURN_MS = 700;
+const JUMP_MS = 760;
+const BOARD_MS = 1000;
+const FLICK = 380; // px/s in book units
+
 const smooth = (a) => (1 - Math.cos(Math.PI * a)) / 2;
 const prefersReducedMotion = () => (
   typeof window !== 'undefined' && window.matchMedia
     ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
     : false
 );
+
+const RIBBONS = ['#1d3a5c', '#b8862b', '#2e6a4c', '#6d2b55', '#c0492f'];
+const BOOKMARK_KEY = 'gvm-journal-bookmarks';
+const CHAPTERS = [
+  { key: 'contents', label: 'Contents' },
+  { key: 'ch-education', label: 'Education' },
+  { key: 'ch-experience', label: 'Experience' },
+  { key: 'ch-projects', label: 'Projects' },
+  { key: 'ch-toolkit', label: 'Toolkit' },
+  { key: 'ch-research', label: 'Research' },
+  { key: 'ch-correspondence', label: 'Correspondence' },
+  { key: 'index', label: 'Index' },
+];
+const FRONT_NAMES = { title: 'Title page', colophon: 'Colophon' };
+
+// The floor shadow under each board covers only the board's footprint, so
+// nothing is left hanging in the air while a cover swings.
+const setFloor = (node, k) => {
+  if (!node) return;
+  node.style.transform = `scaleX(${k.toFixed(4)})`;
+  node.style.opacity = k > 0.002 ? '1' : '0';
+};
+
+const loadBookmarks = () => {
+  try {
+    const saved = JSON.parse(window.localStorage.getItem(BOOKMARK_KEY) || '[]');
+    return Array.isArray(saved) ? saved.filter((b) => Number.isInteger(b.spread) && typeof b.color === 'string') : [];
+  } catch (error) {
+    return [];
+  }
+};
 
 /* ------------------------------------------------------------------ */
 /* A single leaf side                                                  */
@@ -91,6 +133,71 @@ const Leaf = memo(forwardRef(function Leaf({ page, ctx, left, fontsVersion }, re
 }));
 
 /* ------------------------------------------------------------------ */
+/* The text block beneath the open pages                               */
+/* ------------------------------------------------------------------ */
+
+// Leaves still to read (or already read) show as sheets stepping out from
+// under the open page, following the same curve into the binding.
+const Sheets = memo(function Sheets({ side, count }) {
+  if (!count) return null;
+  const layers = clamp(Math.round(2 + count * 0.55), 2, 8);
+  const dx = side === 'right' ? 1.35 : -1.35;
+  return (
+    <div className="bk-sheets" aria-hidden="true">
+      {Array.from({ length: layers }, (_, n) => {
+        const i = layers - n;
+        return (
+          <div
+            key={i}
+            className={`bk-sheet is-${side}`}
+            style={{ left: side === 'right' ? W : 0, transform: `translate(${(dx * i).toFixed(2)}px, ${(i * 1.05).toFixed(2)}px)` }}
+          >
+            <span style={{ backgroundColor: `rgb(${244 - i * 2.6}, ${238 - i * 3}, ${226 - i * 3.6})` }} />
+          </div>
+        );
+      })}
+    </div>
+  );
+});
+
+/* ------------------------------------------------------------------ */
+/* Bookmarks                                                           */
+/* ------------------------------------------------------------------ */
+
+// Satin ribbon with stitched edges, a foil-stamped folio and, when it lies
+// across the page, a small brass charm.
+function Ribbon({ color, folio, drape = false }) {
+  return (
+    <span className={`bk-ribbon ${drape ? 'is-drape' : 'is-tab'}`} style={{ '--silk': color }}>
+      <span className="bk-silk">
+        <span className="bk-silk-folio">{folio}</span>
+      </span>
+      {drape && <i className="bk-charm" aria-hidden="true"><b>G</b></i>}
+    </span>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Icons for the reading bar                                           */
+/* ------------------------------------------------------------------ */
+
+const Icon = ({ name }) => {
+  const paths = {
+    prev: <path d="M10 3.5L5.5 8l4.5 4.5" />,
+    next: <path d="M6 3.5L10.5 8 6 12.5" />,
+    mark: <path d="M4.5 2.5h7v11L8 10.6l-3.5 2.9z" />,
+    marks: <><path d="M3 2.5h6v10L6 10l-3 2.5z" /><path d="M11 4.5h2v9l-2-1.6" /></>,
+    undo: <><path d="M5.5 5H10a3.5 3.5 0 010 7H6.5" /><path d="M7.5 2.5L5 5l2.5 2.5" /></>,
+    full: <path d="M2.5 6V2.5H6M10 2.5h3.5V6M13.5 10v3.5H10M6 13.5H2.5V10" />,
+    exit: <path d="M6 2.5V6H2.5M13.5 6H10V2.5M10 13.5V10h3.5M2.5 10H6v3.5" />,
+    help: <><circle cx="8" cy="8" r="6" /><path d="M6.4 6.3a1.7 1.7 0 113 1.1c-.6.5-1.4.8-1.4 1.8M8 11.4v.1" /></>,
+    close: <path d="M4 4l8 8M12 4l-8 8" />,
+    doc: <><path d="M4 2.5h5.5L12 5v8.5H4z" /><path d="M9.5 2.5V5H12M6 8.5h4M6 11h4" /></>,
+  };
+  return <svg viewBox="0 0 16 16" aria-hidden="true">{paths[name]}</svg>;
+};
+
+/* ------------------------------------------------------------------ */
 /* The book                                                            */
 /* ------------------------------------------------------------------ */
 
@@ -106,10 +213,17 @@ export default function Book() {
   const [fontsVersion, setFontsVersion] = useState(0);
   const [idle, setIdle] = useState(false);
   const [opened, setOpened] = useState(false);
+  const [preview, setPreview] = useState(null);
+  const [undo, setUndo] = useState(null);
+  const [bookmarks, setBookmarks] = useState(loadBookmarks);
+  const [menu, setMenu] = useState(null);
+  const [pick, setPick] = useState('');
+  const [fullscreen, setFullscreen] = useState(false);
 
   const stageRef = useRef(null);
   const blockRef = useRef(null);
   const shiftRef = useRef(null);
+  const dockRef = useRef(null);
   const leafNodes = useRef(new Map());
   const underShadeRef = useRef(null);
   const castRef = useRef(null);
@@ -147,7 +261,7 @@ export default function Book() {
     const fit = () => {
       const width = 2 * W + 2 * OV + 40;
       const height = H + 2 * OV + 30;
-      const next = Math.min((window.innerWidth - 96) / width, (window.innerHeight - 150) / height);
+      const next = Math.min((window.innerWidth - 96) / width, (window.innerHeight - 170) / height);
       setScale(clamp(next, 0.45, 1.5));
     };
     fit();
@@ -155,18 +269,44 @@ export default function Book() {
     if (document.fonts && document.fonts.ready) {
       document.fonts.ready.then(() => setFontsVersion((v) => v + 1));
     }
+    const onFullscreen = () => setFullscreen(Boolean(document.fullscreenElement));
+    document.addEventListener('fullscreenchange', onFullscreen);
     const state = engine.current;
     return () => {
       document.body.classList.remove('is-reading');
       window.removeEventListener('resize', fit);
+      document.removeEventListener('fullscreenchange', onFullscreen);
       cancelAnimationFrame(state.raf);
     };
   }, []);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(BOOKMARK_KEY, JSON.stringify(bookmarks));
+    } catch (error) {
+      // Bookmarks simply won't survive a reload.
+    }
+  }, [bookmarks]);
 
   /* ------------------------- what is shown ------------------------ */
 
   const leftOf = useCallback((s) => (s <= 0 ? null : pages[2 * s - 1] || null), [pages]);
   const rightOf = useCallback((s) => (s < 0 ? pages[0] : pages[2 * s] || null), [pages]);
+
+  const spreadOfKey = useCallback((key) => {
+    const index = book.indexOf(key);
+    return index === undefined ? null : Math.floor((index + 1) / 2);
+  }, [book]);
+
+  const describe = useCallback((s) => {
+    if (s === CLOSED_FRONT) return { folios: 'Cover', head: BOOK_TITLE };
+    if (s === CLOSED_BACK) return { folios: 'Back cover', head: BOOK_TITLE };
+    const l = leftOf(s);
+    const r = rightOf(s);
+    const folios = [l, r].filter((page) => page && page.key !== 'blank').map((page) => page.folio).join('–');
+    const headOf = (page) => (page ? page.head || FRONT_NAMES[page.key] || '' : '');
+    return { folios, head: headOf(r) || headOf(l) };
+  }, [leftOf, rightOf, CLOSED_BACK]);
 
   let staticLeft = spread === CLOSED_BACK ? pages[pages.length - 1] : leftOf(spread);
   let staticRight = spread === CLOSED_BACK ? null : rightOf(spread);
@@ -217,7 +357,6 @@ export default function Book() {
     if (!frontNode || !backNode || !under || !cast) return;
 
     const P = constrain(e.P, e.G, W, H);
-    e.P = P;
     const f = fold(e.G, P, W, H);
     const forward = e.dir > 0;
     const Lf = forward ? identity : mirror(W);
@@ -243,18 +382,19 @@ export default function Book() {
     backNode.style.transform = toCss(multiply(FS, multiply(f.reflect, Lb)));
     backNode.style.clipPath = polygonCss(f.lifted.map((p) => apply(Lb, p)));
 
-    // Light across the curl: a tight dark crease, a soft highlight where the
-    // paper rolls toward the light, then the flat of the flap.
+    // Light across the curl: a tight dark crease, a bright roll where the
+    // paper turns toward the lamp, then the flat of the flap.
     const w = Math.max(f.width, 1);
     const shade = backNode.lastElementChild;
     shade.style.opacity = String(settle);
     shade.style.background = gradientFrom(W, H, apply(Lb, f.mid), [Lb[0] * f.normal[0], f.normal[1]], [
-      [0, 'rgba(52, 38, 22, 0.24)'],
-      [Math.min(7, w * 0.08), 'rgba(52, 38, 22, 0.08)'],
-      [w * 0.17, 'rgba(255, 252, 244, 0.26)'],
-      [w * 0.45, 'rgba(255, 252, 244, 0)'],
+      [0, 'rgba(52, 38, 22, 0.26)'],
+      [Math.min(6, w * 0.07), 'rgba(52, 38, 22, 0.1)'],
+      [w * 0.12, 'rgba(255, 252, 244, 0.2)'],
+      [w * 0.22, 'rgba(255, 253, 248, 0.34)'],
+      [w * 0.5, 'rgba(255, 252, 244, 0.04)'],
       [w * 0.82, 'rgba(52, 38, 22, 0)'],
-      [w, 'rgba(52, 38, 22, 0.07)'],
+      [w, 'rgba(52, 38, 22, 0.08)'],
     ]);
 
     // Shadow the lifted page throws on the page it uncovers.
@@ -294,17 +434,18 @@ export default function Book() {
     const shift = e.kind === 'front' ? lerp(-SHIFT, 0, smooth(a)) : lerp(0, SHIFT, smooth(a));
     shiftRef.current.style.transform = `translateX(${shift.toFixed(2)}px)`;
 
+    const across = Math.cos(Math.PI * a); // +1 lying right, −1 lying left
     if (e.kind === 'front') {
-      floorLeftRef.current.style.opacity = String(smooth(a));
-      floorRightRef.current.style.opacity = '1';
+      setFloor(floorLeftRef.current, Math.max(0, -across));
+      setFloor(floorRightRef.current, 1);
     } else {
-      floorLeftRef.current.style.opacity = '1';
-      floorRightRef.current.style.opacity = String(1 - smooth(a));
+      setFloor(floorLeftRef.current, 1);
+      setFloor(floorRightRef.current, Math.max(0, across));
     }
 
     // Shadow of the standing board on the pages next to the spine.
     const hard = hardShadeRef.current;
-    const reach = (W + OV) * Math.abs(Math.cos(Math.PI * a));
+    const reach = (W + OV) * Math.abs(across);
     const onRight = a < 0.5;
     const alpha = 0.34 * tilt;
     hard.style.visibility = 'visible';
@@ -336,7 +477,7 @@ export default function Book() {
     if (completed && target >= 0) setOpened(true);
   }, []);
 
-  const animateSoft = useCallback((to, duration, { lift = 0, ease = easeOut, completed }) => {
+  const animateSoft = useCallback((to, duration, { lift = 0, ease = TURN_EASE, completed }) => {
     const e = engine.current;
     stopLoop();
     e.mode = 'anim';
@@ -354,6 +495,46 @@ export default function Book() {
     e.raf = requestAnimationFrame(step);
   }, [drawSoft, finish]);
 
+  // After a drag, the page keeps the speed the hand gave it and settles on a
+  // critically damped spring: no fixed duration, no jolt at the start.
+  const animateSpring = useCallback((target, velocity, completed) => {
+    const e = engine.current;
+    stopLoop();
+    e.mode = 'anim';
+    if (reduced.current) {
+      e.P = target.slice();
+      drawSoft();
+      finish(completed);
+      return;
+    }
+    let [x, y] = e.P;
+    let [vx, vy] = velocity;
+    let last = performance.now();
+    const start = last;
+    const step = (now) => {
+      const dt = Math.min(0.034, (now - last) / 1000);
+      last = now;
+      const h = dt / 3;
+      for (let i = 0; i < 3; i += 1) {
+        vx += (-SPRING_K * (x - target[0]) - SPRING_C * vx) * h;
+        vy += (-SPRING_K * (y - target[1]) - SPRING_C * vy) * h;
+        x += vx * h;
+        y += vy * h;
+      }
+      e.P = [x, y];
+      drawSoft();
+      const settled = Math.hypot(x - target[0], y - target[1]) < 1.5 && Math.hypot(vx, vy) < 30;
+      if (!settled && now - start < 1400) {
+        e.raf = requestAnimationFrame(step);
+      } else {
+        e.P = target.slice();
+        drawSoft();
+        finish(completed);
+      }
+    };
+    e.raf = requestAnimationFrame(step);
+  }, [drawSoft, finish]);
+
   const animateHard = useCallback((to, duration, completed) => {
     const e = engine.current;
     stopLoop();
@@ -363,7 +544,7 @@ export default function Book() {
     const time = reduced.current ? 1 : duration * Math.max(0.35, Math.abs(to - from));
     const step = (now) => {
       const t = clamp((now - start) / time, 0, 1);
-      e.a = lerp(from, to, easeInOut(t));
+      e.a = lerp(from, to, BOARD_EASE(t));
       drawHard();
       if (t < 1) e.raf = requestAnimationFrame(step);
       else finish(completed);
@@ -372,24 +553,23 @@ export default function Book() {
   }, [drawHard, finish]);
 
   // Where a gesture ends: over the spine (or flicked) completes the turn.
-  const release = useCallback((velocity = 0) => {
+  const release = useCallback((velocity = [0, 0]) => {
     const e = engine.current;
     if (e.kind === 'soft') {
+      const [vx] = velocity;
       const passed = e.P[0] < 0;
-      const flicked = velocity < -0.35;
-      const pulledBack = velocity > 0.35;
-      const complete = (passed || flicked) && !pulledBack;
+      const complete = (passed || vx < -FLICK) && vx <= FLICK;
       const target = complete ? [-e.G[0], e.G[1]] : e.G.slice();
-      const distance = Math.hypot(target[0] - e.P[0], target[1] - e.P[1]);
-      animateSoft(target, 240 + 420 * (distance / (2 * W)), { completed: complete });
+      animateSpring(target, velocity, complete);
     } else if (e.kind) {
+      const v = velocity[0];
       const forwardish = e.dir > 0;
       const progress = forwardish ? e.a : 1 - e.a;
-      const complete = (progress > 0.3 || velocity < -0.3) && velocity < 0.3;
+      const complete = (progress > 0.3 || v < -0.3) && v < 0.3;
       const to = complete === forwardish ? 1 : 0;
-      animateHard(to, 1150, complete);
+      animateHard(to, BOARD_MS, complete);
     }
-  }, [animateSoft, animateHard]);
+  }, [animateSpring, animateHard]);
 
   /* --------------------------- turning ---------------------------- */
 
@@ -441,7 +621,7 @@ export default function Book() {
     if (e.kind === 'soft' && e.mode === 'peel' && e.dir === dir && options.to === undefined) {
       e.mode = 'auto';
       const target = [-e.G[0], e.G[1]];
-      animateSoft(target, 820, { lift: e.G[1] > H / 2 ? -H * 0.14 : H * 0.14, ease: easeInOut, completed: true });
+      animateSoft(target, TURN_MS, { lift: e.G[1] > H / 2 ? -H * 0.12 : H * 0.12, completed: true });
       return;
     }
     if (e.kind === 'soft' && e.mode === 'peel') {
@@ -457,19 +637,25 @@ export default function Book() {
     if (begin(dir, { ...options, G: corner, mode: 'auto' })) e.plan = 'auto';
   }, [begin, animateSoft]);
 
-  const go = useCallback((key) => {
-    const index = book.indexOf(key);
-    if (index === undefined) return;
-    const target = Math.floor((index + 1) / 2);
+  // Move to any spread. Jumps of more than one spread can be undone.
+  const jumpTo = useCallback((target, { record = true } = {}) => {
     const s = spreadRef.current;
+    const goal = clamp(target, 0, LAST);
     if (s === CLOSED_FRONT || s === CLOSED_BACK) {
       autoTurn(s === CLOSED_FRONT ? 1 : -1);
-      engine.current.queue = () => go(key);
+      engine.current.queue = () => jumpTo(goal, { record: false });
       return;
     }
-    if (target === s) return;
-    autoTurn(target > s ? 1 : -1, { to: target });
-  }, [book, autoTurn, CLOSED_BACK]);
+    if (goal === s) return;
+    if (record && Math.abs(goal - s) > 1) setUndo({ spread: s, stamp: Date.now() });
+    const dir = goal > s ? 1 : -1;
+    autoTurn(dir, goal === s + dir ? {} : { to: goal });
+  }, [autoTurn, LAST, CLOSED_BACK]);
+
+  const go = useCallback((key) => {
+    const target = spreadOfKey(key);
+    if (target !== null) jumpTo(target);
+  }, [spreadOfKey, jumpTo]);
 
   const ctx = useMemo(() => ({
     go,
@@ -477,6 +663,50 @@ export default function Book() {
     index: book.index,
     indexSplit: book.indexSplit,
   }), [go, book]);
+
+  // The undo chip waits a while, then quietly leaves.
+  useEffect(() => {
+    if (!undo) return undefined;
+    const timer = setTimeout(() => setUndo(null), 12000);
+    return () => clearTimeout(timer);
+  }, [undo]);
+
+  const goBack = () => {
+    if (!undo) return;
+    const target = undo.spread;
+    setUndo(null);
+    jumpTo(target, { record: false });
+  };
+
+  /* --------------------------- bookmarks -------------------------- */
+
+  const isOpen = spread >= 0 && spread <= LAST;
+  const marked = (s) => bookmarks.some((b) => b.spread === s);
+
+  const addBookmark = useCallback((s) => {
+    setBookmarks((list) => {
+      if (list.some((b) => b.spread === s)) return list;
+      const used = new Set(list.map((b) => b.color));
+      const color = RIBBONS.find((c) => !used.has(c)) || RIBBONS[list.length % RIBBONS.length];
+      return [...list, { spread: s, color }].sort((a, b) => a.spread - b.spread);
+    });
+  }, []);
+
+  const removeBookmark = useCallback((s) => {
+    setBookmarks((list) => list.filter((b) => b.spread !== s));
+  }, []);
+
+  const toggleBookmark = useCallback(() => {
+    const s = spreadRef.current;
+    if (s < 0 || s > LAST) return;
+    if (bookmarks.some((b) => b.spread === s)) removeBookmark(s);
+    else addBookmark(s);
+  }, [bookmarks, addBookmark, removeBookmark, LAST]);
+
+  const toggleFullscreen = () => {
+    if (document.fullscreenElement) document.exitFullscreen?.();
+    else document.documentElement.requestFullscreen?.().catch(() => {});
+  };
 
   // Once the leaves for a turn are mounted, put them in place before paint.
   useLayoutEffect(() => {
@@ -503,8 +733,8 @@ export default function Book() {
         const shift = spread === CLOSED_FRONT ? -SHIFT : spread === CLOSED_BACK ? SHIFT : 0;
         shiftRef.current.style.transform = `translateX(${shift}px)`;
       }
-      if (floorLeftRef.current) floorLeftRef.current.style.opacity = spread === CLOSED_FRONT ? '0' : '1';
-      if (floorRightRef.current) floorRightRef.current.style.opacity = spread === CLOSED_BACK ? '0' : '1';
+      setFloor(floorLeftRef.current, spread === CLOSED_FRONT ? 0 : 1);
+      setFloor(floorRightRef.current, spread === CLOSED_BACK ? 0 : 1);
       [frontBoardRef.current, backBoardRef.current].forEach((board, i) => {
         if (!board) return;
         const turned = i === 0 ? spread !== CLOSED_FRONT : spread === CLOSED_BACK;
@@ -526,13 +756,12 @@ export default function Book() {
       if (turn.kind === 'soft') {
         const target = [-e.G[0], e.G[1]];
         const far = Math.abs(turn.to - turn.from) > 1;
-        animateSoft(target, far ? 980 : 820, {
-          lift: e.G[1] > H / 2 ? -H * 0.14 : H * 0.14,
-          ease: easeInOut,
+        animateSoft(target, far ? JUMP_MS : TURN_MS, {
+          lift: e.G[1] > H / 2 ? -H * 0.12 : H * 0.12,
           completed: true,
         });
       } else {
-        animateHard(turn.dir > 0 ? 1 : 0, 1150, true);
+        animateHard(turn.dir > 0 ? 1 : 0, BOARD_MS, true);
       }
     } else if (e.plan === 'peel') {
       e.plan = null;
@@ -636,15 +865,15 @@ export default function Book() {
         if (e.kind === 'soft') {
           const [u, y] = toFrame(X, Y, e.dir);
           e.P = [u + e.press.offset[0], y + e.press.offset[1]];
-          e.moves.push({ t: now, v: e.P[0] });
+          e.moves.push({ t: now, x: e.P[0], y: e.P[1] });
           drawSoft();
         } else {
           const travel = (event.clientX - e.press.x) / k / ((W + OV) * 1.15);
           e.a = clamp(e.dir > 0 ? -travel : 1 - travel, 0, 1);
-          e.moves.push({ t: now, v: e.dir > 0 ? -e.a : e.a });
+          e.moves.push({ t: now, x: e.dir > 0 ? -e.a : e.a, y: 0 });
           drawHard();
         }
-        e.moves = e.moves.filter((m) => now - m.t < 90);
+        e.moves = e.moves.slice(-8);
       }
       return;
     }
@@ -661,7 +890,8 @@ export default function Book() {
 
   const onPointerDown = (event) => {
     if (event.button !== 0) return;
-    if (event.target.closest('a, button, input')) return;
+    if (event.target.closest('a, button, input, select')) return;
+    if (menu) setMenu(null);
     const e = engine.current;
     const [X, Y] = toBook(event.clientX, event.clientY);
     const dir = X > W ? 1 : -1;
@@ -683,14 +913,22 @@ export default function Book() {
     if (!press) return;
     stageRef.current.releasePointerCapture?.(event.pointerId);
     if (press.dragging && e.mode === 'drag') {
+      // Speed over the last ~100 ms of movement. Sparse pointer events fall
+      // back to the previous sample; a pause before letting go means no flick.
       const moves = e.moves;
-      let velocity = 0;
-      if (moves.length > 1) {
-        const first = moves[0];
-        const last = moves[moves.length - 1];
-        velocity = (last.v - first.v) / Math.max(1, last.t - first.t);
+      let velocity = [0, 0];
+      const last = moves[moves.length - 1];
+      if (last && performance.now() - last.t < 120) {
+        let first = moves.find((m) => last.t - m.t <= 100);
+        if (first === last && moves.length > 1 && last.t - moves[moves.length - 2].t < 250) {
+          first = moves[moves.length - 2];
+        }
+        if (first !== last) {
+          const span = Math.max(1, last.t - first.t);
+          velocity = [((last.x - first.x) / span) * 1000, ((last.y - first.y) / span) * 1000];
+        }
       }
-      if (e.kind !== 'soft') velocity *= W; // board travel is in fractions of a turn
+      if (e.kind !== 'soft') velocity = [velocity[0] / 1000 * W, 0]; // board travel is in fractions of a turn
       release(velocity);
       return;
     }
@@ -713,6 +951,11 @@ export default function Book() {
   useEffect(() => {
     const onKey = (event) => {
       if (event.metaKey || event.ctrlKey || event.altKey) return;
+      if (event.key === 'Escape') {
+        setMenu(null);
+        return;
+      }
+      if (event.target.closest?.('input, select, textarea')) return;
       if (['ArrowRight', 'PageDown', ' '].includes(event.key)) {
         event.preventDefault();
         autoTurn(1);
@@ -722,11 +965,27 @@ export default function Book() {
       } else if (event.key === 'Home') {
         event.preventDefault();
         go('contents');
+      } else if (event.key === 'b' || event.key === 'B') {
+        toggleBookmark();
+      } else if (event.key === 'f' || event.key === 'F') {
+        toggleFullscreen();
+      } else if ((event.key === 'u' || event.key === 'U') && undo) {
+        goBack();
       }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [autoTurn, go]);
+  }); // re-bound each render so it always sees the latest state
+
+  // Menus close when the reader clicks elsewhere.
+  useEffect(() => {
+    if (!menu) return undefined;
+    const close = (event) => {
+      if (!dockRef.current?.contains(event.target)) setMenu(null);
+    };
+    document.addEventListener('pointerdown', close);
+    return () => document.removeEventListener('pointerdown', close);
+  }, [menu]);
 
   // Reading controls step back when the reader is reading.
   useEffect(() => {
@@ -740,25 +999,45 @@ export default function Book() {
   const shown = turn && turn.kind === 'soft' ? turn.from : spread;
   const leftLeaves = clamp(shown, 0, LAST);
   const rightLeaves = shown === CLOSED_BACK ? 0 : LAST - clamp(shown, 0, LAST);
-  const edge = (count) => (count ? 1.5 + count * 0.34 : 0);
   const frontBoardUp = spread === CLOSED_FRONT || (turn && turn.kind === 'front');
   const backBoardUp = spread === CLOSED_BACK || (turn && turn.kind === 'back');
+  const bookOpen = shown >= 0 && shown <= LAST && (!turn || turn.kind === 'soft');
 
-  const label = (() => {
-    if (spread === CLOSED_FRONT) return 'Cover';
-    if (spread === CLOSED_BACK) return 'Back cover';
-    const l = leftOf(spread);
-    const r = rightOf(spread);
-    if (l && r) return `${l.folio}–${r.folio}`;
-    return (l || r)?.folio || '';
-  })();
-
+  const here = describe(spread);
   const liveLabel = spread === CLOSED_FRONT || spread === CLOSED_BACK
-    ? label
-    : `Pages ${label.replace('–', ' and ')}`;
+    ? here.folios
+    : `Pages ${here.folios.replace('–', ' and ')}`;
+
+  const scrubValue = preview ?? clamp(spread, 0, LAST);
+  const scrubInfo = describe(scrubValue);
+  // Positions along the scrubber, matching where the thumb's centre sits.
+  const pct = (s) => `calc(7px + (100% - 14px) * ${(s / LAST).toFixed(4)})`;
+  const commitScrub = () => {
+    if (preview === null) return;
+    const target = preview;
+    setPreview(null);
+    jumpTo(target);
+  };
+
+  // Ribbons: on the open spread one drapes over the page and then slides up
+  // out of the way; the others peek above the pages on the side they are on.
+  const tabs = [];
+  if (bookOpen) {
+    const ahead = bookmarks.filter((b) => b.spread > shown);
+    const behind = bookmarks.filter((b) => b.spread < shown).reverse();
+    ahead.forEach((b, k) => tabs.push({ ...b, x: W + 58 + ((k * 54) % 360) }));
+    behind.forEach((b, k) => tabs.push({ ...b, x: W - 74 - ((k * 54) % 360) }));
+  }
+  const drape = !turn && isOpen ? bookmarks.find((b) => b.spread === spread) : null;
+  const drapeX = rightOf(spread) ? W + 446 : 78;
+
+  const chapterTicks = CHAPTERS
+    .map((chapter) => ({ ...chapter, spread: spreadOfKey(chapter.key) }))
+    .filter((chapter) => chapter.spread !== null);
 
   return (
-    <div className={`bk-room ${idle ? 'is-idle' : ''}`}>
+    <div className={`bk-room ${idle && !menu ? 'is-idle' : ''} ${spread === CLOSED_FRONT ? 'is-closed' : ''}`}>
+      <Desk />
       <div
         ref={stageRef}
         className="bk-stage"
@@ -794,15 +1073,51 @@ export default function Book() {
                 <div className="bk-board-edge" />
               </div>
 
-              <div className="bk-stack is-left" style={{ width: edge(leftLeaves), left: -edge(leftLeaves) }} />
-              <div className="bk-stack is-right" style={{ width: edge(rightLeaves), left: 2 * W }} />
-              <div className={`bk-ribbon ${spread === CLOSED_BACK || (turn && turn.kind === 'back') ? 'is-hidden' : ''}`} />
+              {bookOpen && (
+                <>
+                  <span className="bk-headband is-top" aria-hidden="true" />
+                  <span className="bk-headband is-bottom" aria-hidden="true" />
+                </>
+              )}
+              <Sheets side="left" count={shown === CLOSED_FRONT ? 0 : leftLeaves} />
+              <Sheets side="right" count={shown === CLOSED_BACK ? 0 : rightLeaves} />
+
+              {tabs.map((b) => {
+                const info = describe(b.spread);
+                return (
+                  <button
+                    key={b.spread}
+                    type="button"
+                    className="bk-mark is-tab"
+                    style={{ left: b.x }}
+                    onClick={() => jumpTo(b.spread)}
+                    aria-label={`Go to bookmark, ${info.head}, pages ${info.folios}`}
+                    data-tip={`${info.head} · ${info.folios}`}
+                  >
+                    <Ribbon color={b.color} folio={info.folios.split('–')[0]} />
+                  </button>
+                );
+              })}
 
               {leaves.map(({ page, role, left }) => (
                 <div key={page.key} className={`bk-slot is-${role}`}>
                   <Leaf ref={refFor(page.key)} page={page} ctx={ctx} left={left} fontsVersion={fontsVersion} />
                 </div>
               ))}
+
+              {drape && (
+                <button
+                  key={`drape-${drape.spread}`}
+                  type="button"
+                  className="bk-mark is-drape"
+                  style={{ left: drapeX }}
+                  onClick={() => removeBookmark(drape.spread)}
+                  aria-label="Remove the bookmark on these pages"
+                  data-tip="Bookmarked · click to remove"
+                >
+                  <Ribbon color={drape.color} folio={here.folios.split('–')[0]} drape />
+                </button>
+              )}
 
               <div ref={underShadeRef} className="bk-under-shade" />
               <div ref={castWrapRef} className="bk-cast">
@@ -818,17 +1133,168 @@ export default function Book() {
         Open the cover, or press <kbd>→</kbd>
       </p>
 
-      <nav className="bk-controls" aria-label="Book controls">
-        <button type="button" onClick={() => autoTurn(-1)} disabled={spread === CLOSED_FRONT} aria-label="Previous page">
-          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3.5L5.5 8l4.5 4.5" /></svg>
-        </button>
-        <button type="button" className="bk-controls-text" onClick={() => go('contents')}>Contents</button>
-        <span className="bk-controls-folio">{label}</span>
-        <a className="bk-controls-text" href={RESUME} target="_blank" rel="noreferrer">Résumé</a>
-        <button type="button" onClick={() => autoTurn(1)} disabled={spread === CLOSED_BACK} aria-label="Next page">
-          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3.5L10.5 8 6 12.5" /></svg>
-        </button>
-      </nav>
+      <div className="bk-dock" ref={dockRef}>
+        {undo && (
+          <button type="button" className="bk-undo" onClick={goBack} key={undo.stamp}>
+            <Icon name="undo" />
+            <span>Back to {describe(undo.spread).head}</span>
+            <em>{describe(undo.spread).folios}</em>
+          </button>
+        )}
+
+        {menu === 'marks' && (
+          <div className="bk-pop" role="dialog" aria-label="Bookmarks">
+            <div className="bk-pop-head">
+              <span>Bookmarks</span>
+              <button type="button" onClick={() => setMenu(null)} aria-label="Close"><Icon name="close" /></button>
+            </div>
+            {bookmarks.length ? (
+              <ul className="bk-marklist">
+                {bookmarks.map((b) => {
+                  const info = describe(b.spread);
+                  return (
+                    <li key={b.spread} className={b.spread === spread ? 'is-here' : ''}>
+                      <button type="button" className="bk-marklist-go" onClick={() => { setMenu(null); jumpTo(b.spread); }}>
+                        <i style={{ '--silk': b.color }} aria-hidden="true" />
+                        <span>{info.head}</span>
+                        <em>{info.folios}</em>
+                      </button>
+                      <button type="button" className="bk-marklist-remove" onClick={() => removeBookmark(b.spread)} aria-label={`Remove bookmark, pages ${info.folios}`}>
+                        <Icon name="close" />
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            ) : (
+              <p className="bk-pop-empty">No bookmarks yet. Mark these pages with the ribbon button, or press <kbd>B</kbd>.</p>
+            )}
+            <form
+              className="bk-pop-add"
+              onSubmit={(event) => {
+                event.preventDefault();
+                if (pick === '') return;
+                addBookmark(Number(pick));
+                setPick('');
+              }}
+            >
+              <label htmlFor="bk-pick">Add a bookmark at</label>
+              <div>
+                <select id="bk-pick" value={pick} onChange={(event) => setPick(event.target.value)}>
+                  <option value="">Choose pages…</option>
+                  {Array.from({ length: LAST + 1 }, (_, s) => s).filter((s) => !marked(s)).map((s) => {
+                    const info = describe(s);
+                    return <option key={s} value={s}>{info.folios} · {info.head}</option>;
+                  })}
+                </select>
+                <button type="submit" disabled={pick === ''}>Add</button>
+              </div>
+            </form>
+          </div>
+        )}
+
+        {menu === 'help' && (
+          <div className="bk-pop is-help" role="dialog" aria-label="Reading shortcuts">
+            <div className="bk-pop-head">
+              <span>Reading this journal</span>
+              <button type="button" onClick={() => setMenu(null)} aria-label="Close"><Icon name="close" /></button>
+            </div>
+            <dl className="bk-keys">
+              <div><dt><kbd>←</kbd> <kbd>→</kbd></dt><dd>Turn the page</dd></div>
+              <div><dt>Drag a corner</dt><dd>Turn it by hand; let go to finish</dd></div>
+              <div><dt><kbd>Home</kbd></dt><dd>Contents</dd></div>
+              <div><dt><kbd>B</kbd></dt><dd>Bookmark these pages</dd></div>
+              <div><dt><kbd>U</kbd></dt><dd>Back to where you jumped from</dd></div>
+              <div><dt><kbd>F</kbd></dt><dd>Full screen</dd></div>
+            </dl>
+          </div>
+        )}
+
+        <nav className="bk-controls" aria-label="Book controls">
+          <button type="button" onClick={() => autoTurn(-1)} disabled={spread === CLOSED_FRONT} aria-label="Previous page">
+            <Icon name="prev" />
+          </button>
+          <button type="button" className="bk-controls-text" onClick={() => go('contents')}>Contents</button>
+
+          <div className={`bk-scrub ${preview !== null ? 'is-scrubbing' : ''}`}>
+            <span className="bk-scrub-head">{here.head}</span>
+            <div className="bk-scrub-track">
+              {chapterTicks.map((chapter) => (
+                <i key={chapter.key} className="bk-scrub-tick" style={{ left: pct(chapter.spread) }} />
+              ))}
+              {bookmarks.map((b) => (
+                <i key={b.spread} className="bk-scrub-mark" style={{ left: pct(b.spread), '--silk': b.color }} />
+              ))}
+              <input
+                type="range"
+                min={0}
+                max={LAST}
+                step={1}
+                value={scrubValue}
+                aria-label="Go to page"
+                aria-valuetext={`${scrubInfo.head}, pages ${scrubInfo.folios}`}
+                onChange={(event) => setPreview(Number(event.target.value))}
+                onPointerUp={commitScrub}
+                onKeyUp={commitScrub}
+                onBlur={commitScrub}
+                style={{ '--fill': pct(clamp(spread, 0, LAST)) }}
+              />
+              {preview !== null && (
+                <span className="bk-scrub-bubble" style={{ left: pct(preview) }}>
+                  <strong>{scrubInfo.head}</strong>
+                  <em>{scrubInfo.folios}</em>
+                </span>
+              )}
+            </div>
+            <span className="bk-scrub-folio">{here.folios}</span>
+          </div>
+
+          <button
+            type="button"
+            className={marked(spread) ? 'is-on' : ''}
+            onClick={toggleBookmark}
+            disabled={!isOpen}
+            aria-pressed={marked(spread)}
+            aria-label={marked(spread) ? 'Remove bookmark' : 'Bookmark these pages'}
+            title={marked(spread) ? 'Remove bookmark (B)' : 'Bookmark these pages (B)'}
+          >
+            <Icon name="mark" />
+          </button>
+          <button
+            type="button"
+            className={menu === 'marks' ? 'is-active' : ''}
+            onClick={() => setMenu(menu === 'marks' ? null : 'marks')}
+            aria-expanded={menu === 'marks'}
+            aria-label="Bookmarks"
+            title="Bookmarks"
+          >
+            <Icon name="marks" />
+            {bookmarks.length > 0 && <span className="bk-count">{bookmarks.length}</span>}
+          </button>
+          <span className="bk-controls-rule" aria-hidden="true" />
+          <a href={RESUME} target="_blank" rel="noreferrer" aria-label="Résumé (PDF)" title="Résumé (PDF)">
+            <Icon name="doc" />
+          </a>
+          {typeof document !== 'undefined' && document.fullscreenEnabled && (
+            <button type="button" onClick={toggleFullscreen} aria-label={fullscreen ? 'Leave full screen' : 'Full screen'} title="Full screen (F)">
+              <Icon name={fullscreen ? 'exit' : 'full'} />
+            </button>
+          )}
+          <button
+            type="button"
+            className={menu === 'help' ? 'is-active' : ''}
+            onClick={() => setMenu(menu === 'help' ? null : 'help')}
+            aria-expanded={menu === 'help'}
+            aria-label="Reading shortcuts"
+            title="Shortcuts"
+          >
+            <Icon name="help" />
+          </button>
+          <button type="button" onClick={() => autoTurn(1)} disabled={spread === CLOSED_BACK} aria-label="Next page">
+            <Icon name="next" />
+          </button>
+        </nav>
+      </div>
       <p className="bk-visually-hidden" aria-live="polite">{liveLabel}</p>
     </div>
   );

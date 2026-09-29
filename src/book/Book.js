@@ -17,12 +17,12 @@ import {
   clamp,
   constrain,
   fold,
-  gradientFrom,
   identity,
+  inverse,
   lerp,
+  linear,
   mirror,
   multiply,
-  polygonCss,
   toCss,
   translate,
 } from './geometry';
@@ -33,7 +33,36 @@ import './book.css';
 export const W = 540;
 export const H = 760;
 const OV = 14; // how far the boards overhang the text block
-const CAST_PAD = 160;
+const CAST_LAYERS = [1.5, 4, 8]; // how far each shadow layer spreads, px
+const SPAN = 4000; // side of the square frames that clip along the fold
+
+// An affine frame whose x axis runs along `dir` from a line through `mid`
+// (direction `t`). As a clipping box it keeps everything on the `dir` side.
+const halfPlane = (mid, dir, t) => [
+  dir[0], dir[1], t[0], t[1],
+  mid[0] - (SPAN / 2) * t[0], mid[1] - (SPAN / 2) * t[1],
+];
+
+// The same frame, stretched so 100 units across span `width` px.
+const band = (mid, dir, t, width) => [
+  (dir[0] * width) / 100, (dir[1] * width) / 100, t[0], t[1],
+  mid[0] - (SPAN / 2) * t[0], mid[1] - (SPAN / 2) * t[1],
+];
+
+// Clip a leaf's frame to one side of the fold, or release it (m = null).
+const setClip = (frame, m) => {
+  if (!frame) return;
+  const inner = frame.firstElementChild;
+  if (!m) {
+    frame.classList.remove('is-clipping');
+    frame.style.transform = '';
+    if (inner) inner.style.transform = '';
+    return;
+  }
+  frame.classList.add('is-clipping');
+  frame.style.transform = toCss(m);
+  if (inner) inner.style.transform = toCss(inverse(m));
+};
 const SHIFT = (W + OV) / 2; // closed books sit centred on their cover
 const CLOSED_FRONT = -1;
 
@@ -90,6 +119,10 @@ const loadBookmarks = () => {
 /* A single leaf side                                                  */
 /* ------------------------------------------------------------------ */
 
+// Measured type scale per page, so a page mounted again for a turn does not
+// have to be laid out repeatedly while the turn is starting.
+const FIT_CACHE = new Map();
+
 const Leaf = memo(forwardRef(function Leaf({ page, ctx, left, fontsVersion }, ref) {
   const bodyRef = useRef(null);
   const recto = page.index % 2 === 0;
@@ -99,12 +132,18 @@ const Leaf = memo(forwardRef(function Leaf({ page, ctx, left, fontsVersion }, re
   useLayoutEffect(() => {
     const body = bodyRef.current;
     if (!body) return;
+    const cacheKey = `${page.key}:${fontsVersion}`;
+    if (FIT_CACHE.has(cacheKey)) {
+      body.style.setProperty('--fit', FIT_CACHE.get(cacheKey));
+      return;
+    }
     let fit = 1;
     body.style.setProperty('--fit', '1');
     while (body.scrollHeight > body.clientHeight + 1 && fit > 0.8) {
       fit -= 0.015;
       body.style.setProperty('--fit', fit.toFixed(3));
     }
+    if (body.clientHeight > 0) FIT_CACHE.set(cacheKey, fit.toFixed(3));
   }, [page, fontsVersion]);
 
   const showHead = !page.plain && !page.opener;
@@ -226,6 +265,8 @@ export default function Book() {
   const dockRef = useRef(null);
   const leafNodes = useRef(new Map());
   const underShadeRef = useRef(null);
+  const underFoldRef = useRef(null);
+  const underGradRef = useRef(null);
   const castRef = useRef(null);
   const castWrapRef = useRef(null);
   const frontBoardRef = useRef(null);
@@ -330,6 +371,19 @@ export default function Book() {
   if (staticRight) leaves.push({ page: staticRight, role: 'right', left: W });
   if (front) leaves.push({ page: front, role: 'front', left: turn.dir > 0 ? W : 0 });
   if (back) leaves.push({ page: back, role: 'back', left: 0 });
+
+  // Keep the neighbouring spreads mounted but hidden, so starting a turn only
+  // moves pages that are already laid out instead of building new ones.
+  const shownKeys = new Set(leaves.map((leaf) => leaf.page.key));
+  const around = [spread, turn ? turn.to : spread];
+  around.forEach((s) => {
+    if (s < 0 || s > LAST) return;
+    [leftOf(s - 1), rightOf(s - 1), leftOf(s + 1), rightOf(s + 1)].forEach((page) => {
+      if (!page || shownKeys.has(page.key)) return;
+      shownKeys.add(page.key);
+      leaves.push({ page, role: 'warm', left: page.index % 2 === 0 ? W : 0 });
+    });
+  });
   const roles = useRef({});
   roles.current = Object.fromEntries(leaves.map((leaf) => [leaf.role, leaf.page.key]));
 
@@ -352,70 +406,74 @@ export default function Book() {
     const frontNode = nodeFor('front');
     const backNode = nodeFor('back');
     const under = underShadeRef.current;
-    const cast = castRef.current;
-    const castWrap = castWrapRef.current;
-    if (!frontNode || !backNode || !under || !cast) return;
+    const castFold = castWrapRef.current;
+    const castInner = castRef.current;
+    if (!frontNode || !backNode || !under || !castFold) return;
 
     const P = constrain(e.P, e.G, W, H);
     const f = fold(e.G, P, W, H);
     const forward = e.dir > 0;
-    const Lf = forward ? identity : mirror(W);
     const Lb = forward ? mirror(W) : identity;
     const FS = forward ? translate(W) : mirror(W);
     const q = clamp((e.G[0] - P[0]) / (2 * e.G[0]), 0, 1);
     const rise = Math.sin(Math.PI * q);
     const settle = q < 0.5 ? 1 : clamp((1 - q) * 2.4, 0, 1);
-
-    frontNode.style.clipPath = polygonCss(f.stay.map((p) => apply(Lf, p)));
+    const frontFold = frontNode.parentNode.parentNode;
+    const backFold = backNode.parentNode.parentNode;
 
     if (f.flat || f.lifted.length < 3) {
+      setClip(frontFold, null);
       backNode.style.visibility = 'hidden';
       under.style.visibility = 'hidden';
-      castWrap.style.visibility = 'hidden';
+      castFold.style.visibility = 'hidden';
       return;
     }
     backNode.style.visibility = 'visible';
     under.style.visibility = 'visible';
-    castWrap.style.visibility = 'visible';
+    castFold.style.visibility = 'visible';
 
-    // The lifted flap, laid back over the page.
-    backNode.style.transform = toCss(multiply(FS, multiply(f.reflect, Lb)));
-    backNode.style.clipPath = polygonCss(f.lifted.map((p) => apply(Lb, p)));
+    // Everything here only moves layers that are already drawn: the fold is a
+    // rotated clipping frame, the flap is a transform, and the light and
+    // shadows are fixed gradients placed along the fold. Nothing is redrawn.
+    const mid = apply(FS, f.mid);
+    const n = linear(FS, f.normal); // toward the lifted corner
+    const t = [-n[1], n[0]];
+    const staySide = halfPlane(mid, [-n[0], -n[1]], t);
+    setClip(frontFold, staySide);
+    setClip(backFold, staySide);
+    setClip(castFold, staySide);
+
+    // The lifted flap, reflected across the fold onto the spine's side.
+    const flap = multiply(FS, multiply(f.reflect, Lb));
+    backNode.style.transform = toCss(flap);
 
     // Light across the curl: a tight dark crease, a bright roll where the
     // paper turns toward the lamp, then the flat of the flap.
-    const w = Math.max(f.width, 1);
     const shade = backNode.lastElementChild;
+    const nLeaf = linear(Lb, f.normal);
+    shade.style.transform = toCss(band(apply(Lb, f.mid), nLeaf, [-nLeaf[1], nLeaf[0]], Math.max(f.width, 1)));
     shade.style.opacity = String(settle);
-    shade.style.background = gradientFrom(W, H, apply(Lb, f.mid), [Lb[0] * f.normal[0], f.normal[1]], [
-      [0, 'rgba(52, 38, 22, 0.26)'],
-      [Math.min(6, w * 0.07), 'rgba(52, 38, 22, 0.1)'],
-      [w * 0.12, 'rgba(255, 252, 244, 0.2)'],
-      [w * 0.22, 'rgba(255, 253, 248, 0.34)'],
-      [w * 0.5, 'rgba(255, 252, 244, 0.04)'],
-      [w * 0.82, 'rgba(52, 38, 22, 0)'],
-      [w, 'rgba(52, 38, 22, 0.08)'],
-    ]);
 
     // Shadow the lifted page throws on the page it uncovers.
     const reach = 22 + 90 * rise;
-    const depth = 0.42 * (q < 0.5 ? Math.min(1, 0.4 + q * 2) : settle);
-    under.style.left = `${forward ? W : 0}px`;
-    under.style.clipPath = polygonCss(f.lifted.map((p) => apply(Lf, p)));
-    under.style.background = gradientFrom(W, H, apply(Lf, f.mid), [Lf[0] * f.normal[0], f.normal[1]], [
-      [0, `rgba(33, 24, 14, ${depth.toFixed(3)})`],
-      [reach * 0.35, `rgba(33, 24, 14, ${(depth * 0.45).toFixed(3)})`],
-      [reach, 'rgba(33, 24, 14, 0)'],
-    ]);
+    const depth = q < 0.5 ? Math.min(1, 0.4 + q * 2) : settle;
+    const left = forward ? W : 0;
+    under.style.left = `${left}px`;
+    underFoldRef.current.style.transform = toCss(halfPlane([mid[0] - left, mid[1]], n, t));
+    underGradRef.current.style.transform = `scaleX(${(reach / 100).toFixed(4)})`;
+    underGradRef.current.style.opacity = depth.toFixed(3);
 
-    // Soft contact shadow around the flap on whatever lies beneath it.
-    const FR = multiply(FS, f.reflect);
-    cast.style.clipPath = polygonCss(f.lifted.map((p) => {
-      const [x, y] = apply(FR, p);
-      return [x + CAST_PAD, y + CAST_PAD];
-    }));
-    castWrap.style.opacity = String(Math.min(1, q * 5) * settle);
-    castWrap.style.filter = `blur(${(5 + 9 * rise).toFixed(1)}px)`;
+    // Soft contact shadow around the flap: faint, slightly larger copies of
+    // the flap itself, stacked beneath it.
+    const lift = 1 + 1.6 * rise;
+    Array.from(castInner.children).forEach((copy, i) => {
+      const grow = CAST_LAYERS[i] * lift;
+      const sx = 1 + (2 * grow) / W;
+      const sy = 1 + (2 * grow) / H;
+      const grown = [sx, 0, 0, sy, (W / 2) * (1 - sx), (H / 2) * (1 - sy)];
+      copy.style.transform = toCss(multiply(translate(1.5, 2.5), multiply(flap, grown)));
+    });
+    castInner.style.opacity = String(Math.min(1, q * 5) * settle);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const drawHard = useCallback(() => {
@@ -715,11 +773,11 @@ export default function Book() {
       const key = node.dataset.page;
       const role = Object.keys(roles.current).find((r) => roles.current[r] === key);
       if (role === 'front' || role === 'back') return;
-      node.style.clipPath = '';
       node.style.transform = '';
       node.style.visibility = '';
+      setClip(node.parentNode?.parentNode, null);
       if (node.lastElementChild) {
-        node.lastElementChild.style.background = '';
+        node.lastElementChild.style.transform = '';
         node.lastElementChild.style.opacity = '';
       }
     });
@@ -1064,6 +1122,16 @@ export default function Book() {
               </div>
 
               <div
+                className={`bk-thickness ${spread === CLOSED_FRONT && !turn ? '' : 'is-hidden'}`}
+                style={{ left: W, top: -OV, width: W + OV, height: H + 2 * OV }}
+                aria-hidden="true"
+              >
+                <span className="is-back" />
+                <span className="is-pages" />
+                <span className="is-board" />
+              </div>
+
+              <div
                 ref={frontBoardRef}
                 className="bk-board is-front"
                 style={{ left: W, top: -OV, width: W + OV, height: H + 2 * OV, zIndex: frontBoardUp ? 40 : 1 }}
@@ -1101,7 +1169,11 @@ export default function Book() {
 
               {leaves.map(({ page, role, left }) => (
                 <div key={page.key} className={`bk-slot is-${role}`}>
-                  <Leaf ref={refFor(page.key)} page={page} ctx={ctx} left={left} fontsVersion={fontsVersion} />
+                  <div className="bk-fold">
+                    <div className="bk-fold-inner">
+                      <Leaf ref={refFor(page.key)} page={page} ctx={ctx} left={left} fontsVersion={fontsVersion} />
+                    </div>
+                  </div>
                 </div>
               ))}
 
@@ -1119,9 +1191,15 @@ export default function Book() {
                 </button>
               )}
 
-              <div ref={underShadeRef} className="bk-under-shade" />
-              <div ref={castWrapRef} className="bk-cast">
-                <div ref={castRef} className="bk-cast-shape" style={{ left: -CAST_PAD, top: -CAST_PAD, width: 2 * W + 2 * CAST_PAD, height: H + 2 * CAST_PAD }} />
+              <div ref={underShadeRef} className="bk-under-shade">
+                <div ref={underFoldRef} className="bk-under-fold">
+                  <span ref={underGradRef} className="bk-under-grad" />
+                </div>
+              </div>
+              <div ref={castWrapRef} className="bk-cast bk-fold">
+                <div ref={castRef} className="bk-fold-inner">
+                  {CAST_LAYERS.map((grow) => <span key={grow} className="bk-cast-copy" />)}
+                </div>
               </div>
               <div ref={hardShadeRef} className="bk-hard-shade" />
             </div>

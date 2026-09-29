@@ -9,11 +9,15 @@ body.is-reading {
 }
 
 .bk-room {
-  --cloth: #8e2519;
-  --cloth-deep: #6f1b12;
-  --cloth-light: #b23b2a;
-  --foil: #d2b36c;
-  --mat: #1d2834;
+  --cloth: #83231a;
+  --cloth-deep: #641a12;
+  --cloth-light: #a93626;
+  --foil: #c9a55e;
+  --desk-ink: 96, 72, 46;
+  /* Linen book cloth: dark weft threads, pale warp threads, uneven dye */
+  --weft: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.012 1.2' numOctaves='2' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.08 0 0 0 0 0.01 0 0 0 0 0.01 0.9 0 0 0 -0.36'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E");
+  --warp: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2 0.012' numOctaves='2' seed='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 0.86 0 0 0 0 0.78 0.7 0 0 0 -0.3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E");
+  --mottle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='520' height='520'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.006' numOctaves='3' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.06 0 0 0 0 0.01 0 0 0 0 0.01 0.6 0 0 0 -0.24'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E");
   --page-recto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 540 760' preserveAspectRatio='none'%3E%3Cpath d='M0 12C18 4 90 0 240 0C360 0 470 1.2 540 2.5V757.5C470 758.8 360 760 240 760C90 760 18 756 0 748Z'/%3E%3C/svg%3E");
   --page-verso: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 540 760' preserveAspectRatio='none'%3E%3Cpath d='M540 12C522 4 450 0 300 0C180 0 70 1.2 0 2.5V757.5C70 758.8 180 760 300 760C450 760 522 756 540 748Z'/%3E%3C/svg%3E");
   --leaf: #f6f1e7;
@@ -24,16 +28,20 @@ body.is-reading {
   position: fixed;
   inset: 0;
   overflow: hidden;
-  background-color: var(--mat);
+  /* The site's own paper, as a drafting sheet on the desk: a sepia grid,
+     warm lamplight on the book and a gentle fall-off to the edges. */
+  background-color: #e8dfd0;
   background-image:
-    radial-gradient(ellipse 120% 95% at 50% 44%, transparent 48%, rgba(5, 9, 13, 0.6)),
-    linear-gradient(rgba(236, 228, 214, 0.065) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(236, 228, 214, 0.065) 1px, transparent 1px),
-    linear-gradient(rgba(236, 228, 214, 0.028) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(236, 228, 214, 0.028) 1px, transparent 1px),
-    var(--grain);
-  background-size: 100% 100%, 100px 100px, 100px 100px, 20px 20px, 20px 20px, 220px 220px;
-  background-position: 0 0, 24px 24px, 24px 24px, 24px 24px, 24px 24px, 0 0;
+    radial-gradient(ellipse 58% 60% at 50% 44%, rgba(255, 251, 243, 0.7), rgba(255, 251, 243, 0) 72%),
+    radial-gradient(ellipse 120% 95% at 50% 44%, transparent 55%, rgba(90, 64, 38, 0.16)),
+    linear-gradient(rgba(var(--desk-ink), 0.075) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(var(--desk-ink), 0.075) 1px, transparent 1px),
+    linear-gradient(rgba(var(--desk-ink), 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(var(--desk-ink), 0.035) 1px, transparent 1px),
+    var(--grain),
+    var(--fibers);
+  background-size: 100% 100%, 100% 100%, 100px 100px, 100px 100px, 20px 20px, 20px 20px, 220px 220px, 600px 600px;
+  background-position: 0 0, 0 0, 24px 24px, 24px 24px, 24px 24px, 24px 24px, 0 0, 0 0;
   color: var(--leaf-ink);
   -webkit-user-select: none;
   user-select: none;
@@ -78,11 +86,11 @@ body.is-reading {
   pointer-events: none;
   border-radius: 3px;
   box-shadow:
-    0 0 0 0.5px rgba(0, 0, 0, 0.3),
-    0 1px 2px rgba(0, 0, 0, 0.5),
-    0 5px 10px -2px rgba(0, 0, 0, 0.42),
-    0 22px 38px -12px rgba(0, 0, 0, 0.55),
-    0 58px 90px -30px rgba(0, 0, 0, 0.6);
+    0 0 0 0.5px rgba(60, 40, 20, 0.22),
+    0 1px 2px rgba(60, 40, 20, 0.32),
+    0 5px 10px -2px rgba(60, 40, 20, 0.26),
+    0 22px 38px -12px rgba(60, 40, 20, 0.34),
+    0 58px 90px -30px rgba(60, 40, 20, 0.34);
 }
 
 .bk-floor.is-left { transform-origin: 100% 50%; }
@@ -96,7 +104,7 @@ body.is-reading {
   left: 450px;
   width: 180px;
   height: 36px;
-  background: radial-gradient(ellipse 50% 45% at 50% 40%, rgba(0, 0, 0, 0.5), transparent 75%);
+  background: radial-gradient(ellipse 50% 45% at 50% 40%, rgba(60, 40, 20, 0.36), transparent 75%);
   content: '';
   pointer-events: none;
   transition: opacity 500ms ease;
@@ -113,25 +121,79 @@ body.is-reading {
   visibility: hidden;
 }
 
+/* ------------------------- turning a leaf ------------------------- */
+/* A turn never redraws a page. Each leaf sits in a frame that, during a
+   turn, becomes a large square rotated so one edge lies on the fold; its
+   inner layer is counter-rotated so the page stays put. Only transforms
+   change from frame to frame. */
+.bk-fold,
+.bk-fold-inner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  pointer-events: none;
+}
+
+.bk-fold .bk-leaf { pointer-events: auto; }
+
+.bk-fold.is-clipping {
+  width: 4000px;
+  height: 4000px;
+  overflow: hidden;
+  will-change: transform;
+}
+
+.bk-fold.is-clipping > .bk-fold-inner,
+.bk-slot.is-front .bk-leaf,
+.bk-slot.is-back .bk-leaf { will-change: transform; }
+
+/* The shadow on the page being uncovered, clipped to that page */
 .bk-under-shade {
   z-index: 15;
   width: 540px;
   height: 760px;
+  overflow: hidden;
 }
 
-.bk-cast {
-  z-index: 21;
-  left: 0;
-  width: 1080px;
-  height: 760px;
-  will-change: filter, opacity;
-}
-
-.bk-cast-shape {
+.bk-under-fold {
   position: absolute;
-  background: rgba(30, 21, 12, 0.34);
-  transform: translate(2px, 3px);
+  top: 0;
+  left: 0;
+  width: 4000px;
+  height: 4000px;
+  overflow: hidden;
+  transform-origin: 0 0;
+  will-change: transform;
 }
+
+.bk-under-grad {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100px;
+  height: 4000px;
+  background: linear-gradient(90deg, rgba(33, 24, 14, 0.42), rgba(33, 24, 14, 0.19) 35%, rgba(33, 24, 14, 0));
+  transform-origin: 0 0;
+  will-change: transform, opacity;
+}
+
+/* The flap's shadow: faint, slightly larger copies of the flap */
+.bk-cast { z-index: 21; }
+
+.bk-cast-copy {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 540px;
+  height: 760px;
+  background: rgba(30, 21, 12, 0.12);
+  transform-origin: 0 0;
+  will-change: transform;
+}
+
+.bk-cast-copy:nth-child(2) { background: rgba(30, 21, 12, 0.07); }
+.bk-cast-copy:nth-child(3) { background: rgba(30, 21, 12, 0.04); }
 
 .bk-hard-shade {
   z-index: 30;
@@ -193,26 +255,41 @@ body.is-reading {
   transform: rotateY(90deg);
 }
 
-/* Woven book cloth */
+/* Book cloth: a linen weave (weft and warp threads), uneven dye, light
+   falling from the lamp, and edges a shade paler where hands have rubbed. */
 .bk-cover,
 .bk-pastedown {
   position: absolute;
   inset: 0;
   background-color: var(--cloth);
   background-image:
-    radial-gradient(ellipse 90% 70% at 38% 30%, rgba(255, 226, 206, 0.16), transparent 70%),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.05) 50%, transparent 50%),
-    linear-gradient(0deg, rgba(255, 255, 255, 0.035) 50%, transparent 50%),
-    var(--grain),
-    var(--fibers);
-  background-size: 100% 100%, 2px 2px, 2px 2px, 220px 220px, 600px 600px;
+    linear-gradient(135deg, rgba(255, 228, 206, 0.1), transparent 42%, rgba(20, 4, 2, 0.18)),
+    var(--weft),
+    var(--warp),
+    var(--mottle),
+    var(--grain);
+  background-size: 100% 100%, 180px 180px, 180px 180px, 520px 520px, 220px 220px;
 }
 
 .bk-cover {
   box-shadow:
-    inset 0 0 0 1px rgba(60, 14, 8, 0.45),
-    inset 0 0 18px rgba(50, 10, 4, 0.35),
-    inset 0 0 3px 1px rgba(255, 210, 190, 0.08);
+    inset 0 0 0 1px rgba(40, 6, 3, 0.55),
+    inset 0 0 0 2px rgba(214, 150, 122, 0.18),
+    inset 0 0 12px rgba(214, 150, 122, 0.12),
+    inset 0 0 44px rgba(30, 4, 2, 0.28);
+}
+
+/* Corners worn pale from handling */
+.bk-cover::before {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 100% 0, rgba(226, 170, 140, 0.24), transparent 26px),
+    radial-gradient(circle at 100% 100%, rgba(226, 170, 140, 0.24), transparent 26px),
+    radial-gradient(circle at 0 0, rgba(226, 170, 140, 0.14), transparent 22px),
+    radial-gradient(circle at 0 100%, rgba(226, 170, 140, 0.14), transparent 22px);
+  content: '';
+  pointer-events: none;
 }
 
 /* The hinge groove, pressed into the board beside the spine */
@@ -231,26 +308,31 @@ body.is-reading {
 .bk-cover.is-front .bk-cover-joint { left: 20px; }
 .bk-cover.is-back .bk-cover-joint { right: 20px; transform: scaleX(-1); }
 
-/* Gold foil stamped into the cloth */
+/* Matte gold leaf, pressed into the cloth: a dark lip above each letter
+   where it sinks, a faint catch of light below. */
 .bk-foil {
-  background-image: linear-gradient(100deg, #8d6b2e 0%, #e7cd87 18%, #b18c45 34%, #f5e4b2 48%, #a8833d 62%, #dcc07a 80%, #8d6b2e 100%);
-  background-size: 240% 100%;
+  background-image: var(--grain), linear-gradient(180deg, #dcc07e, #b8924c);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  filter: drop-shadow(0 1px 0 rgba(44, 6, 2, 0.6));
+  filter: drop-shadow(0 -0.6px 0 rgba(30, 4, 2, 0.6)) drop-shadow(0 0.8px 0 rgba(255, 214, 184, 0.16));
 }
 
-.bk-foil-frame {
+/* Blind tooling: pressed into the cloth with no foil at all */
+.bk-blind-frame {
   position: absolute;
   top: 36px;
   left: 52px;
   width: calc(100% - 84px);
   height: calc(100% - 72px);
-  filter: drop-shadow(0 1px 0 rgba(44, 6, 2, 0.55));
+  fill: none;
+  stroke: rgba(34, 5, 2, 0.5);
+  filter: drop-shadow(0 1px 0 rgba(236, 170, 140, 0.16));
 }
 
-.bk-foil-frame .is-fill { fill: var(--foil); stroke: none; }
+.bk-blind-frame circle { fill: rgba(34, 5, 2, 0.36); stroke: none; }
+
+.bk-blind { stroke: rgba(34, 5, 2, 0.5); fill: rgba(34, 5, 2, 0.5); }
 
 .bk-cover-layout {
   position: absolute;
@@ -258,7 +340,7 @@ body.is-reading {
   bottom: 36px;
   left: 52px;
   right: 32px;
-  padding: 56px 30px 46px;
+  padding: 64px 30px 44px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -280,11 +362,11 @@ body.is-reading {
 }
 
 .bk-medallion {
-  width: 170px;
-  height: 170px;
-  margin: 34px 0 30px;
+  width: 150px;
+  height: 150px;
+  margin: auto 0 26px;
   overflow: visible;
-  filter: drop-shadow(0 1px 0 rgba(44, 6, 2, 0.6));
+  filter: drop-shadow(0 1px 0 rgba(236, 170, 140, 0.14));
 }
 
 .bk-medallion-ring {
@@ -325,7 +407,7 @@ body.is-reading {
 .bk-cover-title > span,
 .bk-cover-title > em {
   display: block;
-  font-size: 54px;
+  font-size: 56px;
   letter-spacing: -0.01em;
   font-variation-settings: 'opsz' 144;
 }
@@ -343,7 +425,7 @@ body.is-reading {
   position: relative;
   width: 150px;
   height: 9px;
-  margin: 24px 0 18px;
+  margin: 22px 0 36px;
   background: linear-gradient(90deg, transparent, var(--foil) 18%, var(--foil) 82%, transparent) center / 100% 1px no-repeat;
 }
 
@@ -360,6 +442,7 @@ body.is-reading {
 }
 
 .bk-cover-subtitle {
+  margin-top: 24px;
   font-family: var(--sans);
   font-size: 8.5px;
   font-weight: 700;
@@ -368,29 +451,50 @@ body.is-reading {
 }
 
 .bk-cover-author {
-  margin-top: auto;
   font-family: var(--sans);
-  font-size: 10px;
+  font-size: 9.5px;
   font-weight: 600;
-  letter-spacing: 0.3em;
+  letter-spacing: 0.32em;
   text-transform: uppercase;
 }
 
-/* A slow band of lamplight passing over the foil */
-.bk-cover-sheen {
+/* The closed book's depth: the cover board's edge, the page block and the
+   back board, seen just beneath the front cover. */
+.bk-thickness {
   position: absolute;
-  inset: 0;
-  background: linear-gradient(105deg, transparent 38%, rgba(255, 236, 200, 0.1) 46%, rgba(255, 246, 226, 0.18) 50%, rgba(255, 236, 200, 0.1) 54%, transparent 62%);
-  background-position: 120% 0;
-  background-size: 300% 100%;
-  mix-blend-mode: screen;
+  z-index: 39;
   pointer-events: none;
-  animation: cover-sheen 8s ease-in-out 1.2s infinite;
+  transition: opacity 160ms ease;
 }
 
-@keyframes cover-sheen {
-  0% { background-position: 120% 0; }
-  36%, 100% { background-position: -20% 0; }
+.bk-thickness.is-hidden { opacity: 0; }
+
+.bk-thickness span {
+  position: absolute;
+  border-radius: 0 4px 4px 0;
+}
+
+.bk-thickness .is-back {
+  inset: 0;
+  background: #5c160f;
+  box-shadow: 0 2px 4px rgba(60, 40, 20, 0.35);
+  transform: translate(2.5px, 10px);
+}
+
+.bk-thickness .is-pages {
+  top: 14px;
+  bottom: 14px;
+  left: 0;
+  right: 14px;
+  border-radius: 0 1px 1px 0;
+  background: repeating-linear-gradient(180deg, #f3ecdf 0 1px, #d6cab6 1px 1.7px);
+  transform: translate(1.8px, 7px);
+}
+
+.bk-thickness .is-board {
+  inset: 0;
+  background: linear-gradient(180deg, var(--cloth), var(--cloth-deep));
+  transform: translate(0.6px, 3px);
 }
 
 /* The pasted paper label (back cover blurb) */
@@ -798,6 +902,12 @@ body.is-reading {
 .bk-slot.is-front { z-index: 20; }
 .bk-slot.is-back { z-index: 22; }
 
+/* Neighbouring pages, mounted ahead of a turn but not shown */
+.bk-slot.is-warm {
+  z-index: 0;
+  visibility: hidden;
+}
+
 .bk-leaf {
   position: absolute;
   top: 0;
@@ -847,10 +957,30 @@ body.is-reading {
       rgba(58, 42, 24, 0.07));
 }
 
+/* Light across the curl of a turning leaf: a band laid along the fold and
+   stretched to the flap's width (see `band` in Book.js). */
 .bk-leaf-shade {
+  display: none;
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
+  width: 100px;
+  height: 4000px;
+  background: linear-gradient(90deg,
+    rgba(52, 38, 22, 0.26) 0%,
+    rgba(52, 38, 22, 0.1) 5%,
+    rgba(255, 252, 244, 0.2) 12%,
+    rgba(255, 253, 248, 0.34) 22%,
+    rgba(255, 252, 244, 0.04) 50%,
+    rgba(52, 38, 22, 0) 82%,
+    rgba(52, 38, 22, 0.08) 100%);
   pointer-events: none;
+  transform-origin: 0 0;
+}
+
+.bk-slot.is-back .bk-leaf-shade {
+  display: block;
+  will-change: transform, opacity;
 }
 
 .bk-runhead,
@@ -1828,7 +1958,7 @@ body.is-reading {
   left: 0;
   right: 0;
   margin: 0;
-  color: rgba(236, 228, 214, 0.62);
+  color: rgba(var(--desk-ink), 0.62);
   font-family: var(--serif);
   font-size: 13px;
   font-style: italic;
@@ -1842,7 +1972,7 @@ body.is-reading {
 .bk-hint kbd {
   margin: 0 2px;
   padding: 1px 5px;
-  border: 1px solid rgba(236, 228, 214, 0.3);
+  border: 1px solid rgba(var(--desk-ink), 0.3);
   border-radius: 4px;
   font-family: var(--sans);
   font-size: 10px;
@@ -1868,7 +1998,7 @@ body.is-reading {
 
 .bk-desk-ruler {
   position: absolute;
-  color: rgba(236, 228, 214, 0.42);
+  color: rgba(var(--desk-ink), 0.42);
   font: 500 7.5px/1 'JetBrains Mono', ui-monospace, monospace;
   letter-spacing: 0.04em;
 }
@@ -1878,11 +2008,11 @@ body.is-reading {
   left: 24px;
   right: 0;
   height: 24px;
-  border-bottom: 1px solid rgba(236, 228, 214, 0.2);
+  border-bottom: 1px solid rgba(var(--desk-ink), 0.2);
   background:
-    repeating-linear-gradient(90deg, rgba(236, 228, 214, 0.42) 0 1px, transparent 1px 100px) left bottom / 100% 13px no-repeat,
-    repeating-linear-gradient(90deg, rgba(236, 228, 214, 0.3) 0 1px, transparent 1px 50px) left bottom / 100% 8px no-repeat,
-    repeating-linear-gradient(90deg, rgba(236, 228, 214, 0.2) 0 1px, transparent 1px 10px) left bottom / 100% 4px no-repeat;
+    repeating-linear-gradient(90deg, rgba(var(--desk-ink), 0.42) 0 1px, transparent 1px 100px) left bottom / 100% 13px no-repeat,
+    repeating-linear-gradient(90deg, rgba(var(--desk-ink), 0.3) 0 1px, transparent 1px 50px) left bottom / 100% 8px no-repeat,
+    repeating-linear-gradient(90deg, rgba(var(--desk-ink), 0.2) 0 1px, transparent 1px 10px) left bottom / 100% 4px no-repeat;
 }
 
 .bk-desk-ruler.is-left {
@@ -1890,11 +2020,11 @@ body.is-reading {
   bottom: 0;
   left: 0;
   width: 24px;
-  border-right: 1px solid rgba(236, 228, 214, 0.2);
+  border-right: 1px solid rgba(var(--desk-ink), 0.2);
   background:
-    repeating-linear-gradient(180deg, rgba(236, 228, 214, 0.42) 0 1px, transparent 1px 100px) right top / 13px 100% no-repeat,
-    repeating-linear-gradient(180deg, rgba(236, 228, 214, 0.3) 0 1px, transparent 1px 50px) right top / 8px 100% no-repeat,
-    repeating-linear-gradient(180deg, rgba(236, 228, 214, 0.2) 0 1px, transparent 1px 10px) right top / 4px 100% no-repeat;
+    repeating-linear-gradient(180deg, rgba(var(--desk-ink), 0.42) 0 1px, transparent 1px 100px) right top / 13px 100% no-repeat,
+    repeating-linear-gradient(180deg, rgba(var(--desk-ink), 0.3) 0 1px, transparent 1px 50px) right top / 8px 100% no-repeat,
+    repeating-linear-gradient(180deg, rgba(var(--desk-ink), 0.2) 0 1px, transparent 1px 10px) right top / 4px 100% no-repeat;
 }
 
 .bk-desk-ruler span { position: absolute; }
@@ -1907,7 +2037,7 @@ body.is-reading {
   width: 30px;
   height: 30px;
   fill: none;
-  stroke: rgba(236, 228, 214, 0.26);
+  stroke: rgba(var(--desk-ink), 0.26);
   stroke-width: 0.9;
 }
 
@@ -1924,12 +2054,12 @@ body.is-reading {
   height: 190px;
   overflow: visible;
   fill: none;
-  stroke: rgba(236, 228, 214, 0.1);
+  stroke: rgba(var(--desk-ink), 0.1);
   stroke-width: 1;
 }
 
 .bk-desk-angles text {
-  fill: rgba(236, 228, 214, 0.3);
+  fill: rgba(var(--desk-ink), 0.3);
   stroke: none;
   font: 500 9px 'JetBrains Mono', ui-monospace, monospace;
 }
@@ -1940,8 +2070,8 @@ body.is-reading {
   right: 18px;
   bottom: 18px;
   width: 262px;
-  border: 1px solid rgba(236, 228, 214, 0.26);
-  color: rgba(236, 228, 214, 0.5);
+  border: 1px solid rgba(var(--desk-ink), 0.26);
+  color: rgba(var(--desk-ink), 0.5);
   font: 500 7px/1.2 'JetBrains Mono', ui-monospace, monospace;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -1956,12 +2086,12 @@ body.is-reading {
 }
 
 .bk-titleblock-row + .bk-titleblock-row,
-.bk-titleblock-grid + .bk-titleblock-row { border-top: 1px solid rgba(236, 228, 214, 0.18); }
+.bk-titleblock-grid + .bk-titleblock-row { border-top: 1px solid rgba(var(--desk-ink), 0.18); }
 
 .bk-titleblock-row.is-title { grid-template-columns: auto 1fr; }
 
 .bk-titleblock strong {
-  color: rgba(246, 240, 228, 0.78);
+  color: rgba(var(--desk-ink), 0.9);
   font-weight: 500;
 }
 
@@ -1972,14 +2102,14 @@ body.is-reading {
 }
 
 .bk-titleblock-grid {
-  border-top: 1px solid rgba(236, 228, 214, 0.18);
+  border-top: 1px solid rgba(var(--desk-ink), 0.18);
   display: grid;
   grid-template-columns: 1.4fr 1fr 1fr 0.7fr;
 }
 
 .bk-titleblock-grid span {
   padding: 5px 8px;
-  border-left: 1px solid rgba(236, 228, 214, 0.18);
+  border-left: 1px solid rgba(var(--desk-ink), 0.18);
 }
 
 .bk-titleblock-grid span:first-child { border-left: 0; }
@@ -1987,7 +2117,7 @@ body.is-reading {
 .bk-titleblock-grid b {
   display: block;
   margin-top: 3px;
-  color: rgba(246, 240, 228, 0.78);
+  color: rgba(var(--desk-ink), 0.9);
   font-size: 8.5px;
   font-weight: 500;
 }

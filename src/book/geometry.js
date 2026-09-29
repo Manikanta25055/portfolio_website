@@ -27,6 +27,14 @@ export function apply(m, [x, y]) {
   return [m[0] * x + m[2] * y + m[4], m[1] * x + m[3] * y + m[5]];
 }
 
+export function inverse([a, b, c, d, e, f]) {
+  const det = a * d - b * c;
+  return [d / det, -b / det, -c / det, a / det, (c * f - d * e) / det, (b * e - a * f) / det];
+}
+
+// The linear part of a transform applied to a direction.
+export const linear = (m, [x, y]) => [m[0] * x + m[2] * y, m[1] * x + m[3] * y];
+
 export const mirror = (W) => [-1, 0, 0, 1, W, 0];
 export const translate = (x, y = 0) => [1, 0, 0, 1, x, y];
 

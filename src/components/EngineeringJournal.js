@@ -162,8 +162,8 @@ function Header({ active, onNavigate }) {
         <button className="brand" type="button" onClick={() => navigate('home')} aria-label="Go to home">
           <span className="brand-mark">{PERSONAL.initials}</span>
           <span className="brand-copy">
-            <strong>Engineering Journal</strong>
-            <span>Veera Manikanta Gonugondla</span>
+            <strong>Veera Manikanta</strong>
+            <span>Hardware · Systems · Operations</span>
           </span>
         </button>
 
